@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace BugTracker
 {
@@ -25,6 +24,30 @@ namespace BugTracker
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            // My Bundles
+            bundles.Add(new StyleBundle(@"~/MyContent/css").Include(
+                @"~/Content\MyStyles\MyStyles.css"));
+
+            bundles.Add(new ScriptBundle(@"~/MyContent/js").Include(
+                @"~/Scripts\MyScripts\MyScript.js"));
+
+            bundles.Add(new StyleBundle(@"~/Template/css").Include(
+                @"~/Content\TemplateCSS\animate.min.css",
+                @"~/Content\TemplateCSS\demo.css",
+                @"~/Content\TemplateCSS\light-bootstrap-dashboard.css",
+                @"~/Content\TemplateCSS\pe-icon-7-stroke.css",
+                @"~/Content\site.css"));
+
+            bundles.Add(new ScriptBundle(@"~/Template/js").Include(
+                @"~/Scripts\TemplateScripts\bootstrap-notify.js",
+                @"~/Scripts\TemplateScripts\bootstrap-select.js",
+                @"~/Scripts\TemplateScripts\chartist.min.js",
+
+                // I think this was just for the demo in the live preview of the template
+                //@"~/Scripts\TemplateScripts\demo.js",
+
+                @"~/Scripts\TemplateScripts\light-bootstrap-dashboard.js"));
         }
     }
 }
