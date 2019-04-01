@@ -34,7 +34,10 @@ namespace BugTracker
 
             bundles.Add(new StyleBundle(@"~/Template/css").Include(
                 @"~/Content\TemplateCSS\animate.min.css",
-                @"~/Content\TemplateCSS\demo.css",
+
+                // I think this was just for the demo in the live preview of the template
+                //@"~/Content\TemplateCSS\demo.css",
+
                 @"~/Content\TemplateCSS\light-bootstrap-dashboard.css",
                 @"~/Content\TemplateCSS\pe-icon-7-stroke.css",
                 @"~/Content\site.css"));
@@ -48,6 +51,12 @@ namespace BugTracker
                 //@"~/Scripts\TemplateScripts\demo.js",
 
                 @"~/Scripts\TemplateScripts\light-bootstrap-dashboard.js"));
+
+            bundles.Add(new StyleBundle(@"~/font-awesome", @"http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"));
+            bundles.Add(new StyleBundle(@"~/fonts-google", @"http://fonts.googleapis.com/css?family=Roboto:400,700,300"));
+
+            BundleTable.EnableOptimizations = true;
+            bundles.UseCdn = true;
         }
     }
 }

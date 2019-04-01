@@ -3,20 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Styles.Render("~/Template/css")
-    @Scripts.Render("~/bundles/modernizr")
-
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
-
+    <title>@ViewBag.Title</title>
+    @Styles.Render(@"~/fonts-google")
+    @Styles.Render(@"~/font-awesome")
+    @Styles.Render(@"~/Content/css")
+    @Styles.Render(@"~/Template/css")
     @Styles.Render(@"~/MyContent/css")
+    @Scripts.Render(@"~/bundles/modernizr")
 </head>
 <body>
 
     <div class="wrapper">
-        <div class="sidebar" data-color="" data-image="./Template/assets/img/sidebar-5.jpg">
+        <div class="sidebar" data-color="" data-image="@Url.Content("~/Template/assets/img/sidebar-5.jpg")">
             <!--
 
                 Tip 1: you can change the color of the sidebar using: data-color="blue | azure | green | orange | red | purple
@@ -150,12 +148,10 @@
     </div>
 
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render(@"~/bundles/jquery")
+    @Scripts.Render(@"~/bundles/bootstrap")
     @Scripts.Render(@"~/Template/js")
-
     @Scripts.Render(@"~/MyContent/js")
-
     @RenderSection("scripts", required: false)
 </body>
 </html>
