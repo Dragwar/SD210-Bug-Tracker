@@ -1,0 +1,4 @@
+﻿body > div > div.main-panel > footer > div {
+    display: flex;
+    justify-content: space-between;
+}

@@ -186,16 +186,25 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\MyStyles\MyStyles.css" />
+    <Content Include="Content\TemplateCSS\animate.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\TemplateCSS\demo.css" />
+    <Content Include="Content\TemplateCSS\light-bootstrap-dashboard.css" />
+    <Content Include="Content\TemplateCSS\pe-icon-7-stroke.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="fonts\Pe-icon-7-stroke.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="fonts\Pe-icon-7-stroke.eot" />
+    <Content Include="fonts\Pe-icon-7-stroke.ttf" />
+    <Content Include="fonts\Pe-icon-7-stroke.woff" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
@@ -207,6 +216,12 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\MyScripts\MyScript.js" />
+    <Content Include="Scripts\TemplateScripts\bootstrap-notify.js" />
+    <Content Include="Scripts\TemplateScripts\bootstrap-select.js" />
+    <Content Include="Scripts\TemplateScripts\chartist.min.js" />
+    <Content Include="Scripts\TemplateScripts\demo.js" />
+    <Content Include="Scripts\TemplateScripts\light-bootstrap-dashboard.js" />
     <Content Include="Template\assets\css\animate.min.css" />
     <Content Include="Template\assets\css\bootstrap.min.css" />
     <Content Include="Template\assets\css\demo.css" />
