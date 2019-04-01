@@ -37,16 +37,16 @@
                         </a>
                     </li>
 
-                    @* Don't even need to check if the user is logged in *@
+                    @* Don't even need to check if the user is logged in because it will redirect to login page *@
                     @*@if (!User.Identity.IsAuthenticated)
-                    {*@
-                        <li>
-                            @*Update Link*@
-                            <a href="@Url.Action("Index", "Manage")">
-                                <i class="pe-7s-user"></i>
-                                <p>User Profile</p>
-                            </a>
-                        </li>
+                        {*@
+                    <li>
+                        @*Update Link*@
+                        <a href="@Url.Action("Index", "Manage")">
+                            <i class="pe-7s-user"></i>
+                            <p>User Profile @if (User.Identity.IsAuthenticated) { <span class="small">(@User.Identity.Name)</span> }</p>
+                        </a>
+                    </li>
                     @*}*@
 
                     <li>

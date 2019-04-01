@@ -6,13 +6,17 @@
 <div class="col-md-6">
     <div class="card ">
         <div class="header">
-            <h4 class="title">@ViewBag.Title</h4>
+            <h4 class="title">Change your account settings</h4>
             <p class="category text-success">@ViewBag.StatusMessage</p>
+            @if (!string.IsNullOrWhiteSpace(Model.DisplayName))
+            {
+                <small>
+                    @Model.DisplayName
+                </small>
+            }
         </div>
         <div class="content">
             <div>
-                <h4>Change your account settings</h4>
-                <hr />
                 <dl class="dl-horizontal">
                     <dt>Password:</dt>
                     <dd>
