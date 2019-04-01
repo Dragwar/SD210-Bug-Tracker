@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string userName = User.Identity.Name;
+    var userRepository = new BugTracker.MyHelpers.DB_Repositories.UserRepository(new BugTracker.Models.ApplicationDbContext());
+
+    ViewBag.UserDisplayName = userRepository.GetUserByUserName(userName).DisplayName;
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -44,7 +50,14 @@
                         @*Update Link*@
                         <a href="@Url.Action("Index", "Manage")">
                             <i class="pe-7s-user"></i>
-                            <p>User Profile @if (User.Identity.IsAuthenticated) { <span class="small">(@User.Identity.Name)</span> }</p>
+                            <p>
+                                User Profile
+                                @if (User.Identity.IsAuthenticated && (ViewBag.UserDisplayName is string) && !string.IsNullOrWhiteSpace((string)(ViewBag.UserDisplayName)))
+                                {
+                                    <br />
+                                    <small>(@ViewBag.UserDisplayName)</small>
+                                }
+                            </p>
                         </a>
                     </li>
                     @*}*@

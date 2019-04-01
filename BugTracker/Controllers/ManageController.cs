@@ -74,7 +74,7 @@ namespace BugTracker.Controllers
             var model = new IndexViewModel
             {
                 //TODO: Get DisplayName and set it here!
-                DisplayName = userRepository.GetUser(userId).DisplayName,
+                DisplayName = userRepository.GetUserById(userId).DisplayName,
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),

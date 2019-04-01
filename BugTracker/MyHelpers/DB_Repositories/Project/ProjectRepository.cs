@@ -19,9 +19,13 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public Project GetProject(string id) => DBContext.Projects.FirstOrDefault(project => project.Id.ToString() == id);
 
-        public List<Project> GetUserProjects(string userId) => DBContext.Projects.Where(project => project.Users.Any(user => userId == user.Id)).ToList();
+        public List<Project> GetUserProjects(string userId) => DBContext.Projects
+            .Where(project => project.Users.Any(user => userId == user.Id))
+            .ToList();
 
-        public List<Project> GetUserProjects(ApplicationUser applicationUser) => DBContext.Projects.Where(project => project.Users.Any(user => applicationUser == user)).ToList();
+        public List<Project> GetUserProjects(ApplicationUser applicationUser) => DBContext.Projects
+            .Where(project => project.Users.Any(user => applicationUser == user))
+            .ToList();
 
         public List<Project> GetAllProjects() => DBContext.Projects.ToList();
     }

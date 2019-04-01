@@ -185,7 +185,6 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
-    <Compile Include="MyHelpers\DB_Repositories\User\IUserRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\User\UserRepository.cs" />
     <Compile Include="MyHelpers\UserRoles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
