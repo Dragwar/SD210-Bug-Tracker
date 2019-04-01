@@ -23,10 +23,6 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public ApplicationUser GetUserByDisplayName(string displayName) => DBContext.Users.FirstOrDefault(user => user.UserName == displayName);
 
-        public List<ApplicationUser> GetUsersByProject(Project projectToFind) => DBContext.Users
-            .Where(user => user.Projects.Any(project => project == projectToFind))
-            .ToList();
-
         public List<ApplicationUser> GetUsersByProject(Guid projectId) => DBContext.Users
             .Where(user => user.Projects.Any(project => project.Id == projectId))
             .ToList();

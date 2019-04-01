@@ -2,7 +2,7 @@
     string userName = User.Identity.Name;
     var userRepository = new BugTracker.MyHelpers.DB_Repositories.UserRepository(new BugTracker.Models.ApplicationDbContext());
 
-    ViewBag.UserDisplayName = userRepository.GetUserByUserName(userName).DisplayName;
+    ViewBag.UserDisplayName = userRepository.GetUserByUserName(userName)?.DisplayName;
 }
 <!DOCTYPE html>
 <html>

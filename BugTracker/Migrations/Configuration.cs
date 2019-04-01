@@ -1,12 +1,11 @@
 namespace BugTracker.Migrations
 {
     using BugTracker.Models;
+    using BugTracker.Models.Domain;
     using BugTracker.MyHelpers;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
-    using System;
     using System.Collections.Generic;
-    using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
@@ -20,12 +19,16 @@ namespace BugTracker.Migrations
 
         protected override void Seed(BugTracker.Models.ApplicationDbContext context)
         {
+            //if (System.Diagnostics.Debugger.IsAttached == false)
+            //{
+            //    System.Diagnostics.Debugger.Launch();
+            //}
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
-            PopulateUsersAndRolesAndSave(context);
-
+            List<ApplicationUser> initialUsers = PopulateUsersAndRolesAndSave(context);
+            PopulateDefaultProjectsAndSave(context, initialUsers);
 
         }
 
@@ -117,6 +120,37 @@ namespace BugTracker.Migrations
             }
 
             return newUser;
+        }
+
+
+        private void PopulateDefaultProjectsAndSave(BugTracker.Models.ApplicationDbContext context, List<ApplicationUser> initialUsers)
+        {
+            // make one default post for all initial users
+            for (int i = 0; i < initialUsers.Count; i++)
+            {
+                string name = $"{initialUsers[i].UserName.Replace("@mybugtracker.com", "")}'s Project";
+
+                Project newPost = new Project()
+                {
+                    Name = name,
+                    Users = new List<ApplicationUser>() { initialUsers[i] },
+                };
+
+                if ((i + 1) < initialUsers.Count)
+                {
+                    newPost.Users.Add(initialUsers[i + 1]);
+                }
+                else if ((i - 1) >= 0)
+                {
+                    newPost.Users.Add(initialUsers[i - 1]);
+                }
+
+                // Add new post to database if the name of the post doesn't match any in the database
+                context.Projects.AddOrUpdate(post => post.Name, newPost);
+            }
+
+            // Save changes made above to the database
+            context.SaveChanges();
         }
     }
 }
