@@ -31,18 +31,24 @@
                 <ul class="nav">
                     <li class="active">
                         @*Update Link*@
-                        <a href="./">
+                        <a href="/">
                             <i class="pe-7s-graph"></i>
                             <p>Dashboard</p>
                         </a>
                     </li>
-                    <li>
-                        @*Update Link*@
-                        <a href="./Template/user.html">
-                            <i class="pe-7s-user"></i>
-                            <p>User Profile</p>
-                        </a>
-                    </li>
+
+                    @* Don't even need to check if the user is logged in *@
+                    @*@if (!User.Identity.IsAuthenticated)
+                    {*@
+                        <li>
+                            @*Update Link*@
+                            <a href="@Url.Action("Index", "Manage")">
+                                <i class="pe-7s-user"></i>
+                                <p>User Profile</p>
+                            </a>
+                        </li>
+                    @*}*@
+
                     <li>
                         @*Update Link*@
                         <a href="./Template/table.html">
@@ -91,10 +97,13 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
+                        <!--
                         @*Update Link*@
                         <a class="navbar-brand" href="#">Dashboard</a>
+                        -->
                     </div>
                     <div class="collapse navbar-collapse">
+                        <!--
                         <ul class="nav navbar-nav navbar-left">
                             <li>
                                 @*Update Link*@
@@ -103,14 +112,8 @@
                                 </a>
                             </li>
                         </ul>
-                        <ul class="nav navbar-nav navbar-right">
-                            <li>
-                                @*Update Link*@
-                                <a href="#">
-                                    Account
-                                </a>
-                            </li>
-                        </ul>
+                        -->
+                        @Html.Partial("_LoginPartial")
                     </div>
                 </div>
             </nav>
