@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using BugTracker.Models;
+using BugTracker.MyHelpers.DB_Repositories;
 
 namespace BugTracker.Controllers
 {
@@ -16,8 +17,11 @@ namespace BugTracker.Controllers
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
+        private ApplicationDbContext DbContext;
+
         public ManageController()
         {
+            DbContext = new ApplicationDbContext();
         }
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
@@ -63,9 +67,14 @@ namespace BugTracker.Controllers
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
 
-            var userId = User.Identity.GetUserId();
+            string userId = User.Identity.GetUserId();
+
+            UserRepository userRepository = new UserRepository(DbContext);
+
             var model = new IndexViewModel
             {
+                //TODO: Get DisplayName and set it here!
+                DisplayName = userRepository.GetUser(userId).DisplayName,
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
                 TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
