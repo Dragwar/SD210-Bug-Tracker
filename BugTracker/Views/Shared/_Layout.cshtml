@@ -14,6 +14,7 @@
     @Styles.Render(@"~/font-awesome")
     @Styles.Render(@"~/Content/css")
     @Styles.Render(@"~/Template/css")
+    @Styles.Render(@"~/data-tables/css")
     @Styles.Render(@"~/MyContent/css")
     @Scripts.Render(@"~/bundles/modernizr")
 </head>
@@ -38,63 +39,40 @@
                     <li class="active">
                         @*Update Link*@
                         <a href="/">
-                            <i class="pe-7s-graph"></i>
+                            <i class="pe-7s-pin"></i>
                             <p>Dashboard</p>
                         </a>
                     </li>
 
-                    @* Don't even need to check if the user is logged in because it will redirect to login page *@
-                    @*@if (!User.Identity.IsAuthenticated)
-                        {*@
-                    <li>
-                        @*Update Link*@
-                        <a href="@Url.Action("Index", "Manage")">
-                            <i class="pe-7s-user"></i>
-                            <p>
-                                User Profile
-                                @if (User.Identity.IsAuthenticated && (ViewBag.UserDisplayName is string) && !string.IsNullOrWhiteSpace((string)(ViewBag.UserDisplayName)))
-                                {
-                                    <br />
-                                    <small>(@ViewBag.UserDisplayName)</small>
-                                }
-                            </p>
-                        </a>
-                    </li>
-                    @*}*@
+                    @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)))
+                    {
+                        <li>
+                            @*Update Link*@
+                            <a href="./Template/notifications.html">
+                                <i class="pe-7s-edit"></i>
+                                <p>Assign User Roles</p>
+                            </a>
+                        </li>
+                    }
+
+                    @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
+                    {
+                        <li>
+                            @*Update Link*@
+                            @*<a href="./Template/table.html">*@
+                            <a href="#">
+                                <i class="pe-7s-note2"></i>
+                                <p>All Projects</p>
+                            </a>
+                        </li>
+                    }
 
                     <li>
                         @*Update Link*@
-                        <a href="./Template/table.html">
-                            <i class="pe-7s-note2"></i>
-                            <p>Table List</p>
-                        </a>
-                    </li>
-                    <li>
-                        @*Update Link*@
-                        <a href="./Template/typography.html">
-                            <i class="pe-7s-news-paper"></i>
-                            <p>Typography</p>
-                        </a>
-                    </li>
-                    <li>
-                        @*Update Link*@
-                        <a href="./Template/icons.html">
-                            <i class="pe-7s-science"></i>
-                            <p>Icons</p>
-                        </a>
-                    </li>
-                    <li>
-                        @*Update Link*@
-                        <a href="./Template/maps.html">
-                            <i class="pe-7s-map-marker"></i>
-                            <p>Maps</p>
-                        </a>
-                    </li>
-                    <li>
-                        @*Update Link*@
-                        <a href="./Template/notifications.html">
-                            <i class="pe-7s-bell"></i>
-                            <p>Notifications</p>
+                        @*<a href="./Template/icons.html">*@
+                        <a href="#">
+                            <i class="pe-7s-notebook"></i>
+                            <p>My Projects</p>
                         </a>
                     </li>
                 </ul>
@@ -167,6 +145,7 @@
     @Scripts.Render(@"~/bundles/jquery")
     @Scripts.Render(@"~/bundles/bootstrap")
     @Scripts.Render(@"~/Template/js")
+    @Scripts.Render(@"~/data-tables/js")
     @Scripts.Render(@"~/MyContent/js")
     @RenderSection("scripts", required: false)
 </body>
