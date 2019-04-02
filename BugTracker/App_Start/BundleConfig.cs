@@ -55,6 +55,11 @@ namespace BugTracker
             bundles.Add(new StyleBundle(@"~/font-awesome", @"http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"));
             bundles.Add(new StyleBundle(@"~/fonts-google", @"http://fonts.googleapis.com/css?family=Roboto:400,700,300"));
 
+            bundles.Add(new StyleBundle(@"~/data-tables/css", @"https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css").IncludeDirectory(
+                @"~/Content\DataTables\css\", "*.css"));
+            bundles.Add(new ScriptBundle(@"~/data-tables/js", @"https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js").IncludeDirectory(
+                @"~/Scripts\DataTables\", "*.js"));
+
             BundleTable.EnableOptimizations = true;
             bundles.UseCdn = true;
         }
