@@ -1,13 +1,12 @@
-﻿using System;
+﻿using BugTracker.Models;
+using BugTracker.MyHelpers.DB_Repositories;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using BugTracker.Models;
-using BugTracker.MyHelpers.DB_Repositories;
 
 namespace BugTracker.Controllers
 {
@@ -32,26 +31,74 @@ namespace BugTracker.Controllers
 
         public ApplicationSignInManager SignInManager
         {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set 
-            { 
-                _signInManager = value; 
-            }
+            get => _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+            private set => _signInManager = value;
         }
 
         public ApplicationUserManager UserManager
         {
-            get
+            get => _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            private set => _userManager = value;
+        }
+
+        //
+        // GET: /Manage/ChangeDisplayName
+        [HttpGet]
+        public ActionResult ChangeDisplayName()
+        {
+            string userId = User.Identity.GetUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                return RedirectToAction("Index", "Home");
             }
-            private set
+
+            UserRepository userRepository = new UserRepository(DbContext);
+            ApplicationUser foundUser = userRepository.GetUserById(userId);
+
+            if (foundUser == null)
             {
-                _userManager = value;
+                return RedirectToAction("Index", new { Message = ManageMessageId.Error });
             }
+
+            return View(new ChangeDisplayNameViewModel() { DisplayName = foundUser.DisplayName });
+        }
+
+        //
+        // POST: /Manage/ChangeDisplayName
+        [HttpPost]
+        public ActionResult ChangeDisplayName(ChangeDisplayNameViewModel formData)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(formData);
+            }
+
+            if ("" == formData.DisplayName.Trim())
+            {
+                ModelState.AddModelError("", "");
+                return View(formData);
+            }
+
+            string userId = User.Identity.GetUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            UserRepository userRepository = new UserRepository(DbContext);
+            ApplicationUser foundUser = userRepository.GetUserById(userId);
+
+            if (foundUser == null)
+            {
+                return RedirectToAction("Index", new { Message = ManageMessageId.Error });
+            }
+
+            foundUser.DisplayName = formData.DisplayName.Trim();
+            DbContext.SaveChanges();
+
+            return RedirectToAction(nameof(Index));
         }
 
         //
@@ -342,7 +389,7 @@ namespace BugTracker.Controllers
             base.Dispose(disposing);
         }
 
-#region Helpers
+        #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -393,6 +440,6 @@ namespace BugTracker.Controllers
             Error
         }
 
-#endregion
+        #endregion
     }
 }

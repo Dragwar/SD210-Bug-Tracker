@@ -21,6 +21,13 @@ namespace BugTracker.Models
         public IList<AuthenticationDescription> OtherLogins { get; set; }
     }
 
+    public class ChangeDisplayNameViewModel
+    {
+        [Required]
+        [Display(Name = "Display Name")]
+        public string DisplayName { get; set; }
+    }
+
     public class FactorViewModel
     {
         public string Purpose { get; set; }

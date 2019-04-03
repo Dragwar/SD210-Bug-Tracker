@@ -8,16 +8,18 @@
         <div class="header">
             <h4 class="title">Change your account settings</h4>
             <p class="category text-success">@ViewBag.StatusMessage</p>
-            @if (!string.IsNullOrWhiteSpace(Model.DisplayName))
-            {
-                <small>
-                    @Model.DisplayName
-                </small>
-            }
+
         </div>
         <div class="content">
             <div>
                 <dl class="dl-horizontal">
+                    @if (!string.IsNullOrWhiteSpace(Model.DisplayName))
+                    {
+                        <dt>Display Name:</dt>
+                        <dd>
+                            @Model.DisplayName [ @Html.ActionLink("Change", "ChangeDisplayName") ]
+                        </dd>
+                    }
                     <dt>Password:</dt>
                     <dd>
                         [

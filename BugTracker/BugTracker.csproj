@@ -577,6 +577,7 @@
     <Content Include="Template\CHANGELOG.md" />
     <Content Include="Template\LICENSE.md" />
     <Content Include="Template\README.md" />
+    <Content Include="Views\Manage\ChangeDisplayName.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
