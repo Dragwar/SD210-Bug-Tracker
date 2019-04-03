@@ -14,7 +14,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public ProjectRepository(ApplicationDbContext dBContext)
         {
-            DBContext = dBContext;
+            DBContext = dBContext ?? throw new ArgumentNullException(nameof(dBContext));
         }
 
         public Project GetProject(string id) => DBContext.Projects.FirstOrDefault(project => project.Id.ToString() == id);

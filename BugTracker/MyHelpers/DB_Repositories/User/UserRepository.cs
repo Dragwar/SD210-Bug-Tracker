@@ -12,7 +12,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public UserRepository(ApplicationDbContext dBContext)
         {
-            DBContext = dBContext;
+            DBContext = dBContext ?? throw new ArgumentNullException(nameof(dBContext));
         }
 
         public ApplicationUser GetUserById(string id) => DBContext.Users.FirstOrDefault(user => user.Id == id);

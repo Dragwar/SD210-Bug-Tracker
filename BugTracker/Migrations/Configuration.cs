@@ -27,9 +27,29 @@ namespace BugTracker.Migrations
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
+
+            CreateDefaultRoles(context);
+
             List<ApplicationUser> initialUsers = PopulateUsersAndRolesAndSave(context);
             PopulateDefaultProjectsAndSave(context, initialUsers);
 
+        }
+
+        private void CreateDefaultRoles(ApplicationDbContext context)
+        {
+            CreateRole(context, nameof(UserRolesEnum.Admin));
+            CreateRole(context, nameof(UserRolesEnum.ProjectManager));
+            CreateRole(context, nameof(UserRolesEnum.Developer));
+            CreateRole(context, nameof(UserRolesEnum.Submitter));
+        }
+
+        private void CreateRole(ApplicationDbContext context, string newRole)
+        {
+            if (!string.IsNullOrWhiteSpace(newRole) && !context.Roles.Any(role => role.Name == newRole))
+            {
+                IdentityRole newIdentityRole = new IdentityRole(newRole);
+                new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context)).Create(newIdentityRole);
+            }
         }
 
         private List<ApplicationUser> PopulateUsersAndRolesAndSave(BugTracker.Models.ApplicationDbContext context)
@@ -52,9 +72,9 @@ namespace BugTracker.Migrations
             #endregion
 
             initialUsers.Add(admin);
-            initialUsers.Add(projectManager);
-            initialUsers.Add(developer);
-            initialUsers.Add(submitter);
+            initialUsers.Add(projectManager); // TODO: Delete these after testing the role permissions
+            initialUsers.Add(developer); // TODO: Delete these after testing the role permissions
+            initialUsers.Add(submitter); // TODO: Delete these after testing the role permissions
             initialUsers.Add(everettGrassler);
 
             // Save changes made above to the database
@@ -100,6 +120,7 @@ namespace BugTracker.Migrations
                     Email = userEmail
                 };
 
+                newUser.EmailConfirmed = true;
                 userManager.Create(newUser, userPassword);
             }
             else
@@ -130,7 +151,7 @@ namespace BugTracker.Migrations
             {
                 string name = $"{initialUsers[i].UserName.Replace("@mybugtracker.com", "")}'s Project";
 
-                Project newPost = new Project()
+                Project newProject = new Project()
                 {
                     Name = name,
                     Users = new List<ApplicationUser>() { initialUsers[i] },
@@ -138,15 +159,15 @@ namespace BugTracker.Migrations
 
                 if ((i + 1) < initialUsers.Count)
                 {
-                    newPost.Users.Add(initialUsers[i + 1]);
+                    newProject.Users.Add(initialUsers[i + 1]);
                 }
                 else if ((i - 1) >= 0)
                 {
-                    newPost.Users.Add(initialUsers[i - 1]);
+                    newProject.Users.Add(initialUsers[i - 1]);
                 }
 
                 // Add new post to database if the name of the post doesn't match any in the database
-                context.Projects.AddOrUpdate(post => post.Name, newPost);
+                context.Projects.AddOrUpdate(post => post.Name, newProject);
             }
 
             // Save changes made above to the database
