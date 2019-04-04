@@ -176,6 +176,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -184,6 +185,7 @@
     <Compile Include="Models\Domain\Project.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\Project\IndexViewModel.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\User\UserRepository.cs" />
@@ -579,10 +581,10 @@
     <Content Include="Template\LICENSE.md" />
     <Content Include="Template\README.md" />
     <Content Include="Views\Manage\ChangeDisplayName.cshtml" />
+    <Content Include="Views\Project\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\ViewModels\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

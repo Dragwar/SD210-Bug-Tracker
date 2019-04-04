@@ -26,11 +26,6 @@ namespace BugTracker.Controllers
             ApplicationUser currentUser = userRepository.GetUserById(userId);
             List<Project> currentUsersProjects = projectRepository.GetUserProjects(userId);
 
-            RoleStore<IdentityRole> roleStore = new RoleStore<IdentityRole>(DbContext);
-            RoleManager<IdentityRole> roleManager = new RoleManager<IdentityRole>(roleStore);
-
-            List<IdentityRole> roles = roleManager.Roles.ToList();
-
             return View();
         }
 

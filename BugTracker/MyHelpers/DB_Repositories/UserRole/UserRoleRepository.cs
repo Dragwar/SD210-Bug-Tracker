@@ -4,39 +4,41 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BugTracker.MyHelpers.DB_Repositories.Role
+namespace BugTracker.MyHelpers.DB_Repositories
 {
     public class UserRoleRepository
     {
-        private UserManager<ApplicationUser> userManager;
+        private UserManager<ApplicationUser> UserManager;
         private ApplicationDbContext DbContext;
 
         public UserRoleRepository(ApplicationDbContext dbContext)
         {
             DbContext = dbContext;
-            userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(dbContext));
+            UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(dbContext));
         }
 
-        public bool IsUserInRole(string userId, string roleName) => userManager.IsInRole(userId, roleName);
+        public List<IdentityRole> GetAllUserRoles() => DbContext.Roles.ToList();
 
-        public List<string> ListUserRoles(string userId) => userManager.GetRoles(userId).ToList();
+        public bool IsUserInRole(string userId, string roleName) => UserManager.IsInRole(userId, roleName);
+
+        public List<string> ListUserRoles(string userId) => UserManager.GetRoles(userId).ToList();
 
         public bool AddUserToRole(string userId, string roleName)
         {
-            IdentityResult result = userManager.AddToRole(userId, roleName);
+            IdentityResult result = UserManager.AddToRole(userId, roleName);
             return result.Succeeded;
         }
 
         public bool RemoveUserFromRole(string userId, string roleName)
         {
-            IdentityResult result = userManager.RemoveFromRole(userId, roleName);
+            IdentityResult result = UserManager.RemoveFromRole(userId, roleName);
             return result.Succeeded;
         }
 
         public List<ApplicationUser> UsersInRole(string roleName)
         {
             List<ApplicationUser> resultList = new List<ApplicationUser>();
-            List<ApplicationUser> List = userManager.Users.ToList();
+            List<ApplicationUser> List = UserManager.Users.ToList();
 
             foreach (ApplicationUser user in List)
             {
@@ -52,7 +54,7 @@ namespace BugTracker.MyHelpers.DB_Repositories.Role
         public List<ApplicationUser> UsersNotInRole(string roleName)
         {
             List<ApplicationUser> resultList = new List<ApplicationUser>();
-            List<ApplicationUser> List = userManager.Users.ToList();
+            List<ApplicationUser> List = UserManager.Users.ToList();
 
             foreach (ApplicationUser user in List)
             {

@@ -66,7 +66,7 @@ namespace BugTracker.Migrations
 
             ApplicationUser developer = CreateUser(context, roleManager, userManager, "Developer (DisplayName)", "developer@mybugtracker.com", "developer@mybugtracker.com", userRole: nameof(UserRolesEnum.Developer));
 
-            ApplicationUser submitter = CreateUser(context, roleManager, userManager, "Project Manager (DisplayName)", "submitter@mybugtracker.com", "submitter@mybugtracker.com", userRole: nameof(UserRolesEnum.Submitter));
+            ApplicationUser submitter = CreateUser(context, roleManager, userManager, "Submitter (DisplayName)", "submitter@mybugtracker.com", "submitter@mybugtracker.com", userRole: nameof(UserRolesEnum.Submitter));
 
             ApplicationUser everettGrassler = CreateUser(context, roleManager, userManager, "Everett Grassler (DisplayName)", "everettG@mybugtracker.com", "everettG@mybugtracker.com", userPassword: "123Everett", userRole: nameof(UserRolesEnum.Admin));
             #endregion
