@@ -14,7 +14,7 @@
     @Styles.Render(@"~/font-awesome")
     @Styles.Render(@"~/Content/css")
     @Styles.Render(@"~/Template/css")
-    @Styles.Render(@"~/data-tables/css")
+    @RenderSection("Styles", false)
     @Styles.Render(@"~/MyContent/css")
     @Scripts.Render(@"~/bundles/modernizr")
 </head>
@@ -149,7 +149,6 @@
     @Scripts.Render(@"~/bundles/jquery")
     @Scripts.Render(@"~/bundles/bootstrap")
     @Scripts.Render(@"~/Template/js")
-    @Scripts.Render(@"~/data-tables/js")
     @Scripts.Render(@"~/MyContent/js")
     @RenderSection("scripts", required: false)
 </body>

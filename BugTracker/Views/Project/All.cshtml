@@ -4,8 +4,18 @@
     ViewBag.Title = "All Projects";
 }
 
+@section Styles
+{
+    @Styles.Render(@"~/data-tables/css")
+}
+
 @section Scripts
 {
+    @Scripts.Render(@"~/data-tables/js")
+    <script type="text/javascript">
+        /* TODO: Get DataTables to work here! */
+    </script>
+
     <!--! testing out C# List to JavaScript array -->
     <script type="text/javascript">
     const testArray = @Html.Raw(Json.Encode(Model));
