@@ -582,6 +582,7 @@
     <Content Include="Template\README.md" />
     <Content Include="Views\Manage\ChangeDisplayName.cshtml" />
     <Content Include="Views\Project\Index.cshtml" />
+    <Content Include="Views\Project\All.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

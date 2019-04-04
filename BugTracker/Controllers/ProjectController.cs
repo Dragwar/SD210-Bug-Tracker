@@ -32,18 +32,18 @@ namespace BugTracker.Controllers
         public ActionResult Index()
         {
             List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
-            List<IndexViewModel> viewModel;
+            List<IndexViewModel> viewModels;
             
             if (userProjects.Any())
             {
-                viewModel = userProjects.Select(project => IndexViewModel.CreateViewModel(project)).ToList();
+                viewModels = userProjects.Select(project => IndexViewModel.CreateViewModel(project)).ToList();
             }
             else
             {
-                viewModel = new List<IndexViewModel>();
+                viewModels = new List<IndexViewModel>();
             }
 
-            return View(viewModel);
+            return View(viewModels);
         }
 
         // GET: Project/All
@@ -51,7 +51,27 @@ namespace BugTracker.Controllers
         public ActionResult All()
         {
             bool isUserAdmin = UserRoleRepository.IsUserInRole(User.Identity.GetUserId(), nameof(UserRolesEnum.Admin));
-            return View();
+            bool isUserProjectManager = UserRoleRepository.IsUserInRole(User.Identity.GetUserId(), nameof(UserRolesEnum.ProjectManager));
+
+            // shouldn't happen ever
+            if (!isUserAdmin && !isUserProjectManager)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            List<Project> allProjects = ProjectRepository.GetAllProjects();
+            List<IndexViewModel> viewModels;
+
+            if (allProjects.Any())
+            {
+                viewModels = allProjects.Select(project => IndexViewModel.CreateViewModel(project)).ToList();
+            }
+            else
+            {
+                viewModels = new List<IndexViewModel>();
+            }
+
+            return View(viewModels);
         }
 
         // GET: Project/Details/{id}
