@@ -1,11 +1,11 @@
 ﻿/** @description this will switch the active class on the my-page-link (nav-links) according to the current page*/
 (() => {
-    const currentPage = document.getElementById("currentPage");
+    const currentPage = document.getElementById("currentPage").dataset;
     const pageLinks = [...document.getElementsByClassName("my-page-link")];
     let isHomePage = true;
 
     pageLinks.forEach(element => {
-        if (currentPage.textContent == element.id) {
+        if (currentPage.page == element.id) {
             isHomePage = false;
             element.classList.add("active");
         } else {
