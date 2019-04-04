@@ -4,6 +4,15 @@
     ViewBag.Title = "All Projects";
 }
 
+@section Scripts
+{
+    <!--! testing out C# List to JavaScript array -->
+    <script type="text/javascript">
+    const testArray = @Html.Raw(Json.Encode(Model));
+    console.log(testArray);
+    </script>
+}
+
 <div>
     <div class="card">
         <div class="header">
@@ -17,7 +26,6 @@
             </p>
         </div>
         <div class="content">
-
             @if (Model.Any())
             {
                 <table class="table table-bordered table-striped">
@@ -58,5 +66,4 @@
         </div>
     </div>
 </div>
-
 
