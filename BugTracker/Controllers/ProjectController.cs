@@ -33,7 +33,7 @@ namespace BugTracker.Controllers
         {
             List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
             List<IndexViewModel> viewModels;
-            
+
             if (userProjects.Any())
             {
                 viewModels = userProjects.Select(project => IndexViewModel.CreateViewModel(project)).ToList();
@@ -75,9 +75,31 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/Details/{id}
-        public ActionResult Details(Guid id)
+        public ActionResult Details(string id)
         {
-            return View();
+            string userId = User.Identity.GetUserId();
+            Project foundProject = ProjectRepository.GetProject(id);
+
+            if (foundProject == null)
+            {
+                ModelState.AddModelError("", "Error - Project not found");
+                return RedirectToAction(nameof(Index));
+            }
+
+            bool isUserAllowToSeeProject = ProjectRepository.IsUserAssignedToProject(userId, foundProject);
+
+            if (UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.Admin)) || UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.ProjectManager)))
+            {
+                isUserAllowToSeeProject = true;
+            }
+
+            if (!isUserAllowToSeeProject)
+            {
+                ModelState.AddModelError("", "Error - You do not have permission to see this project");
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(DetailsViewModel.CreateViewModel(foundProject, DbContext));
         }
 
         // GET: Project/Create

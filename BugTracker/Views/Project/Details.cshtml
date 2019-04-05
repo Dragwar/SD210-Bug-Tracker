@@ -1,0 +1,146 @@
+﻿@model BugTracker.Models.ViewModels.Project.DetailsViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+@section Styles
+{
+    @Styles.Render(@"~/data-tables/css")
+}
+
+@section Scripts
+{
+    @Scripts.Render(@"~/data-tables/js")
+    <script type="text/javascript">
+        /*x TODO: Get DataTables to work here! */
+        $(document).ready(() => {
+            $("#project-users").DataTable();
+            const search = $("#project-users_filter").children("label").children("input");
+            const pageBtn = $(".paginate_button");
+            const dropdown = $("#project-users_length").children("label").children("select");
+            const projectWrapper = $("#project-users_wrapper");
+
+            search.addClass("form-control");
+            pageBtn.addClass("btn btn-secondary");
+            pageBtn.css("margin", "0px 5px")
+            dropdown.addClass("form-control");
+            projectWrapper.css("display", "flex");
+            projectWrapper.css("flex-flow", "row wrap");
+            projectWrapper.css("justify-content", "space-between");
+        });
+    </script>
+}
+
+
+<div class="col-lg-6">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">@ViewBag.Title</h4>
+            <p class="category">
+                @Model.Name
+            </p>
+        </div>
+        <div class="content">
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.DateCreated)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(model => model.DateCreated)
+                </dd>
+
+                @if (Model.DateUpdated.HasValue)
+                {
+                    <dt>
+                        @Html.DisplayNameFor(model => model.DateUpdated)
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.DateUpdated)
+                    </dd>
+                }
+            </dl>
+            <div class="footer">
+                <div class="legend" style="padding: 15px;">
+                    <span>
+                        <i class="fa fa-circle text-info"></i> @Html.ActionLink("Back To My Projects", "Index")
+                    </span>
+                    <span style="margin: 0px 50px;">
+                        @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) && User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
+                        {
+                            <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", "All")
+                        }
+                    </span>
+                    <span>
+                        <i class="fa fa-circle text-warning"></i> @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+                    </span>
+                </div>
+                <hr />
+                @if (Model.DateUpdated.HasValue)
+                {
+                    <div class="stats">
+                        <i class="fa fa-history"></i> Updated @Model.DateUpdated
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-6">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">Assigned Users</h4>
+            <p class="category">
+                @Model.Name's users
+            </p>
+        </div>
+        <div class="content">
+            @if (Model.Users.Any())
+            {
+                <table id="project-users" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <td>Display Name</td>
+                            <td>Email</td>
+                            <td>Roles</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr>
+                                <td>@user.DisplayName</td>
+                                <td>@user.Email</td>
+
+                                @if (user.Roles.Any())
+                                {
+                                    <td>
+                                        @foreach (var role in user.Roles)
+                                        {
+                                            <p>@role.Name</p>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-danger">No users assigned to project</p>
+            }
+        </div>
+    </div>
+</div>

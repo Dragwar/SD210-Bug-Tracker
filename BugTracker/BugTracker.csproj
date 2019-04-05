@@ -185,6 +185,8 @@
     <Compile Include="Models\Domain\Project.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\ViewModels\Project\DetailsViewModel.cs" />
+    <Compile Include="Models\ViewModels\HelperUserViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\IndexViewModel.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
@@ -583,6 +585,7 @@
     <Content Include="Views\Manage\ChangeDisplayName.cshtml" />
     <Content Include="Views\Project\Index.cshtml" />
     <Content Include="Views\Project\All.cshtml" />
+    <Content Include="Views\Project\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
