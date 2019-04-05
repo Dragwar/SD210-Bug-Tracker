@@ -13,6 +13,7 @@ using IndexViewModel = BugTracker.Models.ViewModels.Project.IndexViewModel;
 
 namespace BugTracker.Controllers
 {
+    [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
     public class ProjectController : Controller
     {
         private ApplicationDbContext DbContext { get; }
@@ -29,6 +30,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project
+        [AllowAnonymous]
         public ActionResult Index()
         {
             List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
@@ -47,7 +49,6 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/All
-        [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
         public ActionResult All()
         {
             bool isUserAdmin = UserRoleRepository.IsUserInRole(User.Identity.GetUserId(), nameof(UserRolesEnum.Admin));
@@ -56,6 +57,7 @@ namespace BugTracker.Controllers
             // shouldn't happen ever
             if (!isUserAdmin && !isUserProjectManager)
             {
+                ModelState.AddModelError("", "Error - You don't have permission to view this page");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -75,6 +77,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/Details/{id}
+        [AllowAnonymous]
         public ActionResult Details(string id)
         {
             string userId = User.Identity.GetUserId();
@@ -82,20 +85,22 @@ namespace BugTracker.Controllers
 
             if (foundProject == null)
             {
-                ModelState.AddModelError("", "Error - Project not found");
+                return RedirectToAction(nameof(Index));
+            }
+            else if (string.IsNullOrWhiteSpace(userId))
+            {
                 return RedirectToAction(nameof(Index));
             }
 
             bool isUserAllowToSeeProject = ProjectRepository.IsUserAssignedToProject(userId, foundProject);
 
-            if (UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.Admin)) || UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.ProjectManager)))
+            if (!string.IsNullOrWhiteSpace(userId) && UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.Admin)) || UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.ProjectManager)))
             {
                 isUserAllowToSeeProject = true;
             }
 
             if (!isUserAllowToSeeProject)
             {
-                ModelState.AddModelError("", "Error - You do not have permission to see this project");
                 return RedirectToAction(nameof(Index));
             }
 
@@ -124,13 +129,13 @@ namespace BugTracker.Controllers
             }
         }
 
-        // GET: Project/Edit/5
+        // GET: Project/Edit/{id}
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: Project/Edit/5
+        // POST: Project/Edit/{id}
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
         {
@@ -146,26 +151,27 @@ namespace BugTracker.Controllers
             }
         }
 
-        // GET: Project/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+        //? Is project deletion needed?
+        //// GET: Project/Delete/{id}
+        //public ActionResult Delete(int id)
+        //{
+        //    return View();
+        //}
 
-        // POST: Project/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
+        //// POST: Project/Delete/{id}
+        //[HttpPost]
+        //public ActionResult Delete(int id, FormCollection collection)
+        //{
+        //    try
+        //    {
+        //        // TODO: Add delete logic here
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch
+        //    {
+        //        return View();
+        //    }
+        //}
     }
 }
