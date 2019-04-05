@@ -23,6 +23,8 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public List<string> ListUserRoles(string userId) => UserManager.GetRoles(userId).ToList();
 
+        public List<IdentityRole> GetUserRoles(string userId) => GetAllUserRoles().Where(role => role.Users.FirstOrDefault(user => user.UserId == userId) != null).ToList();
+
         public bool AddUserToRole(string userId, string roleName)
         {
             IdentityResult result = UserManager.AddToRole(userId, roleName);

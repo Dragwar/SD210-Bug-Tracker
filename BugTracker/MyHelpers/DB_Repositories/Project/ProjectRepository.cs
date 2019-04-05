@@ -19,6 +19,11 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public Project GetProject(string id) => DBContext.Projects.FirstOrDefault(project => project.Id.ToString() == id);
 
+        public bool IsUserAssignedToProject(ApplicationUser applicationUser, Project project) => project?.Users.Any(user => user?.Id == applicationUser.Id) ?? false;
+        public bool IsUserAssignedToProject(string userId, Project project) => project?.Users.FirstOrDefault(user => user?.Id == userId) != null;
+        public bool IsUserAssignedToProject(string userId, string projectId) => GetProject(projectId)?.Users.FirstOrDefault(user => user?.Id == userId) != null;
+
+
         public List<Project> GetUserProjects(string userId) => DBContext.Projects
             .Where(project => project.Users.Any(user => userId == user.Id))
             .ToList();
