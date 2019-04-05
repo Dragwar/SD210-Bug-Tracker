@@ -375,6 +375,7 @@
     <Content Include="Content\DataTables\css\semanticui.scss" />
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
+    <Content Include="Private.config" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
@@ -462,12 +463,18 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\MyScripts\DataTablesProjectAll.js" />
+    <Content Include="Scripts\MyScripts\DataTablesProjectDetails.js" />
+    <Content Include="Scripts\MyScripts\DataTablesProjectIndex.js" />
     <Content Include="Scripts\MyScripts\MyScript.js" />
+    <Content Include="SQL\SeeUserInfo.sql" />
     <Content Include="Scripts\TemplateScripts\bootstrap-notify.js" />
     <Content Include="Scripts\TemplateScripts\bootstrap-select.js" />
     <Content Include="Scripts\TemplateScripts\chartist.min.js" />
     <Content Include="Scripts\TemplateScripts\demo.js" />
     <Content Include="Scripts\TemplateScripts\light-bootstrap-dashboard.js" />
+    <Content Include="SQL\CompareUserXProject.sql" />
+    <Content Include="SQL\CompareUserXRoles.sql" />
     <Content Include="Template\assets\css\animate.min.css" />
     <Content Include="Template\assets\css\bootstrap.min.css" />
     <Content Include="Template\assets\css\demo.css" />
@@ -524,8 +531,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />

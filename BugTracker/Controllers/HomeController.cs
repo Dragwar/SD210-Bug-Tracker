@@ -2,9 +2,7 @@
 using BugTracker.Models.Domain;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
 
 namespace BugTracker.Controllers
@@ -25,20 +23,6 @@ namespace BugTracker.Controllers
 
             ApplicationUser currentUser = userRepository.GetUserById(userId);
             List<Project> currentUsersProjects = projectRepository.GetUserProjects(userId);
-
-            return View();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
 
             return View();
         }

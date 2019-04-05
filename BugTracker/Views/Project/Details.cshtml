@@ -12,24 +12,7 @@
 @section Scripts
 {
     @Scripts.Render(@"~/data-tables/js")
-    <script type="text/javascript">
-        /*x TODO: Get DataTables to work here! */
-        $(document).ready(() => {
-            $("#project-users").DataTable();
-            const search = $("#project-users_filter").children("label").children("input");
-            const pageBtn = $(".paginate_button");
-            const dropdown = $("#project-users_length").children("label").children("select");
-            const projectWrapper = $("#project-users_wrapper");
-
-            search.addClass("form-control");
-            pageBtn.addClass("btn btn-secondary");
-            pageBtn.css("margin", "0px 5px")
-            dropdown.addClass("form-control");
-            projectWrapper.css("display", "flex");
-            projectWrapper.css("flex-flow", "row wrap");
-            projectWrapper.css("justify-content", "space-between");
-        });
-    </script>
+    <script type="text/javascript" src="~/Scripts/MyScripts/DataTablesProjectDetails.js"></script>
 }
 
 
@@ -73,10 +56,10 @@
             <div class="footer">
                 <div class="legend" style="padding: 15px;">
                     <span>
-                        <i class="fa fa-circle text-info"></i> @Html.ActionLink("Back To My Projects", "Index")
+                        <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", "Index")
                     </span>
                     <span style="margin: 0px 50px;">
-                        @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) && User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
+                        @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
                         {
                             <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", "All")
                         }

@@ -13,6 +13,7 @@ using Microsoft.Owin.Security;
 using BugTracker.Models;
 using System.Net.Mail;
 using System.Net;
+using System.Configuration;
 
 namespace BugTracker
 {
@@ -20,15 +21,20 @@ namespace BugTracker
     {
         public Task SendAsync(IdentityMessage message)
         {
-            //! email: b6640927b1-cd5718@inbox.mailtrap.io
+            string smtpHost = ConfigurationManager.AppSettings.Get("SmtpHost");
+            int smtpPort = int.Parse(ConfigurationManager.AppSettings.Get("SmtpPort"));
+            string smtpUserName = ConfigurationManager.AppSettings.Get("SmtpUserName");
+            string smtpPassword = ConfigurationManager.AppSettings.Get("SmtpPassword");
+            string smtpFromEmail = ConfigurationManager.AppSettings.Get("SmtpFromEmail");
+ 
             // Plug in your email service here to send an email.
-            var client = new SmtpClient("smtp.mailtrap.io", 2525)
+            var client = new SmtpClient(smtpHost, smtpPort)
             {
-                Credentials = new NetworkCredential("bb46b1d28ec8e7", "ebc3a84ed6b92c"),
+                Credentials = new NetworkCredential(smtpUserName, smtpPassword),
                 EnableSsl = true
             };
 
-            MailMessage mailMessage = new MailMessage("noreply@mybugtracker.com", message.Destination, message.Subject, message.Body)
+            MailMessage mailMessage = new MailMessage(smtpFromEmail, message.Destination, message.Subject, message.Body)
             {
                 IsBodyHtml = true,
             };
