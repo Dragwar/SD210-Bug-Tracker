@@ -11,7 +11,7 @@ namespace BugTracker.Models.ViewModels.Project
         public string Name { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
-        public static IndexViewModel CreateViewModel(BugTracker.Models.Domain.Project project)
+        public static IndexViewModel CreateNewViewModel(BugTracker.Models.Domain.Project project)
         {
             if (project == null)
             {

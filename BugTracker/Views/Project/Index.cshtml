@@ -20,7 +20,7 @@
         <div class="header">
             <h4 class="title">@ViewBag.Title</h4>
             <p class="category">
-                @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) && User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
+                @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
                 {
                     <a href="@Url.Action("Create")">
                         Create New Project

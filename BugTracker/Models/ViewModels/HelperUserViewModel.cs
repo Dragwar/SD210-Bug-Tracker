@@ -15,7 +15,7 @@ namespace BugTracker.Models.ViewModels
 
         public List<IdentityRole> Roles { get; set; }
 
-        public static HelperUserViewModel CreateViewModel(ApplicationUser applicationUser, ApplicationDbContext dbContext)
+        public static HelperUserViewModel CreateNewViewModel(ApplicationUser applicationUser, ApplicationDbContext dbContext)
         {
             if (applicationUser == null)
             {

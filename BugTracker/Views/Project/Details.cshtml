@@ -1,4 +1,4 @@
-﻿@model BugTracker.Models.ViewModels.Project.DetailsViewModel
+﻿@model DetailsViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -7,6 +7,19 @@
 @section Styles
 {
     @Styles.Render(@"~/data-tables/css")
+    <style type="text/css">
+        .card div.legend {
+            display: flex;
+            flex-flow: column;
+            align-items: flex-start;
+        }
+
+        .card div.legend * {
+            padding: 0px;
+            margin: 0px;
+            font-size: small;
+        }
+    </style>
 }
 
 @section Scripts
@@ -16,7 +29,7 @@
 }
 
 
-<div class="col-lg-6">
+<div class="col-lg-4">
     <div class="card">
         <div class="header">
             <h4 class="title">@ViewBag.Title</h4>
@@ -25,48 +38,52 @@
             </p>
         </div>
         <div class="content">
-            <dl class="dl-horizontal">
-                <dt>
-                    @Html.DisplayNameFor(model => model.Name)
-                </dt>
 
-                <dd>
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.Name) :
+                </strong>
+                <span>
                     @Html.DisplayFor(model => model.Name)
-                </dd>
+                </span>
+            </div>
 
-                <dt>
-                    @Html.DisplayNameFor(model => model.DateCreated)
-                </dt>
-
-                <dd>
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.DateCreated) :
+                </strong>
+                <span>
                     @Html.DisplayFor(model => model.DateCreated)
-                </dd>
+                </span>
+            </div>
 
-                @if (Model.DateUpdated.HasValue)
-                {
-                    <dt>
-                        @Html.DisplayNameFor(model => model.DateUpdated)
-                    </dt>
 
-                    <dd>
-                        @Html.DisplayFor(model => model.DateUpdated)
-                    </dd>
-                }
-            </dl>
-            <div class="footer">
-                <div class="legend" style="padding: 15px;">
+            @if (Model.DateUpdated.HasValue)
+            {
+                <p>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.DateUpdated) :
+                    </strong>
                     <span>
-                        <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", "Index")
+                        @Html.DisplayFor(model => model.DateUpdated)
                     </span>
-                    <span style="margin: 0px 50px;">
+                </p>
+
+            }
+            <div class="footer">
+                <div class="legend">
+                    <p>
+                        <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", "Index")
+                    </p>
+                    <p>
                         @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
                         {
                             <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", "All")
                         }
-                    </span>
-                    <span>
+                    </p>
+                    <p>
                         <i class="fa fa-circle text-warning"></i> @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
-                    </span>
+                    </p>
                 </div>
                 <hr />
                 @if (Model.DateUpdated.HasValue)
@@ -80,7 +97,7 @@
     </div>
 </div>
 
-<div class="col-lg-6">
+<div class="col-lg-8">
     <div class="card">
         <div class="header">
             <h4 class="title">Assigned Users</h4>
