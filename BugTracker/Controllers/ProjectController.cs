@@ -1,5 +1,6 @@
 ﻿using BugTracker.Models;
 using BugTracker.Models.Domain;
+using BugTracker.Models.ViewModels;
 using BugTracker.Models.ViewModels.Project;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
@@ -36,7 +37,7 @@ namespace BugTracker.Controllers
 
             if (userProjects.Any())
             {
-                viewModels = userProjects.Select(project => IndexViewModel.CreateViewModel(project)).ToList();
+                viewModels = userProjects.Select(project => IndexViewModel.CreateNewViewModel(project)).ToList();
             }
             else
             {
@@ -64,7 +65,7 @@ namespace BugTracker.Controllers
 
             if (allProjects.Any())
             {
-                viewModels = allProjects.Select(project => IndexViewModel.CreateViewModel(project)).ToList();
+                viewModels = allProjects.Select(project => IndexViewModel.CreateNewViewModel(project)).ToList();
             }
             else
             {
@@ -102,24 +103,68 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(DetailsViewModel.CreateViewModel(foundProject, DbContext));
+            return View(DetailsViewModel.CreateNewViewModel(foundProject, DbContext));
         }
 
         // GET: Project/Create
         public ActionResult Create()
         {
-            return View();
+            CreateViewModel model = new CreateViewModel() { Users = new List<HelperUserViewModel>() };
+            return View(model);
         }
 
         // POST: Project/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(CreateViewModel formData)
         {
             try
             {
                 // TODO: Add insert logic here
+                #region Valid FormData Checks
+                if (!ModelState.IsValid || formData == null)
+                {
+                    ModelState.AddModelError("", "Error - Bad form data");
+                    return View(new CreateViewModel() { Users = new List<HelperUserViewModel>() });
+                }
 
-                return RedirectToAction("Index");
+                if (string.IsNullOrWhiteSpace(formData.Name))
+                {
+                    ModelState.AddModelError("", "Error - Project Name is invalid...");
+                    return View(formData);
+                }
+
+                formData.Name = formData.Name.Trim();
+
+                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name))
+                {
+                    ModelState.AddModelError("", "Error - Project Name is already taken...");
+                    return View(formData);
+                }
+                #endregion
+
+                Project newProject = new Project()
+                {
+                    Name = formData.Name,
+                };
+
+                if (formData.AddProjectCreatorToNewProject)
+                {
+                    ApplicationUser projectCreator = UserRepository.GetUserById(User.Identity.GetUserId());
+
+                    if (projectCreator == null)
+                    {
+                        ModelState.AddModelError("", "Error - Current user was not found...");
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    newProject.Users.Add(projectCreator);
+                }
+
+                DbContext.Projects.Add(newProject);
+
+                DbContext.SaveChanges();
+
+                return RedirectToAction(nameof(Index));
             }
             catch
             {
