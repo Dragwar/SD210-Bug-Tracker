@@ -74,7 +74,7 @@ namespace BugTracker.Controllers
                 return View(formData);
             }
 
-            if ("" == formData.DisplayName.Trim())
+            if (string.IsNullOrWhiteSpace(formData.DisplayName.Trim()))
             {
                 ModelState.AddModelError("", "");
                 return View(formData);
@@ -120,7 +120,7 @@ namespace BugTracker.Controllers
 
             var model = new IndexViewModel
             {
-                //TODO: Get DisplayName and set it here!
+                //x TODO: Get DisplayName and set it here!
                 DisplayName = userRepository.GetUserById(userId).DisplayName,
                 HasPassword = HasPassword(),
                 PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
