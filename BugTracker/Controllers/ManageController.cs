@@ -76,7 +76,7 @@ namespace BugTracker.Controllers
 
             if (string.IsNullOrWhiteSpace(formData.DisplayName.Trim()))
             {
-                ModelState.AddModelError("", "");
+                ModelState.AddModelError("", "Error - Invalid Display Name");
                 return View(formData);
             }
 

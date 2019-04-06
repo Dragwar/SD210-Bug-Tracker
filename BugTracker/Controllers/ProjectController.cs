@@ -109,7 +109,7 @@ namespace BugTracker.Controllers
         // GET: Project/Create
         public ActionResult Create()
         {
-            CreateViewModel model = new CreateViewModel() { Users = new List<HelperUserViewModel>() };
+            CreateViewModel model = new CreateViewModel() { AddProjectCreatorToNewProject = true, Users = new List<HelperUserViewModel>() };
             return View(model);
         }
 
@@ -124,12 +124,12 @@ namespace BugTracker.Controllers
                 if (!ModelState.IsValid || formData == null)
                 {
                     ModelState.AddModelError("", "Error - Bad form data");
-                    return View(new CreateViewModel() { Users = new List<HelperUserViewModel>() });
+                    return View(new CreateViewModel() { AddProjectCreatorToNewProject = true, Users = new List<HelperUserViewModel>() });
                 }
 
                 if (string.IsNullOrWhiteSpace(formData.Name))
                 {
-                    ModelState.AddModelError("", "Error - Project Name is invalid...");
+                    ModelState.AddModelError("", "Error - Project Name is invalid");
                     return View(formData);
                 }
 
@@ -137,7 +137,7 @@ namespace BugTracker.Controllers
 
                 if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name))
                 {
-                    ModelState.AddModelError("", "Error - Project Name is already taken...");
+                    ModelState.AddModelError("", "Error - Project Name is already taken");
                     return View(formData);
                 }
                 #endregion
@@ -153,7 +153,7 @@ namespace BugTracker.Controllers
 
                     if (projectCreator == null)
                     {
-                        ModelState.AddModelError("", "Error - Current user was not found...");
+                        ModelState.AddModelError("", "Error - Current user was not found");
                         return RedirectToAction(nameof(Index));
                     }
 
@@ -168,6 +168,7 @@ namespace BugTracker.Controllers
             }
             catch
             {
+                ModelState.AddModelError("", "Error");
                 return View();
             }
         }

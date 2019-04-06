@@ -46,7 +46,7 @@
                         </a>
                     </li>
 
-                    @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)))
+                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)))
                     {
                         <!--TODO: Update the li's "id" to match "controller-action"-->
                         <li class="my-page-link" id="REPLACE">
@@ -58,7 +58,7 @@
                         </li>
                     }
 
-                    @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
+                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
                     {
                         <li class="my-page-link" id="project-all">
                             @*Update Link*@
