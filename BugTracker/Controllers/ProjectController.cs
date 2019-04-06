@@ -5,6 +5,7 @@ using BugTracker.Models.ViewModels.Project;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -109,7 +110,27 @@ namespace BugTracker.Controllers
         // GET: Project/Create
         public ActionResult Create()
         {
-            CreateViewModel model = new CreateViewModel() { AddProjectCreatorToNewProject = true, Users = new List<HelperUserViewModel>() };
+            SelectListGroup initialAssignedUserGroup = new SelectListGroup()
+            {
+                Name = "Assign Initial Users",
+                Disabled = false,
+            };
+
+            CreateViewModel model = new CreateViewModel()
+            {
+                Name = null,
+                SelectedUsersToAdd = null,
+                Users = new List<HelperUserViewModel>(),
+                UsersAddList = UserRepository.GetAllUsers().Select(user => new SelectListItem()
+                {
+                    Text = user.DisplayName,
+                    Value = user.Id,
+                    Selected = false,
+                    Disabled = false,
+                    Group = initialAssignedUserGroup,
+                }).ToList(),
+            };
+
             return View(model);
         }
 
@@ -124,7 +145,24 @@ namespace BugTracker.Controllers
                 if (!ModelState.IsValid || formData == null)
                 {
                     ModelState.AddModelError("", "Error - Bad form data");
-                    return View(new CreateViewModel() { AddProjectCreatorToNewProject = true, Users = new List<HelperUserViewModel>() });
+                    return View(new CreateViewModel()
+                    {
+                        Name = null,
+                        SelectedUsersToAdd = null,
+                        Users = new List<HelperUserViewModel>(),
+                        UsersAddList = UserRepository.GetAllUsers().Select(user => new SelectListItem()
+                        {
+                            Text = user.DisplayName,
+                            Value = user.Id,
+                            Selected = false,
+                            Disabled = false,
+                            Group = new SelectListGroup()
+                            {
+                                Name = "Assign Initial Users",
+                                Disabled = false,
+                            },
+                        }).ToList(),
+                    });
                 }
 
                 if (string.IsNullOrWhiteSpace(formData.Name))
@@ -147,17 +185,20 @@ namespace BugTracker.Controllers
                     Name = formData.Name,
                 };
 
-                if (formData.AddProjectCreatorToNewProject)
+                bool isAddingUsers = formData.SelectedUsersToAdd != null;
+
+                if (isAddingUsers)
                 {
-                    ApplicationUser projectCreator = UserRepository.GetUserById(User.Identity.GetUserId());
-
-                    if (projectCreator == null)
+                    foreach (string userId in formData.SelectedUsersToAdd)
                     {
-                        ModelState.AddModelError("", "Error - Current user was not found");
-                        return RedirectToAction(nameof(Index));
-                    }
+                        ApplicationUser foundUser = UserRepository.GetUserById(userId);
+                        if (foundUser == null)
+                        {
+                            return RedirectToAction(nameof(Index));
+                        }
 
-                    newProject.Users.Add(projectCreator);
+                        newProject.Users.Add(foundUser);
+                    }
                 }
 
                 DbContext.Projects.Add(newProject);
@@ -173,7 +214,7 @@ namespace BugTracker.Controllers
             }
         }
 
-        
+
 
         // GET: Project/Edit/{id}
         public ActionResult Edit(string id)
@@ -270,6 +311,7 @@ namespace BugTracker.Controllers
                 }
 
                 foundProject.Name = formData.Name;
+                foundProject.DateUpdated = DateTime.Now;
 
                 DbContext.SaveChanges();
 

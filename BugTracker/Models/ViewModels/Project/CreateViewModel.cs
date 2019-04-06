@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace BugTracker.Models.ViewModels.Project
 {
@@ -11,8 +12,9 @@ namespace BugTracker.Models.ViewModels.Project
         [Required]
         public string Name { get; set; }
 
-        [Required]
-        [Display(Name = "Add yourself to the new project")]
-        public bool AddProjectCreatorToNewProject { get; set; }
+        public List<SelectListItem> UsersAddList { get; set; }
+
+        [Display(Name = "Assign Users")]
+        public string[] SelectedUsersToAdd { get; set; }
     }
 }

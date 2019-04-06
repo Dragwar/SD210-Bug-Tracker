@@ -17,22 +17,24 @@
 {
     @Scripts.Render("~/bundles/jqueryval")
 }
-<div @*class="col-lg-4"*@>
-    <div class="card">
-        <div class="header">
-            <h4 class="title">
-                @ViewBag.Title
-            </h4>
-            <p class="category">
-                @* SUBTITLE HERE *@
-            </p>
-        </div>
-        <div class="content">
-            @* CONTENT HERE *@
 
-            @using (Html.BeginForm())
-            {
-                @Html.AntiForgeryToken()
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    @ViewBag.Title
+                </h4>
+                <p class="category">
+                    @* SUBTITLE HERE *@
+                </p>
+            </div>
+            <div class="content">
+                @* CONTENT HERE *@
+
 
                 <div class="form-horizontal">
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -45,35 +47,57 @@
                     </div>
 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.AddProjectCreatorToNewProject, htmlAttributes: new { @class = "control-label col-md-2" })
-                        <div class="col-md-10">
-                            <div class="checkbox">
-                                @Html.EditorFor(model => model.AddProjectCreatorToNewProject)
-                                @Html.ValidationMessageFor(model => model.AddProjectCreatorToNewProject, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Create" class="btn btn-default" />
+                            <input type="submit" value="Create" class="btn btn-primary" />
                         </div>
                     </div>
                 </div>
-            }
 
-            @* FOOTER HERE *@
-            <div class="footer">
-                @*<div class="legend">
-                    <i class="fa fa-circle text-info"></i> Open
-                    <i class="fa fa-circle text-danger"></i> Bounce
-                    <i class="fa fa-circle text-warning"></i> Unsubscribe
-                </div>*@
-                <hr>
-                <div class="stats">
-                    <i style="font-size: 16px; font-weight: 600;" class="pe-7s-back"></i> @Html.ActionLink("Back to List", "Index")
+
+                @* FOOTER HERE *@
+                <div class="footer">
+                    @*<div class="legend">
+                            <i class="fa fa-circle text-info"></i> Open
+                            <i class="fa fa-circle text-danger"></i> Bounce
+                            <i class="fa fa-circle text-warning"></i> Unsubscribe
+                        </div>*@
+                    <hr>
+                    <div class="stats">
+                        <i style="font-size: 16px; font-weight: 600;" class="pe-7s-back"></i> @Html.ActionLink("Back to List", "Index")
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!--Right Side Card-->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    @ViewBag.Title (Manage Users)
+                </h4>
+                <p class="category">
+                    @* SUBTITLE HERE *@
+                    Assign initial users
+                </p>
+            </div>
+            <div class="content">
+                @* CONTENT HERE *@
+                <div class="form-horizontal">
+
+                    @if (Model.UsersAddList != null && Model.UsersAddList.Any())
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SelectedUsersToAdd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.ListBoxFor(model => model.SelectedUsersToAdd, Model.UsersAddList, new { size = 8, @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SelectedUsersToAdd, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

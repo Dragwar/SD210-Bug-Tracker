@@ -190,6 +190,7 @@
     <Compile Include="Models\ViewModels\HelperUserViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\EditViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\IndexViewModel.cs" />
+    <Compile Include="MyHelpers\DateHelper.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\User\UserRepository.cs" />
