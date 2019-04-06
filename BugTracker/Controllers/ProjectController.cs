@@ -173,25 +173,111 @@ namespace BugTracker.Controllers
             }
         }
 
+        
+
         // GET: Project/Edit/{id}
-        public ActionResult Edit(int id)
+        public ActionResult Edit(string id)
         {
-            return View();
+            if (id == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            Project foundProject = ProjectRepository.GetProject(id);
+
+            if (foundProject == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            EditViewModel model = EditViewModel.CreateNewViewModel(foundProject, DbContext, UserRepository);
+
+            return View(model);
         }
 
         // POST: Project/Edit/{id}
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(EditViewModel formData)
         {
             try
             {
-                // TODO: Add update logic here
+                if (!ModelState.IsValid)
+                {
+                    ModelState.AddModelError("", "Error - Bad Data");
+                    EditViewModel model;
 
-                return RedirectToAction("Index");
+                    #region Fixes a bug where project add/remove users lists were null (when name was just whitespace)
+                    if (formData.UsersAddList == null || formData.UsersRemoveList == null)
+                    {
+                        Project project = ProjectRepository.GetProject(formData.Id);
+                        if (project == null)
+                        {
+                            return RedirectToAction(nameof(Index));
+                        }
+                        model = EditViewModel.CreateNewViewModel(project, DbContext, UserRepository);
+                        model.Name = formData.Name;
+                    }
+                    else
+                    {
+                        model = formData;
+                    }
+                    #endregion
+                    return View(model);
+                }
+
+                if (string.IsNullOrWhiteSpace(formData.Name))
+                {
+                    ModelState.AddModelError(nameof(formData.Name), "Project Name can't be left empty");
+                    return View(formData);
+                }
+
+                Project foundProject = ProjectRepository.GetProject(formData.Id);
+
+                if (foundProject == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                bool isAddingUsers = formData.SelectedUsersToAdd != null;
+                bool isRemovingUsers = formData.SelectedUsersToRemove != null;
+
+                if (isAddingUsers)
+                {
+                    foreach (string userId in formData.SelectedUsersToAdd)
+                    {
+                        ApplicationUser foundUser = UserRepository.GetUserById(userId);
+                        if (foundUser == null)
+                        {
+                            return RedirectToAction(nameof(Index));
+                        }
+
+                        foundProject.Users.Add(foundUser);
+                    }
+                }
+
+                if (isRemovingUsers)
+                {
+                    foreach (string userId in formData.SelectedUsersToRemove)
+                    {
+                        ApplicationUser foundUser = UserRepository.GetUserById(userId);
+                        if (foundUser == null)
+                        {
+                            return RedirectToAction(nameof(Index));
+                        }
+
+                        foundProject.Users.Remove(foundUser);
+                    }
+                }
+
+                foundProject.Name = formData.Name;
+
+                DbContext.SaveChanges();
+
+                return RedirectToAction(nameof(Details), new { Id = formData.Id });
             }
             catch
             {
-                return View();
+                return View(formData);
             }
         }
 
