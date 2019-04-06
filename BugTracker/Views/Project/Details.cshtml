@@ -14,11 +14,11 @@
             align-items: flex-start;
         }
 
-        .card div.legend * {
-            padding: 0px;
-            margin: 0px;
-            font-size: small;
-        }
+            .card div.legend * {
+                padding: 0px;
+                margin: 0px;
+                font-size: small;
+            }
     </style>
 }
 
@@ -50,23 +50,12 @@
 
             <div>
                 <strong>
-                    @Html.DisplayNameFor(model => model.DateCreated) :
-                </strong>
-                <span>
-                    @Html.DisplayFor(model => model.DateCreated)
-                </span>
-            </div>
-
-
-            <div>
-                <strong>
                     @Html.DisplayNameFor(model => model.UsersCount) :
                 </strong>
                 <span>
                     @Html.DisplayFor(model => model.UsersCount)
                 </span>
             </div>
-
 
             <div>
                 <strong>
@@ -77,26 +66,34 @@
                 </span>
             </div>
 
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.DateCreated) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.DateCreated)
+                </span>
+            </div>
 
             @if (Model.DateUpdated.HasValue)
             {
-                <p>
+                <div>
                     <strong>
                         @Html.DisplayNameFor(model => model.DateUpdated) :
                     </strong>
                     <span>
                         @Html.DisplayFor(model => model.DateUpdated)
                     </span>
-                </p>
-
+                </div>
             }
+
             <div class="footer">
                 <div class="legend">
                     <p>
                         <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", "Index")
                     </p>
                     <p>
-                        @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
+                        @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
                         {
                             <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", "All")
                         }
@@ -106,12 +103,16 @@
                     </p>
                 </div>
                 <hr />
-                @if (Model.DateUpdated.HasValue)
-                {
-                    <div class="stats">
-                        <i class="fa fa-history"></i> Updated @Model.DateUpdated
-                    </div>
-                }
+                <div class="stats">
+                    @if (Model.DateUpdated.HasValue)
+                    {
+                        <i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span>
+                    }
+                    else
+                    {
+                        <i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span>
+                    }
+                </div>
             </div>
         </div>
     </div>

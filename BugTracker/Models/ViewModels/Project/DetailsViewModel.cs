@@ -14,7 +14,7 @@ namespace BugTracker.Models.ViewModels.Project
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
 
-        [Display(Name ="Total Assigned Users")]
+        [Display(Name ="Total Users")]
         public int UsersCount { get => Users?.Count ?? 0; }
 
         [Display(Name = "Total Tickets")]
