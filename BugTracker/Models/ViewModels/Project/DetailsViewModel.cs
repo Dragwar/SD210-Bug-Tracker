@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
@@ -12,6 +13,13 @@ namespace BugTracker.Models.ViewModels.Project
         public List<HelperUserViewModel> Users { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
+
+        [Display(Name ="Total Assigned Users")]
+        public int UsersCount { get => Users?.Count ?? 0; }
+
+        [Display(Name = "Total Tickets")]
+        public int TicketCount { get => 0; }
+
         public static DetailsViewModel CreateNewViewModel(BugTracker.Models.Domain.Project project, ApplicationDbContext dbContext)
         {
             if (project == null)

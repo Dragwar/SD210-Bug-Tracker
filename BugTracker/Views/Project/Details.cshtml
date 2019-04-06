@@ -58,6 +58,26 @@
             </div>
 
 
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.UsersCount) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.UsersCount)
+                </span>
+            </div>
+
+
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.TicketCount) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.TicketCount)
+                </span>
+            </div>
+
+
             @if (Model.DateUpdated.HasValue)
             {
                 <p>

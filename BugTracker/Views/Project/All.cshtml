@@ -47,6 +47,12 @@
                                 @Html.DisplayNameFor(model => model[0].Name)
                             </th>
                             <th>
+                                @Html.DisplayNameFor(model => model[0].UsersCount)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].TicketCount)
+                            </th>
+                            <th>
                                 @Html.DisplayNameFor(model => model[0].DateCreated)
                             </th>
                             <th>
@@ -56,22 +62,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Model)
+                        @foreach (IndexViewModel project in Model)
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.Name)
+                                    @Html.DisplayFor(modelItem => project.Name)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.DateCreated)
+                                    @Html.DisplayFor(modelItem => project.UsersCount)
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.DateUpdated)
+                                    @Html.DisplayFor(modelItem => project.TicketCount)
                                 </td>
                                 <td>
-                                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                    @Html.ActionLink("Details", "Details", new { id = item.Id }) @*|
-                                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })*@
+                                    @Html.DisplayFor(modelItem => project.DateCreated)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => project.DateUpdated)
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Edit", "Edit", new { id = project.Id }) |
+                                    @Html.ActionLink("Details", "Details", new { id = project.Id }) @*|
+                                        @Html.ActionLink("Delete", "Delete", new { id = project.Id })*@
                                 </td>
                             </tr>
                         }
