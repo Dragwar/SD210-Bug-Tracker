@@ -56,7 +56,9 @@ namespace BugTracker
             bundles.Add(new StyleBundle(@"~/fonts-google", @"http://fonts.googleapis.com/css?family=Roboto:400,700,300"));
 
             string dataTablecssBootstrap3 = @"https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css";
+#pragma warning disable CS0219 // The variable 'dataTablecss' is assigned but its value is never used
             string dataTablecss = @"https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css";
+#pragma warning restore CS0219 // The variable 'dataTablecss' is assigned but its value is never used
             bundles.Add(new StyleBundle(@"~/data-tables/css", dataTablecssBootstrap3).IncludeDirectory(
                 @"~/Content\DataTables\css\", "*.css"));
             bundles.Add(new ScriptBundle(@"~/data-tables/js", @"https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js").IncludeDirectory(

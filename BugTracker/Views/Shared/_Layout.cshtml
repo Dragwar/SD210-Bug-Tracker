@@ -49,11 +49,12 @@
                     @if (User.IsInRole(nameof(UserRolesEnum.Admin)))
                     {
                         <!--TODO: Update the li's "id" to match "controller-action"-->
-                        <li class="my-page-link" id="REPLACE">
+                        <li class="my-page-link" id="userrole-index">
                             @*Update Link*@
-                            <a href="./Template/notifications.html">
+                            @*<a href="./Template/notifications.html">*@
+                            <a href="@Url.Action(nameof(BugTracker.Controllers.UserRoleController.Index), new { controller = "UserRole" })">
                                 <i class="pe-7s-edit"></i>
-                                <p>Assign User Roles</p>
+                                <p>Manage Users</p>
                             </a>
                         </li>
                     }

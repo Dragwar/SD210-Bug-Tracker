@@ -1,4 +1,4 @@
-﻿@model List<IndexViewModel>
+﻿@model List<BugTracker.Models.ViewModels.Project.IndexViewModel>
 
 @{
     ViewBag.Title = "My Projects";
@@ -20,7 +20,7 @@
         <div class="header">
             <h4 class="title">@ViewBag.Title</h4>
             <p class="category">
-                @if (User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
+                @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
                 {
                     <a href="@Url.Action("Create")">
                         Create New Project
@@ -55,7 +55,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (IndexViewModel project in Model)
+                        @foreach (BugTracker.Models.ViewModels.Project.IndexViewModel project in Model)
                         {
                             <tr>
                                 <td>
