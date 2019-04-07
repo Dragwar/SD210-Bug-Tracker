@@ -1,0 +1,157 @@
+﻿@model BugTracker.Models.ViewModels.UserRole.ManageRolesViewModel
+
+@{
+    ViewBag.Title = "Manage Roles";
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <!--Left Side Card-->
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    @Model.UserDisplayName
+                </h4>
+                <p class="category">
+                    @* SUBTITLE HERE *@
+                    @Model.UserEmail
+                </p>
+            </div>
+            <div class="content">
+                @* CONTENT HERE *@
+
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(model => model.UserId)
+                    <div>
+                        <strong>
+                            @Html.DisplayNameFor(model => model.UserDisplayName) :
+                        </strong>
+                        <span>
+                            @Html.DisplayFor(model => model.UserDisplayName)
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>
+                            @Html.DisplayNameFor(model => model.UserEmail) :
+                        </strong>
+                        <span>
+                            @Html.DisplayFor(model => model.UserEmail)
+                        </span>
+                    </div>
+
+                    <div style="margin-bottom: 25px;">
+                        <strong>
+                            Total Assigned Roles :
+                        </strong>
+                        <span>
+                            @Model.RolesRemoveList.Count
+                        </span>
+                    </div>
+
+                    @*
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SelectedUsersToAdd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.ListBoxFor(model => model.SelectedUsersToAdd, Model.UsersAddList, new { size = 8, @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SelectedUsersToAdd, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SelectedUsersToRemove, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.ListBoxFor(model => model.SelectedUsersToRemove, Model.UsersRemoveList, new { size = 8, @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SelectedUsersToRemove, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    *@
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Save Role Changes" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+
+
+                @* FOOTER HERE *@
+                <div class="footer">
+                    @*
+                        <div class="legend">
+                            <i class="fa fa-circle text-info"></i> info
+                            <i class="fa fa-circle text-danger"></i> danger
+                            <i class="fa fa-circle text-warning"></i> warning
+                        </div>
+                    *@
+                    <hr />
+                    <div class="stats">
+                        <i class="pe-7s-back"></i>
+                        <span class="text-danger">Discard Changes</span>
+                        [
+                        <span>@Html.ActionLink("Manage Users", "Index", new { }, new { @class = "text-warning" }) |</span>
+
+                        @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                        {
+                            <span>@Html.ActionLink("All Projects", "All", "Project", new { }, new { @class = "text-warning" })</span>
+                        }
+                        ]
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Right Side Card-->
+
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">
+                    @ViewBag.Title
+                </h4>
+                <p class="category">
+                    @* SUBTITLE HERE *@
+                    
+                </p>
+            </div>
+            <div class="content">
+                @* CONTENT HERE *@
+                <div class="form-horizontal">
+
+                    @if (Model?.RolesAddList?.Any() ?? false)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SelectedRolesToAdd, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.ListBoxFor(model => model.SelectedRolesToAdd, Model.RolesAddList, new { size = 8, @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SelectedRolesToAdd, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model?.RolesRemoveList?.Any() ?? false)
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.SelectedRolesToRemove, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.ListBoxFor(model => model.SelectedRolesToRemove, Model.RolesRemoveList, new { size = 8, @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.SelectedRolesToRemove, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

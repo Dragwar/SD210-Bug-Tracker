@@ -177,6 +177,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
+    <Compile Include="Controllers\UserRoleController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -190,6 +191,7 @@
     <Compile Include="Models\ViewModels\HelperUserViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\EditViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\IndexViewModel.cs" />
+    <Compile Include="Models\ViewModels\UserRole\ManageRolesViewModel.cs" />
     <Compile Include="MyHelpers\DateHelper.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
@@ -597,6 +599,8 @@
     <Content Include="Views\Project\Create.cshtml" />
     <Content Include="Template\CardTemplate.cshtml" />
     <Content Include="Views\Project\Edit.cshtml" />
+    <Content Include="Views\UserRole\Index.cshtml" />
+    <Content Include="Views\UserRole\ManageRoles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

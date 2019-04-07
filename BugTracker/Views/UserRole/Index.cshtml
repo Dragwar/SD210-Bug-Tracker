@@ -1,0 +1,77 @@
+﻿@model List<HelperUserViewModel>
+
+@{
+    ViewBag.Title = "All Users";
+}
+
+@section Styles
+{
+    @Styles.Render(@"~/data-tables/css")
+}
+
+@section Scripts
+{
+    @Scripts.Render(@"~/data-tables/js")
+    <script type="text/javascript" src="~/Scripts/MyScripts/DataTablesProjectIndex.js"></script>
+}
+
+<div>
+    <div class="card">
+        <div class="header">
+            <h4 class="title">@ViewBag.Title</h4>
+            <p class="category">
+                @* Category *@
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            </p>
+        </div>
+        <div class="content">
+            @if (Model?.Any() ?? false)
+            {
+                <table id="my-projects" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].DisplayName)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Email)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Roles)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (HelperUserViewModel user in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => user.DisplayName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => user.Email)
+                                </td>
+                                <td>
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <p class="small">@role.Name</p>
+                                    }
+                                </td>
+                                <td>
+                                    @Html.ActionLink("Manage Roles", "ManageRoles", new { id = user.Id })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-danger">Error no users found</p>
+            }
+        </div>
+    </div>
+</div>
+
+
