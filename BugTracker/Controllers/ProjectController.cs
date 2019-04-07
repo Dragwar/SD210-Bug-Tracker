@@ -156,7 +156,19 @@ namespace BugTracker.Controllers
         {
             try
             {
+                formData.Name = formData.Name?.Trim();
+
                 #region Valid FormData Checks
+                if (string.IsNullOrWhiteSpace(formData.Name))
+                {
+                    ModelState.AddModelError("", "Error - Project Name is invalid");
+                }
+
+                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name))
+                {
+                    ModelState.AddModelError("", "Error - Project Name is already taken");
+                }
+
                 if (!ModelState.IsValid || formData == null)
                 {
                     ModelState.AddModelError("", "Error - Bad form data");
@@ -189,20 +201,6 @@ namespace BugTracker.Controllers
                     #endregion
 
                     return View(model);
-                }
-
-                if (string.IsNullOrWhiteSpace(formData.Name))
-                {
-                    ModelState.AddModelError("", "Error - Project Name is invalid");
-                    return View(formData);
-                }
-
-                formData.Name = formData.Name.Trim();
-
-                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name))
-                {
-                    ModelState.AddModelError("", "Error - Project Name is already taken");
-                    return View(formData);
                 }
                 #endregion
 
@@ -269,10 +267,21 @@ namespace BugTracker.Controllers
         {
             try
             {
+                formData.Name = formData.Name?.Trim();
+
                 #region Valid FormData Checks
+                if (string.IsNullOrWhiteSpace(formData.Name))
+                {
+                    ModelState.AddModelError(nameof(formData.Name), "Project Name can't be left empty");
+                }
+
+                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name))
+                {
+                    ModelState.AddModelError("", "Error - Project name is already taken");
+                }
+
                 if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", "Error - Bad Data");
                     EditViewModel model;
 
                     #region Fixes a bug where project add/remove users lists were null (when name was just whitespace)
@@ -284,7 +293,6 @@ namespace BugTracker.Controllers
                             return RedirectToAction(nameof(Index));
                         }
                         model = EditViewModel.CreateNewViewModel(project, DbContext, UserRepository);
-                        model.Name = formData.Name;
                     }
                     else
                     {
@@ -292,12 +300,6 @@ namespace BugTracker.Controllers
                     }
                     #endregion
                     return View(model);
-                }
-
-                if (string.IsNullOrWhiteSpace(formData.Name))
-                {
-                    ModelState.AddModelError(nameof(formData.Name), "Project Name can't be left empty");
-                    return View(formData);
                 }
                 #endregion
 
