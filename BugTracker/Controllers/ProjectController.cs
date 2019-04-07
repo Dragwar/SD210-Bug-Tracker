@@ -116,19 +116,32 @@ namespace BugTracker.Controllers
                 Disabled = false,
             };
 
+            string userId = User.Identity.GetUserId();
+
+            List<SelectListItem> userList = UserRepository.GetAllUsers().Select(user => new SelectListItem()
+            {
+                Text = user.DisplayName,
+                Value = user.Id,
+                Selected = false,
+                Disabled = false,
+                Group = initialAssignedUserGroup,
+            }).ToList();
+
+            SelectListItem projectCreator = userList.FirstOrDefault(user => user.Value == userId);
+
+            if (projectCreator == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            projectCreator.Selected = true; // set the project creator selected by default
+
             CreateViewModel model = new CreateViewModel()
             {
                 Name = null,
                 SelectedUsersToAdd = null,
                 Users = new List<HelperUserViewModel>(),
-                UsersAddList = UserRepository.GetAllUsers().Select(user => new SelectListItem()
-                {
-                    Text = user.DisplayName,
-                    Value = user.Id,
-                    Selected = false,
-                    Disabled = false,
-                    Group = initialAssignedUserGroup,
-                }).ToList(),
+                UsersAddList = userList,
             };
 
             return View(model);
@@ -192,6 +205,7 @@ namespace BugTracker.Controllers
                     foreach (string userId in formData.SelectedUsersToAdd)
                     {
                         ApplicationUser foundUser = UserRepository.GetUserById(userId);
+
                         if (foundUser == null)
                         {
                             return RedirectToAction(nameof(Index));
@@ -286,13 +300,18 @@ namespace BugTracker.Controllers
                 {
                     foreach (string userId in formData.SelectedUsersToAdd)
                     {
-                        ApplicationUser foundUser = UserRepository.GetUserById(userId);
-                        if (foundUser == null)
-                        {
-                            return RedirectToAction(nameof(Index));
-                        }
+                        bool isUserAlreadyAssignedToProject = ProjectRepository.IsUserAssignedToProject(userId, foundProject);
 
-                        foundProject.Users.Add(foundUser);
+                        if (!isUserAlreadyAssignedToProject)
+                        {
+                            ApplicationUser foundUser = UserRepository.GetUserById(userId);
+                            bool didUserGetAssignedToProject = ProjectRepository.AssignUserToProject(foundUser, foundProject.Id.ToString());
+
+                            if (!didUserGetAssignedToProject)
+                            {
+                                return RedirectToAction(nameof(Index));
+                            }
+                        }
                     }
                 }
 
@@ -300,13 +319,18 @@ namespace BugTracker.Controllers
                 {
                     foreach (string userId in formData.SelectedUsersToRemove)
                     {
-                        ApplicationUser foundUser = UserRepository.GetUserById(userId);
-                        if (foundUser == null)
-                        {
-                            return RedirectToAction(nameof(Index));
-                        }
+                        bool isUserAssignedToProject = ProjectRepository.IsUserAssignedToProject(userId, foundProject);
 
-                        foundProject.Users.Remove(foundUser);
+                        if (isUserAssignedToProject)
+                        {
+                            //ApplicationUser foundUser = UserRepository.GetUserById(userId);
+                            bool didUserGetUnassignedFromProject = ProjectRepository.UnassignUserFromProject(userId, foundProject.Id.ToString());
+
+                            if (!didUserGetUnassignedFromProject)
+                            {
+                                return RedirectToAction(nameof(Index));
+                            }
+                        }
                     }
                 }
 
