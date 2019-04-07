@@ -32,15 +32,13 @@
             -->
             <div class="sidebar-wrapper">
                 <div class="logo">
-                    @*Update Link*@
-                    <a href="#" class="simple-text">
+                    <a href="@Url.Action(nameof(HomeController.Index), "Home")" class="simple-text">
                         Bug Tracker
                     </a>
                 </div>
                 <ul class="nav">
                     <li id="home-index" class="my-page-link">
-                        @*Update Link*@
-                        <a href="/">
+                        <a href="@Url.Action(nameof(HomeController.Index), "Home")">
                             <i class="pe-7s-graph"></i>
                             <p>Dashboard</p>
                         </a>
@@ -50,7 +48,6 @@
                     {
                         <!--TODO: Update the li's "id" to match "controller-action"-->
                         <li class="my-page-link" id="userrole-index">
-                            @*Update Link*@
                             @*<a href="./Template/notifications.html">*@
                             <a href="@Url.Action(nameof(BugTracker.Controllers.UserRoleController.Index), new { controller = "UserRole" })">
                                 <i class="pe-7s-edit"></i>
@@ -62,9 +59,8 @@
                     @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(BugTracker.MyHelpers.UserRolesEnum.ProjectManager)))
                     {
                         <li class="my-page-link" id="project-all">
-                            @*Update Link*@
                             @*<a href="./Template/table.html">*@
-                            <a href="@Url.Action(nameof(BugTracker.Controllers.ProjectController.All), "Project")">
+                            <a href="@Url.Action(nameof(ProjectController.All), "Project")">
                                 <i class="pe-7s-note2"></i>
                                 <p>All Projects</p>
                             </a>
@@ -72,9 +68,8 @@
                     }
 
                     <li class="my-page-link" id="project-index">
-                        @*Update Link*@
                         @*<a href="./Template/icons.html">*@
-                        <a href="@Url.Action(nameof(BugTracker.Controllers.ProjectController.Index), "Project")">
+                        <a href="@Url.Action(nameof(ProjectController.Index), "Project")">
                             <i class="pe-7s-folder"></i>
                             <p>My Projects</p>
                         </a>
@@ -92,10 +87,11 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
-                        <!--
-                        @*Update Link*@
-                        <a class="navbar-brand" href="#">Dashboard</a>
-                        -->
+
+                        <a class="navbar-brand" href="@(Url.Action((ViewContext.RouteData.Values["action"] as string) ?? "Index", (ViewContext.RouteData.Values["controller"] as string) ?? "Home"))">
+                            @ViewBag.Title
+                        </a>
+
                     </div>
 
                     <div class="collapse navbar-collapse">
@@ -131,15 +127,14 @@
                         <ul>
                             <li>
                                 @*Update Link*@
-                                <a href="#">
+                                <a href="@Url.Action(nameof(HomeController.Index), "Home")">
                                     Home
                                 </a>
                             </li>
                         </ul>
                     </nav>
                     <p class="copyright pull-right">
-                        @*Update Link*@
-                        &copy; @DateTime.Now.Year <a href="#">Bug Tracker</a>, made for a better project management
+                        &copy; @DateTime.Now.Year <a href="@Url.Action(nameof(HomeController.Index), "Home")">Bug Tracker</a>, made for a better project management
                     </p>
                 </div>
             </footer>
