@@ -3,7 +3,6 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace BugTracker.Models.ViewModels
 {
@@ -21,7 +20,7 @@ namespace BugTracker.Models.ViewModels
             {
                 throw new ArgumentNullException(nameof(applicationUser));
             }
-            var roles = new UserRoleRepository(dbContext).GetUserRoles(applicationUser.Id);
+            List<IdentityRole> roles = new UserRoleRepository(dbContext).GetUserRoles(applicationUser.Id);
             try
             {
                 return new HelperUserViewModel()
@@ -35,6 +34,10 @@ namespace BugTracker.Models.ViewModels
             catch (ArgumentNullException e)
             {
                 throw new ArgumentException($"{e.Message}");
+            }
+            catch
+            {
+                throw new Exception("Something bad happened");
             }
         }
     }

@@ -83,6 +83,7 @@ namespace BugTracker.Controllers
             string userId = User.Identity.GetUserId();
             Project foundProject = ProjectRepository.GetProject(id);
 
+            #region Null Checks
             if (foundProject == null)
             {
                 return RedirectToAction(nameof(Index));
@@ -91,10 +92,12 @@ namespace BugTracker.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+            #endregion
 
             bool isUserAllowToSeeProject = ProjectRepository.IsUserAssignedToProject(userId, foundProject);
 
-            if (!string.IsNullOrWhiteSpace(userId) && UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.Admin)) || UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.ProjectManager)))
+            //! Allow Admins/Project Managers to view any project
+            if (!string.IsNullOrWhiteSpace(userId) && (UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.Admin)) || UserRoleRepository.IsUserInRole(userId, nameof(UserRolesEnum.ProjectManager))))
             {
                 isUserAllowToSeeProject = true;
             }
@@ -153,29 +156,39 @@ namespace BugTracker.Controllers
         {
             try
             {
-                // TODO: Add insert logic here
                 #region Valid FormData Checks
                 if (!ModelState.IsValid || formData == null)
                 {
                     ModelState.AddModelError("", "Error - Bad form data");
-                    return View(new CreateViewModel()
+
+                    #region Create New ViewModel (model)
+                    SelectListGroup initialAssignedUserGroup = new SelectListGroup()
+                    {
+                        Name = "Assign Initial Users",
+                        Disabled = false,
+                    };
+
+                    string userId = User.Identity.GetUserId();
+
+                    List<SelectListItem> userList = UserRepository.GetAllUsers().Select(user => new SelectListItem()
+                    {
+                        Text = user.DisplayName,
+                        Value = user.Id,
+                        Selected = false,
+                        Disabled = false,
+                        Group = initialAssignedUserGroup,
+                    }).ToList();
+
+                    CreateViewModel model = new CreateViewModel()
                     {
                         Name = null,
                         SelectedUsersToAdd = null,
                         Users = new List<HelperUserViewModel>(),
-                        UsersAddList = UserRepository.GetAllUsers().Select(user => new SelectListItem()
-                        {
-                            Text = user.DisplayName,
-                            Value = user.Id,
-                            Selected = false,
-                            Disabled = false,
-                            Group = new SelectListGroup()
-                            {
-                                Name = "Assign Initial Users",
-                                Disabled = false,
-                            },
-                        }).ToList(),
-                    });
+                        UsersAddList = userList,
+                    };
+                    #endregion
+
+                    return View(model);
                 }
 
                 if (string.IsNullOrWhiteSpace(formData.Name))
@@ -256,6 +269,7 @@ namespace BugTracker.Controllers
         {
             try
             {
+                #region Valid FormData Checks
                 if (!ModelState.IsValid)
                 {
                     ModelState.AddModelError("", "Error - Bad Data");
@@ -285,6 +299,7 @@ namespace BugTracker.Controllers
                     ModelState.AddModelError(nameof(formData.Name), "Project Name can't be left empty");
                     return View(formData);
                 }
+                #endregion
 
                 Project foundProject = ProjectRepository.GetProject(formData.Id);
 
@@ -296,6 +311,7 @@ namespace BugTracker.Controllers
                 bool isAddingUsers = formData.SelectedUsersToAdd != null;
                 bool isRemovingUsers = formData.SelectedUsersToRemove != null;
 
+                #region Adding and Removing Users
                 if (isAddingUsers)
                 {
                     foreach (string userId in formData.SelectedUsersToAdd)
@@ -333,6 +349,7 @@ namespace BugTracker.Controllers
                         }
                     }
                 }
+                #endregion
 
                 foundProject.Name = formData.Name;
                 foundProject.DateUpdated = DateTime.Now;
