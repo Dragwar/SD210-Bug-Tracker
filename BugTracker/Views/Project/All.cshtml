@@ -30,7 +30,7 @@
         <div class="header">
             <h4 class="title">@ViewBag.Title</h4>
             <p class="category">
-                <a href="@Url.Action("Create")">
+                <a href="@Url.Action(nameof(ProjectController.Create))">
                     Create New Project
                     <i style="position: relative; top: 5px; font-weight: 500; font-size:25px;"
                        class="pe-7s-note"></i>
@@ -81,8 +81,8 @@
                                     @Html.DisplayFor(modelItem => project.DateUpdated)
                                 </td>
                                 <td>
-                                    @Html.ActionLink("Edit", "Edit", new { id = project.Id }) |
-                                    @Html.ActionLink("Details", "Details", new { id = project.Id }) @*|
+                                    @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = project.Id }) |
+                                    @Html.ActionLink(nameof(ProjectController.Details), nameof(ProjectController.Details), new { id = project.Id }) @*|
                                         @Html.ActionLink("Delete", "Delete", new { id = project.Id })*@
                                 </td>
                             </tr>

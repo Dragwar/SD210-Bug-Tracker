@@ -90,16 +90,16 @@
             <div class="footer">
                 <div class="legend">
                     <p>
-                        <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", "Index")
+                        <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
                     </p>
                     <p>
                         @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
                         {
-                            <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", "All")
+                            <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
                         }
                     </p>
                     <p>
-                        <i class="fa fa-circle text-warning"></i> @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+                        <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
                     </p>
                 </div>
                 <hr />

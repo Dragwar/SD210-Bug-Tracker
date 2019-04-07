@@ -59,7 +59,9 @@
                                     }
                                 </td>
                                 <td>
-                                    @Html.ActionLink("Manage Roles", "ManageRoles", new { id = user.Id })
+                                    <a href="@Url.Action(nameof(UserRoleController.ManageRoles), new { id = user.Id })" class="small text-muted">
+                                        <i style="font-size: 150%; font-weight: 600; position: relative; top:3.5px;" class="pe-7s-config"></i> Manage Roles
+                                    </a>
                                 </td>
                             </tr>
                         }

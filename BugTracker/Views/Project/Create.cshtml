@@ -63,7 +63,16 @@
                         </div>*@
                     <hr>
                     <div class="stats">
-                        <i style="font-size: 16px; font-weight: 600;" class="pe-7s-back"></i> @Html.ActionLink("Back to List", "Index")
+                        <i style="font-size: 16px; font-weight: 600;" class="pe-7s-back"></i>
+                        <span class="text-danger">Discard Draft</span> and Go To
+                        [
+                        <span>@Html.ActionLink("My Projects", nameof(ProjectController.Index), new { }, new { @class = "text-warning" })</span>
+
+                        @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                        {
+                            <span>| @Html.ActionLink("All Projects", nameof(ProjectController.All), new { }, new { @class = "text-warning" })</span>
+                        }
+                        ]
                     </div>
                 </div>
             </div>

@@ -28,7 +28,7 @@ namespace BugTracker.Models.ViewModels
                     Id = string.IsNullOrWhiteSpace(applicationUser.Id) ? throw new ArgumentNullException() : applicationUser.Id,
                     DisplayName = string.IsNullOrWhiteSpace(applicationUser.DisplayName) ? throw new ArgumentNullException() : applicationUser.DisplayName,
                     Email = string.IsNullOrWhiteSpace(applicationUser.Email) ? throw new ArgumentNullException() : applicationUser.Email,
-                    Roles = roles != null ? (!roles.Any() ? new List<IdentityRole>() : roles) : new List<IdentityRole>(),
+                    Roles = (roles?.Any() ?? false) ? roles : new List<IdentityRole>(),
                 };
             }
             catch (ArgumentNullException e)

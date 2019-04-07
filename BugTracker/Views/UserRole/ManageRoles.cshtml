@@ -48,6 +48,15 @@
                         </span>
                     </div>
 
+                    <div>
+                        <strong>
+                            @Html.DisplayNameFor(model => model.NumberOfAssginedProjects) :
+                        </strong>
+                        <span>
+                            @Html.DisplayFor(model => model.NumberOfAssginedProjects)
+                        </span>
+                    </div>
+
                     <div style="margin-bottom: 25px;">
                         <strong>
                             Total Assigned Roles :
@@ -98,11 +107,11 @@
                         <i class="pe-7s-back"></i>
                         <span class="text-danger">Discard Changes</span>
                         [
-                        <span>@Html.ActionLink("Manage Users", "Index", new { }, new { @class = "text-warning" }) |</span>
+                        <span>@Html.ActionLink("Manage Users", nameof(UserRoleController.Index), new { }, new { @class = "text-warning" }) |</span>
 
                         @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
                         {
-                            <span>@Html.ActionLink("All Projects", "All", "Project", new { }, new { @class = "text-warning" })</span>
+                            <span>@Html.ActionLink("All Projects", nameof(ProjectController.All), "Project", new { }, new { @class = "text-warning" })</span>
                         }
                         ]
                     </div>
@@ -121,7 +130,7 @@
                 </h4>
                 <p class="category">
                     @* SUBTITLE HERE *@
-                    
+
                 </p>
             </div>
             <div class="content">

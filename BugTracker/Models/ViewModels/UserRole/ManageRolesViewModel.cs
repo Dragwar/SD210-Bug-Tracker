@@ -18,6 +18,9 @@ namespace BugTracker.Models.ViewModels.UserRole
 
         [Display(Name = "Email")]
         public string UserEmail { get; set; }
+
+        [Display(Name = "Assigned Projects")]
+        public int NumberOfAssginedProjects { get; set; }
         public List<SelectListItem> RolesAddList { get; set; }
         public List<SelectListItem> RolesRemoveList { get; set; }
 
@@ -44,15 +47,15 @@ namespace BugTracker.Models.ViewModels.UserRole
             }
             try
             {
-                List<SelectListItem> RolesRemove = new List<SelectListItem>();
-                List<SelectListItem> RolesAdd = new List<SelectListItem>();
+                List<SelectListItem> rolesRemove = new List<SelectListItem>();
+                List<SelectListItem> rolesAdd = new List<SelectListItem>();
 
-                SelectListGroup RolesAddGroup = new SelectListGroup()
+                SelectListGroup rolesAddGroup = new SelectListGroup()
                 {
                     Name = "Roles To Add",
                     Disabled = false,
                 };
-                SelectListGroup RolesRemoveGroup = new SelectListGroup()
+                SelectListGroup rolesRemoveGroup = new SelectListGroup()
                 {
                     Name = "Roles To Remove",
                     Disabled = false,
@@ -61,27 +64,27 @@ namespace BugTracker.Models.ViewModels.UserRole
                 // remove roles
                 foreach (IdentityUserRole userRole in user.Roles)
                 {
-                    string currentRoleName = allRoles.First(r => r.Id == userRole.RoleId)?.Name ?? throw new Exception("Role not found");
+                    string currentRoleName = allRoles.FirstOrDefault(r => r.Id == userRole.RoleId)?.Name ?? throw new Exception("Role not found");
 
                     //! Double check if the user is in role and Disable an SelectListItem to prevent the admin role from getting revoked
                     if (repo.IsUserInRole(user.Id, currentRoleName) && currentRoleName == nameof(UserRolesEnum.Admin))
                     {
-                        RolesRemove.Add(new SelectListItem()
+                        rolesRemove.Add(new SelectListItem()
                         {
                             Text = currentRoleName,
                             Value = null,
-                            Group = RolesRemoveGroup,
+                            Group = rolesRemoveGroup,
                             Selected = false,
                             Disabled = true,
                         });
                     }
                     else if (repo.IsUserInRole(user.Id, currentRoleName))
                     {
-                        RolesRemove.Add(new SelectListItem()
+                        rolesRemove.Add(new SelectListItem()
                         {
                             Text = currentRoleName,
                             Value = currentRoleName,
-                            Group = RolesRemoveGroup,
+                            Group = rolesRemoveGroup,
                             Selected = false,
                             Disabled = false,
                         });
@@ -93,11 +96,11 @@ namespace BugTracker.Models.ViewModels.UserRole
                 {
                     if (!repo.IsUserInRole(user.Id, role.Name))
                     {
-                        RolesAdd.Add(new SelectListItem()
+                        rolesAdd.Add(new SelectListItem()
                         {
                             Text = role.Name,
                             Value = role.Name,
-                            Group = RolesAddGroup,
+                            Group = rolesAddGroup,
                             Selected = false,
                             Disabled = false,
                         });
@@ -110,8 +113,9 @@ namespace BugTracker.Models.ViewModels.UserRole
                     UserId = user.Id.ToString(),
                     UserDisplayName = user.DisplayName,
                     UserEmail = user.Email,
-                    RolesAddList = RolesAdd,
-                    RolesRemoveList = RolesRemove,
+                    NumberOfAssginedProjects = (user.Projects?.Any() ?? false) ? user.Projects.Count : 0,
+                    RolesAddList = rolesAdd,
+                    RolesRemoveList = rolesRemove,
                     SelectedRolesToAdd = null,
                     SelectedRolesToRemove = null,
                 };
