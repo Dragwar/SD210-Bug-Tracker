@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BugTracker.MyHelpers
 {
-
     [NotMapped]
     public static class DateHelper
     {

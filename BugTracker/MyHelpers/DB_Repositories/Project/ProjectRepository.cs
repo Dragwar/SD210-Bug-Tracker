@@ -2,10 +2,12 @@
 using BugTracker.Models.Domain;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace BugTracker.MyHelpers.DB_Repositories
 {
+    [NotMapped]
     public class ProjectRepository
     {
         private ApplicationDbContext DBContext { get; set; }
@@ -25,11 +27,12 @@ namespace BugTracker.MyHelpers.DB_Repositories
             {
                 Project foundProject = GetProject(projectId);
                 bool didUserGetAdded = foundProject.Users.RemoveAll(user => user.Id == userId) == 1;
-                if (didUserGetAdded && foundProject.Users.Any(user => user.Id == userId))
+                bool isUserStillInProject = foundProject.Users.Any(user => user.Id == userId);
+                if (didUserGetAdded && !isUserStillInProject)
                 {
                     DBContext.SaveChanges();
                 }
-                return didUserGetAdded && foundProject.Users.Any(user => user.Id == userId);
+                return didUserGetAdded && !isUserStillInProject;
             }
             catch
             {

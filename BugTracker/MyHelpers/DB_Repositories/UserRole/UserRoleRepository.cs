@@ -2,10 +2,12 @@
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 
 namespace BugTracker.MyHelpers.DB_Repositories
 {
+    [NotMapped]
     public class UserRoleRepository
     {
         private UserManager<ApplicationUser> UserManager;
