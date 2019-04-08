@@ -1,7 +1,11 @@
 ﻿@{
+    string overrideCurrentPage = ViewBag.OverrideCurrentPage;
     string currentController = ViewContext.RouteData.Values["controller"] as string ?? "Home";
     string currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
-    string currentPage = (currentController + "-" + currentAction).ToLower();
+    string currentPage = string.IsNullOrWhiteSpace(ViewBag.OverrideCurrentPage) ?
+        (currentController + "-" + currentAction).ToLower() :
+        overrideCurrentPage;
+    bool guestMode = ViewBag?.GuestMode ?? false ? true : false;
 }
 
 <!DOCTYPE html>
@@ -23,7 +27,7 @@
 
 
     <div class="wrapper">
-        <div class="sidebar" data-color="blue" data-image="@Url.Content("~/Template/assets/img/sidebar-5.jpg")">
+        <div class="sidebar" data-color="@(guestMode ? "" : "blue")" data-image="@Url.Content("~/Template/assets/img/sidebar-5.jpg")">
             <!--
 
                 Tip 1: you can change the color of the sidebar using: data-color="blue | azure | green | orange | red | purple
@@ -67,13 +71,16 @@
                         </li>
                     }
 
-                    <li class="my-page-link" id="project-index">
-                        @*<a href="./Template/icons.html">*@
-                        <a href="@Url.Action(nameof(ProjectController.Index), "Project")">
-                            <i class="pe-7s-folder"></i>
-                            <p>My Projects</p>
-                        </a>
-                    </li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li class="my-page-link" id="project-index">
+                            @*<a href="./Template/icons.html">*@
+                            <a href="@Url.Action(nameof(ProjectController.Index), "Project")">
+                                <i class="pe-7s-folder"></i>
+                                <p>My Projects</p>
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>

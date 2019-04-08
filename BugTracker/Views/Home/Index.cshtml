@@ -1,35 +1,80 @@
-﻿@{
+﻿@model BugTracker.Models.ViewModels.Home.IndexViewModel
+@{
     ViewBag.Title = "Dashboard";
 }
 
-<div class="row">
+@section Styles
+{
+    <style>
+        #project-link {
+            color: gray;
+        }
 
-    <!-- [Widget]:Email Statistics -->
-    <div class="col-md-4">
-        <div class="card">
-            <div class="header">
-                <h4 class="title">Email Statistics</h4>
-                <p class="category">Last Campaign Performance</p>
-            </div>
-            <div class="content">
-                @*<div id="chartPreferences" class="ct-chart ct-perfect-fourth"></div>*@
-                <div class="footer">
-                    <div class="legend">
-                        <i class="fa fa-circle text-info"></i> Open
-                        <i class="fa fa-circle text-danger"></i> Bounce
-                        <i class="fa fa-circle text-warning"></i> Unsubscribe
-                    </div>
-                    <hr>
-                    <div class="stats">
-                        <i class="fa fa-clock-o"></i> Campaign sent 2 days ago
-                    </div>
+            #project-link:hover {
+                color: ButtonText;
+            }
+    </style>
+}
+
+<div class="row">
+    <!-- [Widget]:My Assigned Projects -->
+    @if (Model.LatestProjects != null)
+    {
+        <div @*class="col-lg-4"*@ class="col-lg-5">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Assigned Projects</h4>
+                    <p class="category">@(Model.LatestProjects.Any() ? $"Here are your {Model.LatestProjects.Count} latest projects" : "")</p>
+                </div>
+                <div class="content">
+                    @if (Model.LatestProjects.Any())
+                    {
+                        foreach (var project in Model.LatestProjects)
+                        {
+                            <!--TODO: style bug -> when user clicks this link, the _Layout.cshtml page doesn't update the nav-links-->
+                            <div style="font-size: 16px;">
+                                <a id="project-link" href="@Url.Action(nameof(ProjectController.Details), "Project", new { Id = project.Id })">
+                                    @project.Name - <i style="font-size: 85%;" class="fa fa-history"></i>
+                                    <span style="font-size: 75%;" class="small">
+                                        @(project.DateUpdated.HasValue ? project.DateUpdated.Value.GetDateTimeFromNow() : project.DateCreated.GetDateTimeFromNow())
+                                    </span>
+                                </a>
+                            </div>
+                        }
+
+                        <div class="footer">
+                            @*
+                                <div class="legend">
+                                    <i class="fa fa-circle text-info"></i> Open
+                                    <i class="fa fa-circle text-danger"></i> Bounce
+                                    <i class="fa fa-circle text-warning"></i> Unsubscribe
+                                </div>
+                            *@
+                            <hr>
+                            <div class="stats">
+                                @if (Model.TotalProjectCount > 0)
+                                {
+                                    <i style="font-size: 125%; font-weight: 500; position: relative; top: 3px;" class="pe-7s-folder"></i>
+                                    <a href="@Url.Action(nameof(ProjectController.Index), "Project")">
+                                        <span>You are assigned to @Model.TotalProjectCount project(s)</span>
+                                    </a>
+                                }
+                            </div>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-warning">You have no assigned projects</p>
+                    }
                 </div>
             </div>
         </div>
-    </div>
+    }
 
     <!-- [Widget]:Users Behavior -->
-    <div class="col-md-8">
+    <!--
+    <div class="col-lg-8">
         <div class="card">
             <div class="header">
                 <h4 class="title">Users Behavior</h4>
@@ -51,9 +96,10 @@
             </div>
         </div>
     </div>
-
+    -->
     <!-- [Widget]:2014 Sales -->
-    <div class="col-md-6">
+    <!--
+    <div class="col-lg-6">
         <div class="card ">
             <div class="header">
                 <h4 class="title">2014 Sales</h4>
@@ -74,24 +120,25 @@
             </div>
         </div>
     </div>
-
+    -->
     <!-- [Widget]:Tasks -->
-    <div class="col-md-6">
+    <!--
+    <div class="col-lg-6">
 
-        <!-- Tasks Header -->
+        @* Tasks Header *@
         <div class="card ">
             <div class="header">
                 <h4 class="title">Tasks</h4>
                 <p class="category">Backend development</p>
             </div>
 
-            <!-- Tasks Content -->
+            @* Tasks Content *@
             <div class="content">
                 <div class="table-full-width">
                     <table class="table">
                         <tbody>
 
-                            <!-- Task -->
+                            @* Task *@
                             <tr>
                                 <td>
                                     <div class="checkbox">
@@ -110,7 +157,7 @@
                                 </td>
                             </tr>
 
-                            <!-- Task -->
+                            @* Task *@
                             <tr>
                                 <td>
                                     <div class="checkbox">
@@ -129,7 +176,7 @@
                                 </td>
                             </tr>
 
-                            <!-- Task -->
+                            @* Task *@
                             <tr>
                                 <td>
                                     <div class="checkbox">
@@ -150,7 +197,7 @@
                                 </td>
                             </tr>
 
-                            <!-- Task -->
+                            @* Task *@
                             <tr>
                                 <td>
                                     <div class="checkbox">
@@ -169,7 +216,7 @@
                                 </td>
                             </tr>
 
-                            <!-- Task -->
+                            @* Task *@
                             <tr>
                                 <td>
                                     <div class="checkbox">
@@ -188,7 +235,7 @@
                                 </td>
                             </tr>
 
-                            <!-- Task -->
+                             @* Task *@
                             <tr>
                                 <td>
                                     <div class="checkbox">
@@ -210,7 +257,7 @@
                     </table>
                 </div>
 
-                <!-- Tasks Footer -->
+                @* Tasks Footer *@
                 <div class="footer">
                     <hr>
                     <div class="stats">
@@ -220,4 +267,5 @@
             </div>
         </div>
     </div>
+    -->
 </div>

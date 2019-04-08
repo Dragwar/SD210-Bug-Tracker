@@ -30,7 +30,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Index()
         {
             List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
@@ -77,9 +77,10 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/Details/{id}
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Details(string id)
         {
+            ViewBag.OverrideCurrentPage = "project-index";
             string userId = User.Identity.GetUserId();
             Project foundProject = ProjectRepository.GetProject(id);
 
@@ -113,6 +114,7 @@ namespace BugTracker.Controllers
         // GET: Project/Create
         public ActionResult Create()
         {
+            ViewBag.OverrideCurrentPage = "project-index";
             SelectListGroup initialAssignedUserGroup = new SelectListGroup()
             {
                 Name = "Assign Initial Users",
@@ -244,6 +246,7 @@ namespace BugTracker.Controllers
         // GET: Project/Edit/{id}
         public ActionResult Edit(string id)
         {
+            ViewBag.OverrideCurrentPage = "project-index";
             if (id == null)
             {
                 return RedirectToAction(nameof(Index));
