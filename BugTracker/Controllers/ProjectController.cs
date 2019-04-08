@@ -278,7 +278,7 @@ namespace BugTracker.Controllers
                     ModelState.AddModelError(nameof(formData.Name), "Project Name can't be left empty");
                 }
 
-                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name))
+                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name, Guid.Parse(formData.Id)))
                 {
                     ModelState.AddModelError("", "Error - Project name is already taken");
                 }

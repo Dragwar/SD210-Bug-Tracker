@@ -68,6 +68,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
             .Where(project => project.Users.Any(user => userId == user.Id))
             .ToList();
         public bool IsProjectNameAlreadyTaken(string projectName) => DBContext.Projects.Any(project => project.Name.ToLower() == projectName.ToLower());
-        public List<Project> GetAllProjects() => DBContext.Projects.ToList();
+        public bool IsProjectNameAlreadyTaken(string projectName, Guid projectId) => DBContext.Projects.Any(project => project.Name.ToLower() == projectName.ToLower() && project.Id != projectId);
+        public List<Project> GetAllProjects() => DBContext.Projects.ToList(); 
     }
 }
