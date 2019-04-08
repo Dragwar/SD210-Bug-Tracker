@@ -5,7 +5,7 @@
     string currentPage = string.IsNullOrWhiteSpace(ViewBag.OverrideCurrentPage) ?
         (currentController + "-" + currentAction).ToLower() :
         overrideCurrentPage;
-    bool guestMode = ViewBag?.GuestMode ?? false ? true : false;
+    bool guestMode = !User.Identity.IsAuthenticated;
 }
 
 <!DOCTYPE html>

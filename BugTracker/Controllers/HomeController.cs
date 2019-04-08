@@ -11,15 +11,11 @@ namespace BugTracker.Controllers
     {
         private Models.ApplicationDbContext DbContext { get; }
         private UserRepository UserRepository { get; }
-        private UserRoleRepository UserRoleRepository { get; }
-        private ProjectRepository ProjectRepository { get; }
 
         public HomeController()
         {
             DbContext = new Models.ApplicationDbContext();
             UserRepository = new UserRepository(DbContext);
-            UserRoleRepository = new UserRoleRepository(DbContext);
-            ProjectRepository = new ProjectRepository(DbContext);
         }
 
 
@@ -34,7 +30,6 @@ namespace BugTracker.Controllers
             }
             else
             {
-                ViewBag.GuestMode = true;
                 model = new IndexViewModel()
                 {
                     UserId = "",

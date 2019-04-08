@@ -30,7 +30,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project
-        [Authorize]
+        [AllowAnonymous]
         public ActionResult Index()
         {
             List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
@@ -77,7 +77,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/Details/{id}
-        [Authorize]
+        [AllowAnonymous]
         public ActionResult Details(string id)
         {
             ViewBag.OverrideCurrentPage = "project-index";
