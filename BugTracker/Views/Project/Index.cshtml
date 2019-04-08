@@ -73,10 +73,21 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => project.DateUpdated)
                                 </td>
+                                @*
+                                                    <td>
+                                                        @Html.ActionLink("Edit", nameof(ProjectController.Edit), new { id = project.Id }) |
+                                                        @Html.ActionLink("Details", nameof(ProjectController.Details), new { id = project.Id }) @*|
+                                    @Html.ActionLink("Delete", "Delete", new { id = project.Id }) @
+                                                    </td>
+                                *@
                                 <td>
-                                    @Html.ActionLink("Edit", nameof(ProjectController.Edit), new { id = project.Id }) |
-                                    @Html.ActionLink("Details", nameof(ProjectController.Details), new { id = project.Id }) @*|
-                                        @Html.ActionLink("Delete", "Delete", new { id = project.Id })*@
+                                    <a class="small text-muted" href="@Url.Action(nameof(ProjectController.Edit), new { id = project.Id })">
+                                        @nameof(ProjectController.Edit) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-tools"></i>
+                                    </a>
+                                    <span style="margin: 0px 6px;">|</span>
+                                    <a class="small text-muted" href="@Url.Action(nameof(ProjectController.Details), new { id = project.Id })">
+                                        @nameof(ProjectController.Details) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-info"></i>
+                                    </a>
                                 </td>
                             </tr>
                         }
