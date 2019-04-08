@@ -3,6 +3,7 @@ using BugTracker.Models.ViewModels;
 using BugTracker.Models.ViewModels.UserRole;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
+using Microsoft.AspNet.Identity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -47,15 +48,14 @@ namespace BugTracker.Controllers
         // GET: UserRole/ManageRoles/{id}
         public ActionResult ManageRoles(string id)
         {
+            ViewBag.OverrideCurrentPage = "userrole-index";
             ApplicationUser foundUser = UserRepository.GetUserById(id);
             if (foundUser == null)
             {
                 return RedirectToAction(nameof(Index));
             }
-
-            ManageRolesViewModel model = ManageRolesViewModel.CreateNewViewModel(foundUser, UserRoleRepository.GetAllUserRoles(), DbContext);
-
-
+            string currentAdminUserId = User.Identity.GetUserId();
+            ManageRolesViewModel model = ManageRolesViewModel.CreateNewViewModel(currentAdminUserId, foundUser, UserRoleRepository.GetAllUserRoles(), DbContext);
 
             return View(model);
         }
@@ -81,8 +81,11 @@ namespace BugTracker.Controllers
                 bool isAddingUsers = formData?.SelectedRolesToAdd != null;
                 bool isRemovingUsers = formData?.SelectedRolesToRemove != null;
 
+                string userId = User.Identity.GetUserId();
 
-                if (isRemovingUsers && formData.SelectedRolesToRemove.Contains(nameof(UserRolesEnum.Admin)))
+                //! other admins can revoke other admins role
+                //! but they can't revoke their own admin role
+                if (isRemovingUsers && formData.UserId == userId && formData.SelectedRolesToRemove.Contains(nameof(UserRolesEnum.Admin)))
                 {
                     return RedirectToAction(nameof(Index), new { error = "You can't revoke your admin role (discarded all changes)" });
                 }

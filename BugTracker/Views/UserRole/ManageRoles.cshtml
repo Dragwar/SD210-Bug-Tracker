@@ -4,6 +4,16 @@
     ViewBag.Title = "Manage Roles";
 }
 
+@section Styles
+{
+    <style>
+    option:disabled {
+        text-decoration: line-through;
+    }
+
+    </style>
+}
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
@@ -57,7 +67,7 @@
                         </span>
                     </div>
 
-                    <div style="margin-bottom: 25px;">
+                    <div style="        margin-bottom: 25px;">
                         <strong>
                             Total Assigned Roles :
                         </strong>
