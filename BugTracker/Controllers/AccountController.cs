@@ -69,7 +69,7 @@ namespace BugTracker.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+                    return RedirectToAction(nameof(AccountController.SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
@@ -145,11 +145,14 @@ namespace BugTracker.Controllers
                     await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
 
 
-                    // Make sure the user is on the passed in role
-                    if (!UserManager.IsInRole(user.Id, nameof(UserRolesEnum.Submitter)))
-                    {
-                        UserManager.AddToRole(user.Id, nameof(UserRolesEnum.Submitter));
-                    }
+                    // don't need to check if user is in role because
+                    // this is where new users get created therefore
+                    // by default new users don't have a role assigned to them
+                    //! New users will be added to the Submitter role by default
+                    UserManager.AddToRole(user.Id, nameof(UserRolesEnum.Submitter));
+
+                    //? is this needed or useful here in any way?
+                    //UserManager.Update(user);
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
@@ -157,7 +160,7 @@ namespace BugTracker.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
                     string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    string callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    string callbackUrl = Url.Action(nameof(AccountController.ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     IdentityMessage message = new IdentityMessage()
                     {
                         Destination = user.Email,
@@ -166,7 +169,7 @@ namespace BugTracker.Controllers
                     };
                     UserManager.EmailService.Send(message);
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction(nameof(HomeController.Index), "Home");
                 }
                 AddErrors(result);
             }
@@ -219,7 +222,7 @@ namespace BugTracker.Controllers
                 // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
                 // return RedirectToAction("ForgotPasswordConfirmation", "Account");
                 string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                string callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                string callbackUrl = Url.Action(nameof(AccountController.ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                 IdentityMessage message = new IdentityMessage()
                 {
                     Destination = user.Email,
@@ -228,7 +231,7 @@ namespace BugTracker.Controllers
                 };
                 UserManager.EmailService.Send(message);
 
-                return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
             }
 
             // If we got this far, something failed, redisplay form
@@ -266,12 +269,12 @@ namespace BugTracker.Controllers
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
+                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
             }
             IdentityResult result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
             {
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
+                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
             }
             AddErrors(result);
             return View();
@@ -293,7 +296,7 @@ namespace BugTracker.Controllers
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             // Request a redirect to the external login provider
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
+            return new ChallengeResult(provider, Url.Action(nameof(AccountController.ExternalLoginCallback), "Account", new { ReturnUrl = returnUrl }));
         }
 
         //
@@ -328,7 +331,7 @@ namespace BugTracker.Controllers
             {
                 return View("Error");
             }
-            return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+            return RedirectToAction(nameof(AccountController.VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
         }
 
         //
@@ -339,7 +342,7 @@ namespace BugTracker.Controllers
             ExternalLoginInfo loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
             if (loginInfo == null)
             {
-                return RedirectToAction("Login");
+                return RedirectToAction(nameof(AccountController.Login));
             }
 
             // Sign in the user with this external login provider if the user already has a login
@@ -351,7 +354,7 @@ namespace BugTracker.Controllers
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
-                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
+                    return RedirectToAction(nameof(AccountController.SendCode), new { ReturnUrl = returnUrl, RememberMe = false });
                 case SignInStatus.Failure:
                 default:
                     // If the user does not have an account, then prompt the user to create an account
@@ -370,7 +373,7 @@ namespace BugTracker.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Manage");
+                return RedirectToAction(nameof(ManageController.Index), "Manage");
             }
 
             if (ModelState.IsValid)
@@ -406,7 +409,7 @@ namespace BugTracker.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         //
@@ -457,7 +460,7 @@ namespace BugTracker.Controllers
             {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         internal class ChallengeResult : HttpUnauthorizedResult
