@@ -53,10 +53,7 @@
                                     @Html.DisplayFor(modelItem => user.Email)
                                 </td>
                                 <td>
-                                    @foreach (var role in user.Roles)
-                                    {
-                                        <p class="small">@role.Name</p>
-                                    }
+                                    <span style="font-family:'Franklin Gothic'">@string.Join(", ", user.Roles.Select(role => role.Name))</span>
                                 </td>
                                 <td>
                                     <a href="@Url.Action(nameof(UserRoleController.ManageRoles), new { id = user.Id })" class="small text-muted">
