@@ -13,7 +13,6 @@ using IndexViewModel = BugTracker.Models.ViewModels.Project.IndexViewModel;
 
 namespace BugTracker.Controllers
 {
-    [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
     public class ProjectController : Controller
     {
         private ApplicationDbContext DbContext { get; }
@@ -30,7 +29,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Index()
         {
             List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
@@ -49,6 +48,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/All
+        [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
         public ActionResult All()
         {
             bool isUserAdmin = UserRoleRepository.IsUserInRole(User.Identity.GetUserId(), nameof(UserRolesEnum.Admin));
@@ -77,7 +77,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/Details/{id}
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult Details(string id)
         {
             ViewBag.OverrideCurrentPage = "project-index";
@@ -112,6 +112,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/Create
+        [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
         public ActionResult Create()
         {
             ViewBag.OverrideCurrentPage = "project-index";
@@ -154,6 +155,7 @@ namespace BugTracker.Controllers
 
         // POST: Project/Create
         [HttpPost]
+        [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
         public ActionResult Create(CreateViewModel formData)
         {
             try
@@ -244,6 +246,7 @@ namespace BugTracker.Controllers
 
 
         // GET: Project/Edit/{id}
+        [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
         public ActionResult Edit(string id)
         {
             ViewBag.OverrideCurrentPage = "project-index";
@@ -266,6 +269,7 @@ namespace BugTracker.Controllers
 
         // POST: Project/Edit/{id}
         [HttpPost]
+        [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
         public ActionResult Edit(EditViewModel formData)
         {
             try
