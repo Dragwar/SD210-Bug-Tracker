@@ -13,9 +13,11 @@ namespace BugTracker.Models
     {
         public virtual string DisplayName { get; set; }
         public virtual List<Project> Projects { get; set; }
+        //public virtual List<Ticket> Tickets { get; set; }
 
         public ApplicationUser()
         {
+            //Tickets = new List<Ticket>();
             Projects = new List<Project>();
         }
 
@@ -36,6 +38,7 @@ namespace BugTracker.Models
         }
 
         public DbSet<Project> Projects { get; set; }
+        //public DbSet<Ticket> Tickets { get; set; }
 
         public static ApplicationDbContext Create()
         {

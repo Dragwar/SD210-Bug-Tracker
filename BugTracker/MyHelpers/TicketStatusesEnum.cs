@@ -5,10 +5,10 @@ using System.Web;
 
 namespace BugTracker.MyHelpers
 {
-    public enum PrioritiesEnum
+    public enum TicketStatusesEnum
     {
-        Low,
-        Medium,
-        High,
+        Open,
+        Resolved,
+        Rejected,
     }
 }
