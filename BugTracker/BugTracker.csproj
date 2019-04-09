@@ -197,7 +197,9 @@
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\User\UserRepository.cs" />
-    <Compile Include="MyHelpers\UserRoles.cs" />
+    <Compile Include="MyHelpers\PrioritiesEnum.cs" />
+    <Compile Include="MyHelpers\TicketTypesEnum.cs" />
+    <Compile Include="MyHelpers\UserRolesEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
