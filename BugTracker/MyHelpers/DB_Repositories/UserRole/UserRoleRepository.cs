@@ -4,6 +4,11 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using Microsoft.Owin.Builder;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin;
+using System.Data.Entity;
+using System.Web;
 
 namespace BugTracker.MyHelpers.DB_Repositories
 {
@@ -16,7 +21,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
         public UserRoleRepository(ApplicationDbContext dbContext)
         {
             DbContext = dbContext;
-            UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(dbContext));
+            UserManager = OwinContextExtensions.GetUserManager<ApplicationUserManager>(HttpContext.Current.GetOwinContext());
         }
 
         public List<IdentityRole> GetAllUserRoles() => DbContext.Roles.ToList();
