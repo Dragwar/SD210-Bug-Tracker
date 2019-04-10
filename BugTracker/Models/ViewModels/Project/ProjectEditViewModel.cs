@@ -9,7 +9,7 @@ namespace BugTracker.Models.ViewModels.Project
 {
     public class ProjectEditViewModel
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         [Display(Name = "Project Name")]
@@ -75,7 +75,7 @@ namespace BugTracker.Models.ViewModels.Project
 
                 ProjectEditViewModel model = new ProjectEditViewModel()
                 {
-                    Id = project.Id.ToString(),
+                    Id = project.Id,
                     Name = project.Name,
                     UsersAddList = usersAdd,
                     UsersRemoveList = usersRemove,

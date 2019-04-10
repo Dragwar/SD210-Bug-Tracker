@@ -77,7 +77,7 @@ namespace BugTracker.Controllers
 
         // GET: Project/Details/{id}
         [Authorize]
-        public ActionResult Details(string id)
+        public ActionResult Details(Guid id)
         {
             ViewBag.OverrideCurrentPage = "project-index";
             string userId = User.Identity.GetUserId();
@@ -246,7 +246,7 @@ namespace BugTracker.Controllers
 
         // GET: Project/Edit/{id}
         [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
-        public ActionResult Edit(string id)
+        public ActionResult Edit(Guid id)
         {
             ViewBag.OverrideCurrentPage = "project-index";
             if (id == null)
@@ -281,7 +281,7 @@ namespace BugTracker.Controllers
                     ModelState.AddModelError(nameof(formData.Name), "Project Name can't be left empty");
                 }
 
-                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name, Guid.Parse(formData.Id)))
+                if (ProjectRepository.IsProjectNameAlreadyTaken(formData.Name, formData.Id))
                 {
                     ModelState.AddModelError("", "Error - Project name is already taken");
                 }
@@ -329,7 +329,7 @@ namespace BugTracker.Controllers
                         if (!isUserAlreadyAssignedToProject)
                         {
                             ApplicationUser foundUser = UserRepository.GetUserById(userId);
-                            bool didUserGetAssignedToProject = ProjectRepository.AssignUserToProject(foundUser, foundProject.Id.ToString());
+                            bool didUserGetAssignedToProject = ProjectRepository.AssignUserToProject(foundUser, foundProject.Id);
 
                             if (!didUserGetAssignedToProject)
                             {
@@ -348,7 +348,7 @@ namespace BugTracker.Controllers
                         if (isUserAssignedToProject)
                         {
                             //ApplicationUser foundUser = UserRepository.GetUserById(userId);
-                            bool didUserGetUnassignedFromProject = ProjectRepository.UnassignUserFromProject(userId, foundProject.Id.ToString());
+                            bool didUserGetUnassignedFromProject = ProjectRepository.UnassignUserFromProject(userId, foundProject.Id);
 
                             if (!didUserGetUnassignedFromProject)
                             {

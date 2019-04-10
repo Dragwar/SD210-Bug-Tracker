@@ -17,11 +17,11 @@ namespace BugTracker.MyHelpers.DB_Repositories
             DBContext = dBContext ?? throw new ArgumentNullException(nameof(dBContext));
         }
 
-        public Project GetProject(string id) => DBContext.Projects.FirstOrDefault(project => project.Id.ToString() == id);
+        public Project GetProject(Guid id) => DBContext.Projects.FirstOrDefault(project => project.Id == id);
         public bool IsUserAssignedToProject(ApplicationUser applicationUser, Project project) => project?.Users.Any(user => user?.Id == applicationUser.Id) ?? false;
         public bool IsUserAssignedToProject(string userId, Project project) => project?.Users.FirstOrDefault(user => user?.Id == userId) != null;
-        public bool IsUserAssignedToProject(string userId, string projectId) => GetProject(projectId)?.Users.FirstOrDefault(user => user?.Id == userId) != null;
-        public bool UnassignUserFromProject(string userId, string projectId)
+        public bool IsUserAssignedToProject(string userId, Guid projectId) => GetProject(projectId)?.Users.FirstOrDefault(user => user?.Id == userId) != null;
+        public bool UnassignUserFromProject(string userId, Guid projectId)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
                 return false;
             }
         }
-        public bool AssignUserToProject(ApplicationUser applicationUser, string projectId)
+        public bool AssignUserToProject(ApplicationUser applicationUser, Guid projectId)
         {
             try
             {
@@ -67,8 +67,10 @@ namespace BugTracker.MyHelpers.DB_Repositories
         public List<Project> GetUserProjects(string userId) => DBContext.Projects
             .Where(project => project.Users.Any(user => userId == user.Id))
             .ToList();
-        public bool IsProjectNameAlreadyTaken(string projectName) => DBContext.Projects.Any(project => project.Name.ToLower() == projectName.ToLower());
-        public bool IsProjectNameAlreadyTaken(string projectName, Guid projectId) => DBContext.Projects.Any(project => project.Name.ToLower() == projectName.ToLower() && project.Id != projectId);
+        public bool IsProjectNameAlreadyTaken(string projectName) => DBContext.Projects
+            .Any(project => project.Name.ToLower() == projectName.ToLower());
+        public bool IsProjectNameAlreadyTaken(string projectName, Guid projectId) => DBContext.Projects
+            .Any(project => project.Name.ToLower() == projectName.ToLower() && project.Id != projectId);
         public List<Project> GetAllProjects() => DBContext.Projects.ToList(); 
     }
 }
