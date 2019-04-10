@@ -1,4 +1,4 @@
-﻿@model List<BugTracker.Models.ViewModels.Project.IndexViewModel>
+﻿@model List<ProjectIndexViewModel>
 
 @{
     ViewBag.Title = "My Projects";
@@ -55,7 +55,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (BugTracker.Models.ViewModels.Project.IndexViewModel project in Model)
+                        @foreach (ProjectIndexViewModel project in Model)
                         {
                             <tr>
                                 <td>

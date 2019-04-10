@@ -6,18 +6,18 @@ using System.Linq;
 
 namespace BugTracker.Models.ViewModels.Home
 {
-    public class IndexViewModel
+    public class HomeIndexViewModel
     {
         public string UserId { get; set; }
         public string DisplayName { get; set; }
         public string Email { get; set; }
 
         public int TotalProjectCount { get; set; }
-        public List<Project.IndexViewModel> LatestProjects { get; set; }
+        public List<Project.ProjectIndexViewModel> LatestProjects { get; set; }
 
         public List<IdentityRole> Roles { get; set; }
 
-        public static IndexViewModel CreateNewViewModel(ApplicationUser applicationUser, ApplicationDbContext dbContext, int latestProjectIntakeLimit = 3)
+        public static HomeIndexViewModel CreateNewViewModel(ApplicationUser applicationUser, ApplicationDbContext dbContext, int latestProjectIntakeLimit = 3)
         {
             if (applicationUser == null)
             {
@@ -26,21 +26,21 @@ namespace BugTracker.Models.ViewModels.Home
             List<IdentityRole> roles = new UserRoleRepository(dbContext).GetUserRoles(applicationUser.Id);
             ProjectRepository repo = new ProjectRepository(dbContext);
 
-            List<Project.IndexViewModel> latestProjects = repo
+            List<Project.ProjectIndexViewModel> latestProjects = repo
                 .GetUserProjects(applicationUser.Id)?
                 .OrderByDescending(project => project?.DateUpdated ?? project.DateCreated)
                 .Take(latestProjectIntakeLimit)
-                .Select(project => Project.IndexViewModel.CreateNewViewModel(project))
-                .ToList() ?? new List<Project.IndexViewModel>();
+                .Select(project => Project.ProjectIndexViewModel.CreateNewViewModel(project))
+                .ToList() ?? new List<Project.ProjectIndexViewModel>();
             try
             {
-                return new IndexViewModel()
+                return new HomeIndexViewModel()
                 {
                     UserId = string.IsNullOrWhiteSpace(applicationUser.Id) ? throw new ArgumentNullException() : applicationUser.Id,
                     DisplayName = string.IsNullOrWhiteSpace(applicationUser.DisplayName) ? throw new ArgumentNullException() : applicationUser.DisplayName,
                     Email = string.IsNullOrWhiteSpace(applicationUser.Email) ? throw new ArgumentNullException() : applicationUser.Email,
                     TotalProjectCount = repo.GetUserProjects(applicationUser.Id)?.Count ?? 0,
-                    LatestProjects = latestProjects?.Any() ?? false ? latestProjects : new List<Project.IndexViewModel>(),
+                    LatestProjects = latestProjects?.Any() ?? false ? latestProjects : new List<Project.ProjectIndexViewModel>(),
                     Roles = (roles?.Any() ?? false) ? roles : new List<IdentityRole>(),
                 };
             }

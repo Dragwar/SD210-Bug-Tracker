@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using IndexViewModel = BugTracker.Models.ViewModels.Project.IndexViewModel;
 
 namespace BugTracker.Controllers
 {
@@ -33,15 +32,15 @@ namespace BugTracker.Controllers
         public ActionResult Index()
         {
             List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
-            List<IndexViewModel> viewModels;
+            List<ProjectIndexViewModel> viewModels;
 
             if (userProjects.Any())
             {
-                viewModels = userProjects.Select(project => IndexViewModel.CreateNewViewModel(project)).ToList();
+                viewModels = userProjects.Select(project => ProjectIndexViewModel.CreateNewViewModel(project)).ToList();
             }
             else
             {
-                viewModels = new List<IndexViewModel>();
+                viewModels = new List<ProjectIndexViewModel>();
             }
 
             return View(viewModels);
@@ -62,15 +61,15 @@ namespace BugTracker.Controllers
             }
 
             List<Project> allProjects = ProjectRepository.GetAllProjects();
-            List<IndexViewModel> viewModels;
+            List<ProjectIndexViewModel> viewModels;
 
             if (allProjects.Any())
             {
-                viewModels = allProjects.Select(project => IndexViewModel.CreateNewViewModel(project)).ToList();
+                viewModels = allProjects.Select(project => ProjectIndexViewModel.CreateNewViewModel(project)).ToList();
             }
             else
             {
-                viewModels = new List<IndexViewModel>();
+                viewModels = new List<ProjectIndexViewModel>();
             }
 
             return View(viewModels);
@@ -108,7 +107,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(DetailsViewModel.CreateNewViewModel(foundProject, DbContext));
+            return View(ProjectDetailsViewModel.CreateNewViewModel(foundProject, DbContext));
         }
 
         // GET: Project/Create
@@ -142,7 +141,7 @@ namespace BugTracker.Controllers
 
             projectCreator.Selected = true; // set the project creator selected by default
 
-            CreateViewModel model = new CreateViewModel()
+            ProjectCreateViewModel model = new ProjectCreateViewModel()
             {
                 Name = null,
                 SelectedUsersToAdd = null,
@@ -156,7 +155,7 @@ namespace BugTracker.Controllers
         // POST: Project/Create
         [HttpPost]
         [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
-        public ActionResult Create(CreateViewModel formData)
+        public ActionResult Create(ProjectCreateViewModel formData)
         {
             try
             {
@@ -195,7 +194,7 @@ namespace BugTracker.Controllers
                         Group = initialAssignedUserGroup,
                     }).ToList();
 
-                    CreateViewModel model = new CreateViewModel()
+                    ProjectCreateViewModel model = new ProjectCreateViewModel()
                     {
                         Name = null,
                         SelectedUsersToAdd = null,
@@ -262,7 +261,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            EditViewModel model = EditViewModel.CreateNewViewModel(foundProject, DbContext, UserRepository);
+            ProjectEditViewModel model = ProjectEditViewModel.CreateNewViewModel(foundProject, DbContext, UserRepository);
 
             return View(model);
         }
@@ -270,7 +269,7 @@ namespace BugTracker.Controllers
         // POST: Project/Edit/{id}
         [HttpPost]
         [Authorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
-        public ActionResult Edit(EditViewModel formData)
+        public ActionResult Edit(ProjectEditViewModel formData)
         {
             try
             {
@@ -289,7 +288,7 @@ namespace BugTracker.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    EditViewModel model;
+                    ProjectEditViewModel model;
 
                     #region Fixes a bug where project add/remove users lists were null (when name was just whitespace)
                     if (formData.UsersAddList == null || formData.UsersRemoveList == null)
@@ -299,7 +298,7 @@ namespace BugTracker.Controllers
                         {
                             return RedirectToAction(nameof(Index));
                         }
-                        model = EditViewModel.CreateNewViewModel(project, DbContext, UserRepository);
+                        model = ProjectEditViewModel.CreateNewViewModel(project, DbContext, UserRepository);
                     }
                     else
                     {

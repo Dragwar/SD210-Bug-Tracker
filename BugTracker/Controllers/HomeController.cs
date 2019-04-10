@@ -1,4 +1,6 @@
-﻿using BugTracker.Models.ViewModels.Home;
+﻿using BugTracker.Models;
+using BugTracker.Models.ViewModels.Home;
+using BugTracker.Models.ViewModels.Project;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -9,33 +11,33 @@ namespace BugTracker.Controllers
 {
     public class HomeController : Controller
     {
-        private Models.ApplicationDbContext DbContext { get; }
-        private UserRepository UserRepository { get; }
+        private readonly ApplicationDbContext DbContext;
+        private readonly UserRepository UserRepository;
 
         public HomeController()
         {
-            DbContext = new Models.ApplicationDbContext();
+            DbContext = new ApplicationDbContext();
             UserRepository = new UserRepository(DbContext);
         }
 
 
         public ActionResult Index()
         {
-            IndexViewModel model;
+            HomeIndexViewModel model;
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.Identity.GetUserId();
                 var currentUser = UserRepository.GetUserById(userId);
-                model = IndexViewModel.CreateNewViewModel(currentUser, DbContext, 5);
+                model = HomeIndexViewModel.CreateNewViewModel(currentUser, DbContext, 5);
             }
             else
             {
-                model = new IndexViewModel()
+                model = new HomeIndexViewModel()
                 {
                     UserId = "",
                     DisplayName = "Guest User",
                     Email = "",
-                    LatestProjects = new List<Models.ViewModels.Project.IndexViewModel>(),
+                    LatestProjects = new List<ProjectIndexViewModel>(),
                     Roles = new List<IdentityRole>(),
                 };
             }

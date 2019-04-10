@@ -4,7 +4,7 @@ using System.Web.Mvc;
 
 namespace BugTracker.Models.ViewModels.Project
 {
-    public class CreateViewModel
+    public class ProjectCreateViewModel
     {
         public List<HelperUserViewModel> Users { get; set; }
 

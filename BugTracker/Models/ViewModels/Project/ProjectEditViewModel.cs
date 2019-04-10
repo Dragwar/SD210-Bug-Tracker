@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace BugTracker.Models.ViewModels.Project
 {
-    public class EditViewModel
+    public class ProjectEditViewModel
     {
         public string Id { get; set; }
 
@@ -24,7 +24,7 @@ namespace BugTracker.Models.ViewModels.Project
         [Display(Name = "Unassign Users")]
         public string[] SelectedUsersToRemove { get; set; }
 
-        public static EditViewModel CreateNewViewModel(Domain.Project project, ApplicationDbContext dbContext, UserRepository userRepository)
+        public static ProjectEditViewModel CreateNewViewModel(Domain.Project project, ApplicationDbContext dbContext, UserRepository userRepository)
         {
             if (project == null || dbContext == null || userRepository == null)
             {
@@ -73,7 +73,7 @@ namespace BugTracker.Models.ViewModels.Project
                     }
                 }
 
-                EditViewModel model = new EditViewModel()
+                ProjectEditViewModel model = new ProjectEditViewModel()
                 {
                     Id = project.Id.ToString(),
                     Name = project.Name,
