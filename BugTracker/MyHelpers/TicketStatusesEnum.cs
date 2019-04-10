@@ -7,7 +7,7 @@ namespace BugTracker.MyHelpers
 {
     public enum TicketStatusesEnum
     {
-        Open,
+        Open = 1,
         Resolved,
         Rejected,
     }

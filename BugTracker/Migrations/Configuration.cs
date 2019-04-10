@@ -5,6 +5,7 @@ namespace BugTracker.Migrations
     using BugTracker.MyHelpers;
     using Microsoft.AspNet.Identity;
     using Microsoft.AspNet.Identity.EntityFramework;
+    using System;
     using System.Collections.Generic;
     using System.Data.Entity.Migrations;
     using System.Linq;
@@ -19,20 +20,116 @@ namespace BugTracker.Migrations
 
         protected override void Seed(BugTracker.Models.ApplicationDbContext context)
         {
-            //if (System.Diagnostics.Debugger.IsAttached == false)
-            //{
-            //    System.Diagnostics.Debugger.Launch();
-            //}
+            if (System.Diagnostics.Debugger.IsAttached == false)
+            {
+                //! Uncomment line below for debugging this Seed() method
+                //System.Diagnostics.Debugger.Launch();
+            }
+
             //  This method will be called after migrating to the latest version.
 
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 
             //  to avoid creating duplicate seed data.
+
+            //! Order matters
 
             CreateDefaultRoles(context);
 
             List<ApplicationUser> initialUsers = PopulateUsersAndRolesAndSave(context);
             PopulateDefaultProjectsAndSave(context, initialUsers);
 
+
+            CreateTicketPropsAndSave(context);
+
+            CreateTestTicket(context);
+
+            context.SaveChanges();
+
+        }
+        private void CreateTestTicket(ApplicationDbContext context)
+        {
+            TicketPriorities tp = context.TicketPriorities.First(p => p.PriorityString == nameof(TicketPrioritiesEnum.Medium));
+            TicketStatuses ts = context.TicketStatuses.First(p => p.StatusString == nameof(TicketStatusesEnum.Open));
+            TicketTypes tt = context.TicketTypes.First(p => p.TypeString == nameof(TicketTypesEnum.Feature));
+            Ticket testTicket = new Ticket()
+            {
+                //! Ran into weird bugs when using ".First()", ".Last()", and ".ElementAt()"
+                AssignedUser = context.Users.ToList()[0],
+                AssignedUserId = context.Users.ToList()[0].Id,
+                Author = context.Users.ToList()[context.Users.Count() - 1],
+                AuthorId = context.Users.ToList()[context.Users.Count() - 1].Id,
+                Title = "Test Ticket",
+                Description = "This is a test ticket",
+
+                PriorityId = tp.Id,
+                Priority = tp,
+
+                StatusId = ts.Id,
+                Status = ts,
+
+                TypeId = tt.Id,
+                Type = tt,
+
+                ProjectId = context.Projects.ToList()[0].Id,
+                Project = context.Projects.ToList()[0]
+            };
+
+            context.Tickets.AddOrUpdate(t => t.Title, testTicket);
+        }
+        private void CreateTicketPropsAndSave(ApplicationDbContext context)
+        {
+            List<int> TicketPrioritiesList = Enum.GetValues(typeof(TicketPrioritiesEnum)).Cast<int>().ToList();
+            if (context.TicketPriorities.Count() != TicketPrioritiesList.Count)
+            {
+                foreach (int TicketPrioritiesId in TicketPrioritiesList)
+                {
+                    bool isSuccessful = CONSTANTS.TicketPriorites.TryGetValue((TicketPrioritiesEnum)TicketPrioritiesId, out TicketPriorities currentPriority);
+
+                    if (!isSuccessful || currentPriority == null)
+                    {
+                        throw new Exception("something bad happened");
+                    }
+
+                    context.TicketPriorities.AddOrUpdate(p => p.PriorityString, currentPriority);
+                }
+            }
+            context.SaveChanges();
+
+
+            List<int> TicketTypesList = Enum.GetValues(typeof(TicketTypesEnum)).Cast<int>().ToList();
+            if (context.TicketTypes.Count() != TicketTypesList.Count)
+            {
+                foreach (int TicketTypeId in TicketTypesList)
+                {
+                    bool isSuccessful = CONSTANTS.TicketTypes.TryGetValue((TicketTypesEnum)TicketTypeId, out TicketTypes currentType);
+
+                    if (!isSuccessful || currentType == null)
+                    {
+                        throw new Exception("something bad happened");
+                    }
+
+                    context.TicketTypes.AddOrUpdate(p => p.TypeString, currentType);
+                }
+            }
+            context.SaveChanges();
+
+
+            List<int> TicketStatusesList = Enum.GetValues(typeof(TicketStatusesEnum)).Cast<int>().ToList();
+            if (context.TicketStatuses.Count() != TicketStatusesList.Count)
+            {
+                foreach (int TicketStatusId in TicketStatusesList)
+                {
+                    bool isSuccessful = CONSTANTS.TicketStatuses.TryGetValue((TicketStatusesEnum)TicketStatusId, out TicketStatuses currentStatus);
+
+                    if (!isSuccessful || currentStatus == null)
+                    {
+                        throw new Exception("something bad happened");
+                    }
+
+                    context.TicketStatuses.AddOrUpdate(p => p.StatusString, currentStatus);
+                }
+            }
+            context.SaveChanges();
         }
 
         private void CreateDefaultRoles(ApplicationDbContext context)

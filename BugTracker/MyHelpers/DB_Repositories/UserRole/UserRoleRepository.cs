@@ -4,10 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using Microsoft.Owin.Builder;
 using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
-using System.Data.Entity;
 using System.Web;
 
 namespace BugTracker.MyHelpers.DB_Repositories

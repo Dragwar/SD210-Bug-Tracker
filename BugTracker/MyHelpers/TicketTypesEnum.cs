@@ -7,7 +7,7 @@ namespace BugTracker.MyHelpers
 {
     public enum TicketTypesEnum
     {
-        Bug,
+        Bug = 1,
         Feature,
         Database,
         Support,

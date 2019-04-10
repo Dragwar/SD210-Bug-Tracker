@@ -7,7 +7,7 @@ namespace BugTracker.MyHelpers
 {
     public enum TicketPrioritiesEnum
     {
-        Low,
+        Low = 1,
         Medium,
         High,
     }

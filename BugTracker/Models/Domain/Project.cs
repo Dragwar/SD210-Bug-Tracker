@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BugTracker.Models.Domain
 {
@@ -7,7 +8,9 @@ namespace BugTracker.Models.Domain
     {
         public Guid Id { get; set; }
         public virtual List<ApplicationUser> Users { get; set; }
-        //public virtual List<Ticket> Tickets { get; set; }
+
+        //[InverseProperty(nameof(Ticket.Project))]
+        public virtual List<Ticket> Tickets { get; set; }
 
         public string Name { get; set; }
 
@@ -19,6 +22,7 @@ namespace BugTracker.Models.Domain
             Id = Guid.NewGuid();
             DateCreated = DateTime.Now;
             Users = new List<ApplicationUser>();
+            Tickets = new List<Ticket>();
         }
     }
 }

@@ -2,9 +2,10 @@
 {
     public enum UserRolesEnum
     {
-        Admin,
-        ProjectManager,
+        None,
+        Submitter,
         Developer,
-        Submitter
+        ProjectManager,
+        Admin,
     }
 }
