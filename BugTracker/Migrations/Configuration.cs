@@ -44,37 +44,62 @@ namespace BugTracker.Migrations
             CreateTestTicket(context);
 
             context.SaveChanges();
-
         }
         private void CreateTestTicket(ApplicationDbContext context)
         {
-            TicketPriorities tp = context.TicketPriorities.First(p => p.PriorityString == nameof(TicketPrioritiesEnum.Medium));
-            TicketStatuses ts = context.TicketStatuses.First(p => p.StatusString == nameof(TicketStatusesEnum.Open));
-            TicketTypes tt = context.TicketTypes.First(p => p.TypeString == nameof(TicketTypesEnum.Feature));
-            Ticket testTicket = new Ticket()
+            if (!context.Tickets.Any())
             {
+                TicketPriorities priority = context.TicketPriorities.First(p => p.PriorityString == nameof(TicketPrioritiesEnum.Medium));
+                TicketStatuses status = context.TicketStatuses.First(p => p.StatusString == nameof(TicketStatusesEnum.Open));
+                TicketTypes type = context.TicketTypes.First(p => p.TypeString == nameof(TicketTypesEnum.Feature));
+
                 //! Ran into weird bugs when using ".First()", ".Last()", and ".ElementAt()"
-                AssignedUser = context.Users.ToList()[0],
-                AssignedUserId = context.Users.ToList()[0].Id,
-                Author = context.Users.ToList()[context.Users.Count() - 1],
-                AuthorId = context.Users.ToList()[context.Users.Count() - 1].Id,
-                Title = "Test Ticket",
-                Description = "This is a test ticket",
+                ApplicationUser author = context.Users.ToList()[context.Users.Count() - 1];
+                ApplicationUser assignedUser = context.Users.ToList()[0];
 
-                PriorityId = tp.Id,
-                Priority = tp,
+                Project project = context.Projects.ToList()[0];
 
-                StatusId = ts.Id,
-                Status = ts,
+                TicketAttachments attachment = new TicketAttachments()
+                {
+                    Description = "testing attachment description",
+                    FilePath = "this is a file path",
+                    FileUrl = "this is a file url",
+                    UserId = author.Id,
+                };
 
-                TypeId = tt.Id,
-                Type = tt,
+                TicketComments comment = new TicketComments()
+                {
+                    Comment = "this is a test comment",
+                    UserId = assignedUser.Id,
+                };
 
-                ProjectId = context.Projects.ToList()[0].Id,
-                Project = context.Projects.ToList()[0]
-            };
+                Ticket testTicket = new Ticket()
+                {
+                    AssignedUser = assignedUser,
+                    AssignedUserId = assignedUser.Id,
+                    Author = author,
+                    AuthorId = author.Id,
+                    Title = "Test Ticket",
+                    Description = "This is a test ticket",
 
-            context.Tickets.AddOrUpdate(t => t.Title, testTicket);
+                    PriorityId = priority.Id,
+                    Priority = priority,
+
+                    StatusId = status.Id,
+                    Status = status,
+
+                    TypeId = type.Id,
+                    Type = type,
+
+                    ProjectId = project.Id,
+                    Project = project,
+
+                    Attachments = new List<TicketAttachments>() { attachment },
+                    Comments = new List<TicketComments>() { comment },
+                };
+
+                context.Tickets.AddOrUpdate(t => t.Title, testTicket);
+            }
         }
         private void CreateTicketPropsAndSave(ApplicationDbContext context)
         {
@@ -244,27 +269,41 @@ namespace BugTracker.Migrations
         private void PopulateDefaultProjectsAndSave(BugTracker.Models.ApplicationDbContext context, List<ApplicationUser> initialUsers)
         {
             // make one default post for all initial users
-            for (int i = 0; i < initialUsers.Count; i++)
+            foreach (ApplicationUser user in initialUsers)
             {
-                string name = $"{initialUsers[i].UserName.Replace("@mybugtracker.com", "")}'s Project";
+                //List<string> userRoleNames = (from role in context.Roles
+                //                              join r in user.Roles
+                //                              on role.Id equals r.RoleId
+                //                              select role.Name).ToList();
+                //
+                //List<string> userRoleNames = context
+                //    .Roles.Join( // inner list/table
+                //    user.Roles, // outer list/table
+                //    role => role.Id, // (inner) property to compare
+                //    userRole => userRole.RoleId, // (outer) property to compare
+                //    (r, ur) => r.Name) // (select) this is basically a ".Select()" statement
+                //    .ToList();
 
-                Project newProject = new Project()
-                {
-                    Name = name,
-                    Users = new List<ApplicationUser>() { initialUsers[i] },
-                };
+                List<string> userRoleNames = context.Roles
+                    .ToList()
+                    .Join(user.Roles, role => role.Id, userRole => userRole.RoleId, (r, ur) => r.Name)
+                    .ToList();
 
-                if ((i + 1) < initialUsers.Count)
+                if ((userRoleNames.Contains(nameof(UserRolesEnum.Admin)) || userRoleNames.Contains(nameof(UserRolesEnum.ProjectManager))) && !user.Projects.Any())
                 {
-                    newProject.Users.Add(initialUsers[i + 1]);
+                    string name = $"{user.UserName.Replace("@mybugtracker.com", "")}'s Project";
+
+                    Project newProject = new Project()
+                    {
+                        Name = name,
+                        Users = new List<ApplicationUser>() { user },
+                    };
+
+                    user.Projects.Add(newProject);
+
+                    // Add new post to database if the name of the post doesn't match any in the database
+                    context.Projects.AddOrUpdate(post => post.Name, newProject);
                 }
-                else if ((i - 1) >= 0)
-                {
-                    newProject.Users.Add(initialUsers[i - 1]);
-                }
-
-                // Add new post to database if the name of the post doesn't match any in the database
-                context.Projects.AddOrUpdate(post => post.Name, newProject);
             }
 
             // Save changes made above to the database

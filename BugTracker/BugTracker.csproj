@@ -185,6 +185,8 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Domain\Project.cs" />
     <Compile Include="Models\Domain\Ticket.cs" />
+    <Compile Include="Models\Domain\TicketAttachments.cs" />
+    <Compile Include="Models\Domain\TicketComments.cs" />
     <Compile Include="Models\Domain\TicketPriorities.cs" />
     <Compile Include="Models\Domain\TicketStatuses.cs" />
     <Compile Include="Models\Domain\TicketTypes.cs" />

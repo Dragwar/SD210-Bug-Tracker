@@ -11,5 +11,5 @@ INNER JOIN
 		ON [users].[Id] = [usersXroles].[UserId]
 
 INNER JOIN
-	[AspNetRoles] AS [roles] 
+	[AspNetRoles] AS [roles]
 		ON [usersXroles].[RoleId] = [roles].[Id]

@@ -1,11 +1,13 @@
 SELECT
 	[T].[Title],
 	[T].[Description],
-	[T].[DateCreated],
-	[T].[DateUpdated],
+	--[T].[DateCreated],
+	--[T].[DateUpdated],
 	[TP].[Priority],
 	[TS].[Status],
 	[TT].[Type],
+	[TA].[Description] AS [Attachment Description],
+	[TC].[Comment] AS [Comment],
 	[Project].[Name] AS [Project Name],
 	[Author].[DisplayName] AS [Author DisplayName],
 	[Author].[Email] AS [Author Email],
@@ -26,6 +28,13 @@ INNER JOIN
 	[TicketTypes] AS [TT] 
 		ON [TT].[Id] = [T].[TypeId]
 
+INNER JOIN
+	[TicketAttachments] AS [TA] 
+		ON [TA].[TicketId] = [T].[Id]
+
+INNER JOIN
+	[TicketComments] AS [TC] 
+		ON [TC].[TicketId] = [T].[Id]
 INNER JOIN
 	[Projects] AS [Project] 
 		ON [Project].[Id] = [T].[ProjectId]
