@@ -490,6 +490,7 @@
     <Content Include="Scripts\TemplateScripts\light-bootstrap-dashboard.js" />
     <Content Include="SQL\CompareUserXProject.sql" />
     <Content Include="SQL\CompareUserXRoles.sql" />
+    <Content Include="SQL\TicketInfo.sql" />
     <Content Include="Template\assets\css\animate.min.css" />
     <Content Include="Template\assets\css\bootstrap.min.css" />
     <Content Include="Template\assets\css\demo.css" />
