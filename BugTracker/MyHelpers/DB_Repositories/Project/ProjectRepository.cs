@@ -10,7 +10,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
     [NotMapped]
     public class ProjectRepository
     {
-        private ApplicationDbContext DBContext { get; set; }
+        private readonly ApplicationDbContext DBContext;
 
         public ProjectRepository(ApplicationDbContext dBContext)
         {

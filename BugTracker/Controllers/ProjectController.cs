@@ -14,10 +14,10 @@ namespace BugTracker.Controllers
 {
     public class ProjectController : Controller
     {
-        private ApplicationDbContext DbContext { get; }
-        private ProjectRepository ProjectRepository { get; }
-        private UserRepository UserRepository { get; }
-        private UserRoleRepository UserRoleRepository { get; }
+        private readonly ApplicationDbContext DbContext;
+        private readonly ProjectRepository ProjectRepository;
+        private readonly UserRepository UserRepository;
+        private readonly UserRoleRepository UserRoleRepository;
 
         public ProjectController()
         {

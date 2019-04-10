@@ -26,8 +26,8 @@ namespace BugTracker.Controllers
             HomeIndexViewModel model;
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.Identity.GetUserId();
-                var currentUser = UserRepository.GetUserById(userId);
+                string userId = User.Identity.GetUserId();
+                ApplicationUser currentUser = UserRepository.GetUserById(userId);
                 model = HomeIndexViewModel.CreateNewViewModel(currentUser, DbContext, 5);
             }
             else

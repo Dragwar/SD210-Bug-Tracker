@@ -13,9 +13,9 @@ namespace BugTracker.Controllers
     [Authorize(Roles = nameof(UserRolesEnum.Admin))]
     public class UserRoleController : Controller
     {
-        public ApplicationDbContext DbContext { get; set; }
-        public UserRepository UserRepository { get; set; }
-        public UserRoleRepository UserRoleRepository { get; set; }
+        public readonly ApplicationDbContext DbContext;
+        public readonly UserRepository UserRepository;
+        public readonly UserRoleRepository UserRoleRepository;
 
         public UserRoleController()
         {

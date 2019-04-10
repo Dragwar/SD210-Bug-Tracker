@@ -1,10 +1,8 @@
 ﻿using BugTracker.Models;
+using BugTracker.MyHelpers.DB_Repositories;
 using BugTracker.MyHelpers.DB_Repositories.Ticket;
 using Microsoft.AspNet.Identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace BugTracker.Controllers
@@ -13,18 +11,19 @@ namespace BugTracker.Controllers
     {
         public readonly ApplicationDbContext DbContext;
         public readonly TicketRepository TicketRepository;
+        public readonly UserRoleRepository UserRoleRepository;
 
         public TicketController()
         {
             DbContext = new ApplicationDbContext();
             TicketRepository = new TicketRepository(DbContext);
+            UserRoleRepository = new UserRoleRepository(DbContext);
         }
 
         // GET: Ticket
         public ActionResult Index()
         {
             string userId = User.Identity.GetUserId();
-
 
 
             return View();

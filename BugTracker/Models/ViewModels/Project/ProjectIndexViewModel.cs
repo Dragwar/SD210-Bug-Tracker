@@ -15,7 +15,7 @@ namespace BugTracker.Models.ViewModels.Project
 
         [Display(Name = "Total Tickets")]
         public int TicketCount { get; set;/*get => TicketCount; set => TicketCount = value < 0 ? 0 : value;*/ } // TODO: Change in second deliverable
-        public static ProjectIndexViewModel CreateNewViewModel(BugTracker.Models.Domain.Project project)
+        public static ProjectIndexViewModel CreateNewViewModel(Domain.Project project)
         {
             if (project == null)
             {

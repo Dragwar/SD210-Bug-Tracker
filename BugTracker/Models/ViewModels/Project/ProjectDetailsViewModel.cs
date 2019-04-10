@@ -19,7 +19,7 @@ namespace BugTracker.Models.ViewModels.Project
         [Display(Name = "Total Tickets")]
         public int TicketCount => 0;
 
-        public static ProjectDetailsViewModel CreateNewViewModel(BugTracker.Models.Domain.Project project, ApplicationDbContext dbContext)
+        public static ProjectDetailsViewModel CreateNewViewModel(Domain.Project project, ApplicationDbContext dbContext)
         {
             if (project == null)
             {
