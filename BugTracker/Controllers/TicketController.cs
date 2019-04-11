@@ -1,8 +1,11 @@
 ﻿using BugTracker.Models;
+using BugTracker.Models.ViewModels.Ticket;
 using BugTracker.MyHelpers.DB_Repositories;
 using BugTracker.MyHelpers.DB_Repositories.Ticket;
 using Microsoft.AspNet.Identity;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace BugTracker.Controllers
@@ -24,9 +27,12 @@ namespace BugTracker.Controllers
         public ActionResult Index()
         {
             string userId = User.Identity.GetUserId();
+            var project = DbContext.Projects.First();
+            List<TicketIndexViewModel> model = DbContext.Tickets.ToList()
+                .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                .ToList();
 
-
-            return View();
+            return View(model);
         }
 
         // GET: Ticket/Details/{id}
