@@ -56,7 +56,7 @@
                                 {
                                     <i style="font-size: 125%; font-weight: 500; position: relative; top: 3px;" class="pe-7s-folder"></i>
                                     <a href="@Url.Action(nameof(ProjectController.Index), "Project")">
-                                        <span>You are assigned to @Model.TotalProjectCount project(s)</span>
+                                        <span>You currently are assigned to @Model.TotalProjectCount @(Model.TotalProjectCount > 1 ? $"projects" : "project")</span>
                                     </a>
                                 }
                             </div>
@@ -72,31 +72,104 @@
         </div>
     }
 
-    <!-- [Widget]:Users Behavior -->
-    <!--
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="header">
-                <h4 class="title">Users Behavior</h4>
-                <p class="category">24 Hours performance</p>
-            </div>
-            <div class="content">
-                @*<div id="chartHours" class="ct-chart"></div>*@
-                <div class="footer">
-                    <div class="legend">
-                        <i class="fa fa-circle text-info"></i> Open
-                        <i class="fa fa-circle text-danger"></i> Click
-                        <i class="fa fa-circle text-warning"></i> Click Second Time
-                    </div>
-                    <hr>
-                    <div class="stats">
-                        <i class="fa fa-history"></i> Updated 3 minutes ago
-                    </div>
+    @if (User.IsInRole(nameof(UserRolesEnum.Submitter)))
+    {
+        <!-- [Widget]:Created Tickets -->
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Created Tickets</h4>
+                    <p class="category">You have created @Model.TotalCreatedTicketCount @(Model.TotalCreatedTicketCount > 1 ? $"tickets" : "ticket")</p>
+                </div>
+                <div class="content">
+                    @if (Model.LatestCreatedTickets.Any())
+                    {
+                        foreach (TicketIndexViewModel ticket in Model.LatestCreatedTickets)
+                        {
+                            <!--TODO: style bug -> when user clicks this link, the _Layout.cshtml page doesn't update the nav-links-->
+                            <div style="font-size: 16px;">
+                                <a id="project-link" href="@Url.Action(nameof(TicketController.Details), "Ticket", new { Id = ticket.Id })">
+                                    @ticket.Title - <i style="font-size: 85%;" class="fa fa-history"></i>
+                                    <span style="font-size: 75%;" class="small">
+                                        @(ticket.DateUpdated.HasValue ? ticket.DateUpdated.Value.GetDateTimeFromNow() : ticket.DateCreated.GetDateTimeFromNow())
+                                    </span>
+                                </a>
+                            </div>
+                        }
+
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @if (Model.TotalCreatedTicketCount > 0)
+                                {
+                                    <i style="font-size: 125%; font-weight: 500; position: relative; top: 3px;" class="pe-7s-ticket"></i>
+                                    <a href="@Url.Action(nameof(ProjectController.Index), "ticket")">
+                                        <span>
+                                            View the @Model.TotalCreatedTicketCount @(Model.TotalCreatedTicketCount > 1 ? $"tickets" : "ticket") that you have created
+                                        </span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-warning">You haven't created a ticket yet</p>
+                    }
                 </div>
             </div>
         </div>
-    </div>
-    -->
+    }
+
+    @if (User.IsInRole(nameof(UserRolesEnum.Developer)))
+    {
+        <!-- [Widget]:Assigned Tickets -->
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Assigned Tickets</h4>
+                    <p class="category">You are assigned to @Model.TotalAssignedTicketCount @(Model.TotalAssignedTicketCount > 1 ? $"tickets" : "ticket")</p>
+                </div>
+                <div class="content">
+                    @if (Model.LatestAssignedTickets.Any())
+                    {
+                        foreach (TicketIndexViewModel ticket in Model.LatestAssignedTickets)
+                        {
+                            <!--TODO: style bug -> when user clicks this link, the _Layout.cshtml page doesn't update the nav-links-->
+                            <div style="font-size: 16px;">
+                                <a id="project-link" href="@Url.Action(nameof(TicketController.Details), "Ticket", new { Id = ticket.Id })">
+                                    @ticket.Title - <i style="font-size: 85%;" class="fa fa-history"></i>
+                                    <span style="font-size: 75%;" class="small">
+                                        @(ticket.DateUpdated.HasValue ? ticket.DateUpdated.Value.GetDateTimeFromNow() : ticket.DateCreated.GetDateTimeFromNow())
+                                    </span>
+                                </a>
+                            </div>
+                        }
+
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @if (Model.TotalAssignedTicketCount > 0)
+                                {
+                                    <i style="font-size: 125%; font-weight: 500; position: relative; top: 3px;" class="pe-7s-ticket"></i>
+                                    <a href="@Url.Action(nameof(ProjectController.Index), "ticket")">
+                                        <span>
+                                            View the @Model.TotalAssignedTicketCount @(Model.TotalAssignedTicketCount > 1 ? $"tickets" : "ticket") that you are assigned to
+                                        </span>
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-warning">You aren't assigned to any tickets yet</p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
     <!-- [Widget]:2014 Sales -->
     <!--
     <div class="col-lg-6">

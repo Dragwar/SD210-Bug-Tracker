@@ -74,11 +74,11 @@
                                     @Html.DisplayFor(modelItem => project.DateUpdated)
                                 </td>
                                 @*
-                                                    <td>
-                                                        @Html.ActionLink("Edit", nameof(ProjectController.Edit), new { id = project.Id }) |
-                                                        @Html.ActionLink("Details", nameof(ProjectController.Details), new { id = project.Id }) @*|
-                                    @Html.ActionLink("Delete", "Delete", new { id = project.Id }) @
-                                                    </td>
+                                    <td>
+                                        @Html.ActionLink("Edit", nameof(ProjectController.Edit), new { id = project.Id }) |
+                                        @Html.ActionLink("Details", nameof(ProjectController.Details), new { id = project.Id }) @*|
+                                        @Html.ActionLink("Delete", "Delete", new { id = project.Id }) @
+                                    </td>
                                 *@
                                 <td>
                                     <a class="small text-muted" href="@Url.Action(nameof(ProjectController.Edit), new { id = project.Id })">
