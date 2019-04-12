@@ -54,10 +54,10 @@ namespace BugTracker.Migrations
                 TicketTypes type = context.TicketTypes.First(p => p.TypeString == nameof(TicketTypesEnum.Feature));
 
                 //! Ran into weird bugs when using ".First()", ".Last()", and ".ElementAt()"
-                ApplicationUser author = context.Users.ToList()[context.Users.Count() - 1];
-                ApplicationUser assignedUser = context.Users.ToList()[0];
+                ApplicationUser author = context.Users.First(user => user.DisplayName.ToLower().Contains("submitter"));
+                ApplicationUser assignedUser = context.Users.First(user => user.DisplayName.ToLower().Contains("developer"));
 
-                Project project = context.Projects.ToList()[0];
+                Project project = author.Projects.FirstOrDefault() ?? context.Projects.First();
 
                 TicketAttachments attachment = new TicketAttachments()
                 {
