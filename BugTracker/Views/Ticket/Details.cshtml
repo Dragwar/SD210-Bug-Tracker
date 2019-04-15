@@ -1,0 +1,230 @@
+﻿@model TicketDetailsViewModel
+@{
+    ViewBag.Title = $"{Model.Title}";
+}
+
+<div class="col-lg-4">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">@ViewBag.Title</h4>
+            <p class="category"></p>
+        </div>
+        <div class="content">
+
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.Title) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.Title)
+                </span>
+            </div>
+            <br />
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.Status) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.Status)
+                </span>
+            </div>
+            <br />
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.Priority) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.Priority)
+                </span>
+            </div>
+            <br />
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.Type) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.Type)
+                </span>
+            </div>
+            <br />
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.Author) :
+                </strong>
+                <span>
+                    @Model.Author.DisplayName
+                </span>
+            </div>
+            <br />
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.DateCreated) :
+                </strong>
+                <span>
+                    @Html.DisplayFor(model => model.DateCreated)
+                </span>
+            </div>
+
+            @if (Model.DateUpdated.HasValue)
+            {
+                <br />
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.DateUpdated) :
+                    </strong>
+                    <span>
+                        @Html.DisplayFor(model => model.DateUpdated)
+                    </span>
+                </div>
+            }
+
+            <div class="footer">
+                <div class="legend">
+                    @*
+                        <p>
+                            <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
+                        </p>
+                        <p>
+                            @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                            {
+                                <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
+                            }
+                        </p>
+                        <p>
+                            <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
+                        </p>
+                    *@
+                </div>
+                <hr />
+                <div class="stats">
+                    @if (Model.DateUpdated.HasValue)
+                    {
+                        <i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span>
+                    }
+                    else
+                    {
+                        <i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="col-lg-8">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">Ticket Description</h4>
+            <p class="category"></p>
+        </div>
+        <div class="content">
+            <div>@Model.Description</div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Author</h4>
+                <p class="category"></p>
+            </div>
+            <div class="content">
+                <p>@Model.Author.DisplayName - <em>@Model.Author.Email</em></p>
+                <p>Roles: <em>@(string.Join(", ", Model.Author.Roles.Select(role => role.Name)))</em></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Assigned User</h4>
+                <p class="category"></p>
+            </div>
+            <div class="content">
+                @if (Model.AssignedUser != null)
+                {
+                    <p>@Model.AssignedUser.DisplayName - <em>@Model.AssignedUser.Email</em></p>
+                    <p>Roles: <em>@(string.Join(", ", Model.AssignedUser.Roles.Select(role => role.Name)))</em></p>
+                }
+                else
+                {
+                    <p class="text-danger">no assigned user yet</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div>
+    <!--Attachments-->
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Attachments (@Model.Attachments.Count)</h4>
+                <p class="category">
+                    <!--TODO: Check if user is the ticket owner before displaying this-->
+                    <a href="@Url.Action("Attachment", "Ticket")">
+                        <i class="pe-7s-upload" style="font-size:125%;font-weight:600;position:relative; top:3px;"></i>
+                        Add attachment
+                    </a>
+                </p>
+            </div>
+            <div class="content">
+                @foreach (var attachment in Model.Attachments)
+                {
+                    <!--Attachment-->
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">@attachment.User.Email</h4>
+                            <p class="category">@attachment.DateCreated.GetDateAndTime()</p>
+                        </div>
+                        <div class="content">
+                            <pre>@attachment.Description</pre>
+                            <pre>@attachment.FileUrl</pre>
+                            <pre>@attachment.FilePath</pre>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!--Comments-->
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Comments (@Model.Comments.Count)</h4>
+                <p class="category">
+                    <!--TODO: Check who can leave a comment before displaying this link-->
+                    <a href="@Url.Action("Comment", "Ticket")">
+                        <i class="pe-7s-chat" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
+                        Leave a comment
+                    </a>
+                </p>
+            </div>
+            <div class="content">
+                @foreach (var comment in Model.Comments)
+                {
+                    <!--Comment-->
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">@comment.User.Email</h4>
+                            <p class="category">@comment.DateCreated.GetDateAndTime()</p>
+                        </div>
+                        <div class="content">
+                            <pre>@comment.Comment</pre>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

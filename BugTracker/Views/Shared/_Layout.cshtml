@@ -81,6 +81,14 @@
                             </a>
                         </li>
                     }
+
+                    <li class="my-page-link" id="ticket-index">
+                        @*<a href="./Template/icons.html">*@
+                        <a href="@Url.Action(nameof(TicketController.Index), "Ticket")">
+                            <i class="pe-7s-ticket"></i>
+                            <p>All Tickets</p>
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>
