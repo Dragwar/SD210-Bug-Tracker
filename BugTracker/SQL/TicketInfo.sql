@@ -16,33 +16,33 @@ SELECT
 FROM 
 	[Tickets] AS [T]
 
-INNER JOIN 
+LEFT JOIN 
 	 [TicketPriorities] AS [TP]
 		ON [T].[PriorityId] = [TP].[Id]
 
-INNER JOIN
+LEFT JOIN
 	[TicketStatuses] AS [TS] 
 		ON [TS].[Id] = [T].[StatusId]
 
-INNER JOIN
+LEFT JOIN
 	[TicketTypes] AS [TT] 
 		ON [TT].[Id] = [T].[TypeId]
 
-INNER JOIN
+LEFT JOIN
 	[TicketAttachments] AS [TA] 
 		ON [TA].[TicketId] = [T].[Id]
 
-INNER JOIN
+LEFT JOIN
 	[TicketComments] AS [TC] 
 		ON [TC].[TicketId] = [T].[Id]
-INNER JOIN
+LEFT JOIN
 	[Projects] AS [Project] 
 		ON [Project].[Id] = [T].[ProjectId]
 		
-INNER JOIN
+LEFT JOIN
 	[AspNetUsers] AS [Author] 
 		ON [Author].[Id] = [T].[AuthorId]
 		
-INNER JOIN
+LEFT JOIN
 	[AspNetUsers] AS [AssignedUser] 
 		ON [AssignedUser].[Id] = [T].[AssignedUserId]
