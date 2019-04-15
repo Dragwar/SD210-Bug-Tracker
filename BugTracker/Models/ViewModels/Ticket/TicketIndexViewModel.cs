@@ -59,9 +59,9 @@ namespace BugTracker.Models.ViewModels.Ticket
                     ProjectName = ticket.Project.Name,
                 };
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception();
+                throw new Exception($"Something went wrong\n {e.Message}");
             }
         }
     }

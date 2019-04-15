@@ -123,9 +123,9 @@ namespace BugTracker.Models.ViewModels.UserRole
 
                 return model;
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception();
+                throw new Exception($"Something went wrong\n {e.Message}");
             }
         }
     }

@@ -35,9 +35,9 @@ namespace BugTracker.Models.ViewModels
             {
                 throw new ArgumentException($"{e.Message}");
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception("Something bad happened");
+                throw new Exception($"Something went wrong\n {e.Message}");
             }
         }
     }

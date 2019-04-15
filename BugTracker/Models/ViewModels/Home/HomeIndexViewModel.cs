@@ -97,9 +97,9 @@ namespace BugTracker.Models.ViewModels.Home
             {
                 throw new ArgumentException($"{e.Message}");
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception("Something bad happened");
+                throw new Exception($"Something bad happened\n {e}");
             }
         }
     }

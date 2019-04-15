@@ -85,9 +85,9 @@ namespace BugTracker.Models.ViewModels.Project
 
                 return model;
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception();
+                throw new Exception(e.Message);
             }
         }
     }

@@ -45,16 +45,16 @@ namespace BugTracker.Models.ViewModels.Ticket
                     Comments = ticket?.Comments ?? new List<TicketComments>(),
                     Attachments = ticket?.Attachments ?? new List<TicketAttachments>(),
                     DateCreated = ticket.DateCreated,
-                    DateUpdated  = ticket.DateUpdated,
+                    DateUpdated = ticket.DateUpdated,
                     Author = HelperUserViewModel.CreateNewViewModel(ticket.Author, dbContext),
-                    AssignedUser = HelperUserViewModel.CreateNewViewModel(ticket.AssignedUser, dbContext),
+                    AssignedUser = ticket.AssignedUser == null ? null : HelperUserViewModel.CreateNewViewModel(ticket.AssignedUser, dbContext),
                     Project = ticket.Project,
                     ProjectId = ticket.ProjectId,
                 };
             }
-            catch
+            catch (Exception e)
             {
-                throw new Exception();
+                throw new Exception($"Something went wrong\n {e.Message}");
             }
         }
     }

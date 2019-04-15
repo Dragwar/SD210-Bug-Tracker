@@ -41,6 +41,10 @@ namespace BugTracker.Models.ViewModels.Project
             {
                 throw new ArgumentException($"{e.Message}");
             }
+            catch (Exception e)
+            {
+                throw new Exception($"Something went wrong\n {e.Message}");
+            }
         }
     }
 }
