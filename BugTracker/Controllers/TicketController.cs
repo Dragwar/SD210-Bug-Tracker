@@ -35,9 +35,8 @@ namespace BugTracker.Controllers
         public ActionResult Index()
         {
             string userId = User.Identity.GetUserId();
-            ApplicationUser currentUser;
+            ApplicationUser currentUser = UserRepository.GetUserById(userId);
 
-            currentUser = UserRepository.GetUserById(userId);
             if (currentUser == null)
             {
                 return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
@@ -76,15 +75,15 @@ namespace BugTracker.Controllers
 
         // GET: Ticket/Details/{id}
         [BugTrackerAuthorize]
-        public ActionResult Details(Guid id)
+        public ActionResult Details(Guid? id)
         {
             ViewBag.OverrideCurrentPage = "ticket-index";
-            if (Guid.Empty == id || string.IsNullOrWhiteSpace(id.ToString()))
+            if (!id.HasValue || Guid.Empty == id.Value || string.IsNullOrWhiteSpace(id.Value.ToString()))
             {
                 return RedirectToAction(nameof(TicketController.Index));
             }
 
-            TicketDetailsViewModel model = TicketDetailsViewModel.CreateNewViewModel(TicketRepository.GetTicket(id), DbContext);
+            TicketDetailsViewModel model = TicketDetailsViewModel.CreateNewViewModel(TicketRepository.GetTicket(id.Value), DbContext);
 
             return View(model);
         }

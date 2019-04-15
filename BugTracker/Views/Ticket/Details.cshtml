@@ -55,6 +55,18 @@
                     @Model.Author.DisplayName
                 </span>
             </div>
+            @if (Model.AssignedUser != null)
+            {
+                <br />
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.AssignedUser) :
+                    </strong>
+                    <span>
+                        @Model.AssignedUser.DisplayName
+                    </span>
+                </div>
+            }
             <br />
             <div>
                 <strong>
@@ -144,7 +156,22 @@
         <div class="card">
             <div class="header">
                 <h4 class="title">Assigned User</h4>
-                <p class="category"></p>
+                <p class="category">
+                    @if (Model.AssignedUser == null && (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))))
+                    {
+                        <a href="@Url.Action("AssignUserToTicket")">
+                            <i class="pe-7s-add-user" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
+                            <span>Assign a user to this ticket</span>
+                        </a>
+                    }
+                    else if (Model.AssignedUser != null && (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))))
+                    {
+                        <a href="@Url.Action("AssignUserToTicket")" class="text-warning">
+                            <i class="pe-7s-users" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
+                            <span>Assign a different user to this ticket </span>
+                        </a>
+                    }
+                </p>
             </div>
             <div class="content">
                 @if (Model.AssignedUser != null)
