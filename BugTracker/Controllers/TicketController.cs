@@ -1,5 +1,6 @@
 ﻿using BugTracker.Models;
 using BugTracker.Models.Domain;
+using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels.Ticket;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
@@ -30,7 +31,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Ticket
-        [Authorize]
+        [BugTrackerAuthorize]
         public ActionResult Index()
         {
             string userId = User.Identity.GetUserId();
@@ -74,6 +75,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Ticket/Details/{id}
+        [BugTrackerAuthorize]
         public ActionResult Details(Guid id)
         {
             ViewBag.OverrideCurrentPage = "ticket-index";
@@ -88,7 +90,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Ticket/Create
-        [Authorize(Roles = nameof(UserRolesEnum.Submitter))]
+        [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Submitter))]
         public ActionResult Create()
         {
             ViewBag.OverrideCurrentPage = "ticket-index";
@@ -124,7 +126,7 @@ namespace BugTracker.Controllers
 
         // POST: Ticket/Create
         [HttpPost]
-        [Authorize(Roles = nameof(UserRolesEnum.Submitter))]
+        [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Submitter))]
         public ActionResult Create(TicketCreateViewModel formData)
         {
             if (formData == null || !ModelState.IsValid || !formData.Type.HasValue || !formData.Priority.HasValue)
@@ -245,6 +247,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Ticket/Edit/{id}
+        [BugTrackerAuthorize]
         public ActionResult Edit(int id)
         {
             ViewBag.OverrideCurrentPage = "ticket-index";
@@ -253,6 +256,7 @@ namespace BugTracker.Controllers
 
         // POST: Ticket/Edit/{id}
         [HttpPost]
+        [BugTrackerAuthorize]
         public ActionResult Edit(int id, FormCollection collection)
         {
             try

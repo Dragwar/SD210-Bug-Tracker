@@ -1,0 +1,36 @@
+﻿
+@{
+    ViewBag.Title = "Unauthorized Request";
+}
+
+<div @*class="col-lg-4"*@>
+    <div class="card">
+        <div class="header">
+            <h4 class="title text-danger">
+                Access Denied
+            </h4>
+            <p class="category">
+                @ViewBag.Title
+            </p>
+        </div>
+        <div class="content">
+            @* CONTENT HERE *@
+            @if (!string.IsNullOrWhiteSpace(ViewBag.PermissionError))
+            {
+                <p class="text-warning">@ViewBag.PermissionError</p>
+            }
+
+            @* FOOTER HERE *@
+            <div class="footer">
+                <div class="legend">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                </div>
+                <hr />
+                <div class="stats">
+                    <i class="pe-7s-key" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i> @Html.ActionLink("Go To Login Page", nameof(AccountController.Login), "Account")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

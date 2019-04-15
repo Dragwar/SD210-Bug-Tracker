@@ -44,6 +44,7 @@ namespace BugTracker.Controllers
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
+            ViewBag.PermissionError = TempData?["PermissionError"]?.ToString();
             return View();
         }
 

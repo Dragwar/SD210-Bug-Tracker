@@ -191,6 +191,7 @@
     <Compile Include="Models\Domain\TicketPriorities.cs" />
     <Compile Include="Models\Domain\TicketStatuses.cs" />
     <Compile Include="Models\Domain\TicketTypes.cs" />
+    <Compile Include="Models\Filters\Authorize\BugTrackerAuthorize.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\ViewModels\Home\HomeIndexViewModel.cs" />
@@ -622,6 +623,7 @@
     <Content Include="Views\Ticket\Index.cshtml" />
     <Content Include="Views\Ticket\Details.cshtml" />
     <Content Include="Views\Ticket\Create.cshtml" />
+    <Content Include="Views\Shared\UnauthorizedRequest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

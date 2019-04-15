@@ -1,4 +1,5 @@
 ﻿using BugTracker.Models;
+using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels;
 using BugTracker.Models.ViewModels.UserRole;
 using BugTracker.MyHelpers;
@@ -10,7 +11,7 @@ using System.Web.Mvc;
 
 namespace BugTracker.Controllers
 {
-    [Authorize(Roles = nameof(UserRolesEnum.Admin))]
+    [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Admin))]
     public class UserRoleController : Controller
     {
         public readonly ApplicationDbContext DbContext;

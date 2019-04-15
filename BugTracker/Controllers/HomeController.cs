@@ -44,5 +44,11 @@ namespace BugTracker.Controllers
 
             return View(model);
         }
+
+        public ActionResult UnauthorizedRequest()
+        {
+            ViewBag.PermissionError = TempData?["PermissionError"]?.ToString();
+            return View();
+        }
     }
 }
