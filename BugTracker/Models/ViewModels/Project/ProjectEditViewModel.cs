@@ -24,9 +24,9 @@ namespace BugTracker.Models.ViewModels.Project
         [Display(Name = "Unassign Users")]
         public string[] SelectedUsersToRemove { get; set; }
 
-        public static ProjectEditViewModel CreateNewViewModel(Domain.Project project, ApplicationDbContext dbContext, UserRepository userRepository)
+        public static ProjectEditViewModel CreateNewViewModel(Domain.Project project, UserRepository userRepository)
         {
-            if (project == null || dbContext == null || userRepository == null)
+            if (project == null || userRepository == null)
             {
                 throw new ArgumentNullException();
             }
@@ -47,7 +47,7 @@ namespace BugTracker.Models.ViewModels.Project
                     Disabled = false,
                 };
 
-                foreach (ApplicationUser user in userRepository.GetAllUsers().ToList())
+                foreach (ApplicationUser user in userRepository.GetAllUsers())
                 {
                     if (project.Users.Contains(user))
                     {

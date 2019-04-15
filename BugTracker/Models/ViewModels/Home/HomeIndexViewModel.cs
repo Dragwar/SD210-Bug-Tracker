@@ -52,7 +52,7 @@ namespace BugTracker.Models.ViewModels.Home
                 //! get created tickets (Submitter)
                 numberOfCreatedTickets = applicationUser.CreatedTickets?.Count ?? 0;
                 latestCreatedTickets = applicationUser.CreatedTickets?
-                   .OrderByDescending(project => project?.DateUpdated ?? project.DateCreated)
+                   .OrderByDescending(ticket => ticket?.DateUpdated ?? ticket.DateCreated)
                    .Take(latestCreatedTicketIntakeLimit)
                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                    .ToList() ?? new List<TicketIndexViewModel>();
@@ -63,8 +63,8 @@ namespace BugTracker.Models.ViewModels.Home
                 //! get assigned tickets (Developer)
                 numberOfAssignedTickets = applicationUser.AssignedTickets?.Count ?? 0;
                 latestAssignedTickets = applicationUser.AssignedTickets?
-                    .OrderByDescending(project => project?.DateUpdated ?? project.DateCreated)
-                    .Take(latestCreatedTicketIntakeLimit)
+                    .OrderByDescending(ticket => ticket?.DateUpdated ?? ticket.DateCreated)
+                    .Take(latestAssignedTicketIntakeLimit)
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList() ?? new List<TicketIndexViewModel>();
                 latestCreatedTickets = new List<TicketIndexViewModel>();

@@ -261,7 +261,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ProjectEditViewModel model = ProjectEditViewModel.CreateNewViewModel(foundProject, DbContext, UserRepository);
+            ProjectEditViewModel model = ProjectEditViewModel.CreateNewViewModel(foundProject, UserRepository);
 
             return View(model);
         }
@@ -298,7 +298,7 @@ namespace BugTracker.Controllers
                         {
                             return RedirectToAction(nameof(Index));
                         }
-                        model = ProjectEditViewModel.CreateNewViewModel(project, DbContext, UserRepository);
+                        model = ProjectEditViewModel.CreateNewViewModel(project, UserRepository);
                     }
                     else
                     {
