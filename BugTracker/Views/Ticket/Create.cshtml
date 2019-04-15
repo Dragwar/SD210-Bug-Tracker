@@ -1,0 +1,118 @@
+﻿@model TicketCreateViewModel
+
+@{
+    ViewBag.Title = "Create";
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+
+<div class="col-lg-6">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">
+                @ViewBag.Title
+            </h4>
+            <p class="category">
+                @* SUBTITLE HERE *@
+            </p>
+        </div>
+        <div class="content">
+            @* CONTENT HERE *@
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.AuthorId)
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <span style="margin-right: 4px;"></span>
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", rows = "3", cols = "3", style = "min-height: 40px; resize: vertical;" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Priority, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EnumDropDownListFor(model => model.Priority, "Ticket Priority", new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Priority, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EnumDropDownListFor(model => model.Type, "Ticket Type", new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)))
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EnumDropDownListFor(model => model.Status, "Ticket Status", new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    }
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ProjectId, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.DropDownListFor(model => model.ProjectId, Model.Projects, "Choose a project", new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Create Ticket" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* FOOTER HERE *@
+            <div class="footer">
+                <hr />
+                <div class="stats">
+                    <i class="pe-7s-attention" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i>
+                    <span class="text-danger">Discard Draft</span> and Go To
+                    [
+                    <span>
+                        @Html.ActionLink("All Tickets", nameof(TicketController.Index), new { }, new { @class = "text-warning" })
+                    </span>
+                    <span>
+                        | @Html.ActionLink("My Projects", nameof(ProjectController.Index), "Project", new { }, new { @class = "text-warning" })
+                    </span>
+
+                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                    {
+                        <span>| @Html.ActionLink("All Projects", nameof(ProjectController.All), "Project", new { }, new { @class = "text-warning" })</span>
+                    }
+                    ]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
