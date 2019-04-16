@@ -33,10 +33,14 @@ namespace BugTracker.Controllers
 
         // GET: Ticket
         [BugTrackerAuthorize]
-        public ActionResult Index()
+        public ActionResult Index(string error = "")
         {
             string userId = User.Identity.GetUserId();
             ApplicationUser currentUser = UserRepository.GetUserById(userId);
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                ModelState.AddModelError("", error);
+            }
 
             if (currentUser == null)
             {
@@ -44,21 +48,21 @@ namespace BugTracker.Controllers
             }
 
             List<TicketIndexViewModel> model;
-            if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Admin) || UserRoleRepository.IsUserInRole(userId, UserRolesEnum.ProjectManager))
             {
                 //! ONLY admins/project-managers can see all tickets
                 model = TicketRepository.GetAllTickets()
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList();
             }
-            else if (User.IsInRole(nameof(UserRolesEnum.Submitter)) && !User.IsInRole(nameof(UserRolesEnum.Developer)))
+            else if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter) && !UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Developer))
             {
                 //! submitters can ONLY see their created tickets
                 model = currentUser.CreatedTickets
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList();
             }
-            else if (User.IsInRole(nameof(UserRolesEnum.Developer)) && !User.IsInRole(nameof(UserRolesEnum.Submitter)))
+            else if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Developer) && !UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter))
             {
                 //! developers can ONLY see their assigned tickets
                 model = currentUser.AssignedTickets
@@ -131,7 +135,7 @@ namespace BugTracker.Controllers
         {
             string userId = User.Identity.GetUserId();
 
-            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter))
+            if (!UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter))
             {
                 throw new Exception("This shouldn't happen");
             }
@@ -145,16 +149,22 @@ namespace BugTracker.Controllers
                 })
                 .ToList();
 
-            if (!userProjects?.Any() == null)
+            if (userProjects == null)
             {
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
+
 
             TicketCreateViewModel model = new TicketCreateViewModel()
             {
                 AuthorId = userId,
                 Projects = userProjects,
             };
+
+            if (!model.Projects.Any())
+            {
+                return RedirectToAction(nameof(HomeController.Index), new { error = "You don't have any project to assign a ticket to.\nPLEASE CONTACT ADMIN to get assigned to a project" });
+            }
 
             return View(model);
         }
@@ -324,9 +334,9 @@ namespace BugTracker.Controllers
 
         // GET: Ticket/Edit/{id}
         [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager), nameof(UserRolesEnum.Submitter), nameof(UserRolesEnum.Developer))]
+        [OverrideCurrentNavLinkStyle("ticket-index")]
         public ActionResult Edit(Guid? id)
         {
-            ViewBag.OverrideCurrentPage = "ticket-index";
 
             TicketEditViewModel model = GenerateTicketEditViewModel(id);
             if (model == null)
@@ -361,7 +371,7 @@ namespace BugTracker.Controllers
 
                 DbContext.SaveChanges();
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { Id = foundTicket.Id });
             }
             catch (Exception e)
             {

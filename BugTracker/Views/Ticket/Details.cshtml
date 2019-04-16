@@ -10,7 +10,6 @@
             <p class="category"></p>
         </div>
         <div class="content">
-
             <div>
                 <strong>
                     @Html.DisplayNameFor(model => model.Title) :
@@ -19,7 +18,6 @@
                     @Html.DisplayFor(model => model.Title)
                 </span>
             </div>
-            <br />
             <div>
                 <strong>
                     @Html.DisplayNameFor(model => model.Status) :
@@ -28,7 +26,6 @@
                     @Html.DisplayFor(model => model.Status)
                 </span>
             </div>
-            <br />
             <div>
                 <strong>
                     @Html.DisplayNameFor(model => model.Priority) :
@@ -37,7 +34,6 @@
                     @Html.DisplayFor(model => model.Priority)
                 </span>
             </div>
-            <br />
             <div>
                 <strong>
                     @Html.DisplayNameFor(model => model.Type) :
@@ -46,7 +42,14 @@
                     @Html.DisplayFor(model => model.Type)
                 </span>
             </div>
-            <br />
+            <div>
+                <strong>
+                    @Html.DisplayNameFor(model => model.Project) :
+                </strong>
+                <span>
+                    @Model.Project.Name
+                </span>
+            </div>
             <div>
                 <strong>
                     @Html.DisplayNameFor(model => model.Author) :
@@ -57,7 +60,6 @@
             </div>
             @if (Model.AssignedUser != null)
             {
-                <br />
                 <div>
                     <strong>
                         @Html.DisplayNameFor(model => model.AssignedUser) :
@@ -67,7 +69,6 @@
                     </span>
                 </div>
             }
-            <br />
             <div>
                 <strong>
                     @Html.DisplayNameFor(model => model.DateCreated) :
@@ -79,7 +80,6 @@
 
             @if (Model.DateUpdated.HasValue)
             {
-                <br />
                 <div>
                     <strong>
                         @Html.DisplayNameFor(model => model.DateUpdated) :
@@ -153,8 +153,8 @@
                 <p class="category"></p>
             </div>
             <div class="content">
-                <p>@Model.Author.DisplayName - <em>@Model.Author.Email</em></p>
-                <p>Roles: <em>@(string.Join(", ", Model.Author.Roles.Select(role => role.Name)))</em></p>
+                <p class="small" style="font-weight: 600;">@Model.Author.DisplayName - <em>@Model.Author.Email</em></p>
+                <small>Roles: <em>@(string.Join(", ", Model.Author.Roles.Select(role => role.Name)))</em></small>
             </div>
         </div>
     </div>
@@ -183,8 +183,8 @@
             <div class="content">
                 @if (Model.AssignedUser != null)
                 {
-                    <p>@Model.AssignedUser.DisplayName - <em>@Model.AssignedUser.Email</em></p>
-                    <p>Roles: <em>@(string.Join(", ", Model.AssignedUser.Roles.Select(role => role.Name)))</em></p>
+                    <p class="small" style="font-weight: 600;">@Model.AssignedUser.DisplayName - <em>@Model.AssignedUser.Email</em></p>
+                    <small>Roles: <em>@(string.Join(", ", Model.AssignedUser.Roles.Select(role => role.Name)))</em></small>
                 }
                 else
                 {

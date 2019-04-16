@@ -30,6 +30,7 @@
             </p>
         </div>
         <div class="content">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
             @if (Model.Any())
             {
                 <table id="my-projects" class="table table-bordered table-striped">
@@ -108,7 +109,7 @@
                                     <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = ticket.Id })">
                                         @nameof(ProjectController.Edit) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-tools"></i>
                                     </a>
-                                    <span style="margin: 0px 6px;">|</span>
+                                    <div style="margin: 0px 6px;"></div>
                                     <a class="small text-muted" href="@Url.Action(nameof(TicketController.Details), new { Id = ticket.Id })">
                                         @nameof(ProjectController.Details) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-info"></i>
                                     </a>

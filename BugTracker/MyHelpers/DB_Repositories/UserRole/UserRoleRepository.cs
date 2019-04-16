@@ -23,7 +23,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public List<IdentityRole> GetAllUserRoles() => DbContext.Roles.ToList();
         public bool IsUserInRole(string userId, string roleName) => UserManager.IsInRole(userId, roleName);
-        public bool IsUserInRole(string userId, UserRolesEnum roleName) => UserManager.IsInRole(userId, nameof(roleName));
+        public bool IsUserInRole(string userId, UserRolesEnum roleName) => UserManager.IsInRole(userId, roleName.ToString());
         public List<string> ListUserRoles(string userId) => UserManager.GetRoles(userId).ToList();
         public List<IdentityRole> GetUserRoles(string userId) => GetAllUserRoles().Where(role => role.Users.FirstOrDefault(user => user.UserId == userId) != null).ToList();
         public bool AddUserToRole(string userId, string roleName)
