@@ -254,7 +254,7 @@ namespace BugTracker.Controllers
                 {
                     return RedirectToAction(nameof(Index));
                 }
-                ModelState.AddModelError("", e.Message);
+                ModelState.AddModelError("", e.Message); // TODO: Remove after project completion (on staging phase)
                 return View(model);
             }
         }
@@ -400,7 +400,7 @@ namespace BugTracker.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
-                ModelState.AddModelError("", e.Message);
+                ModelState.AddModelError("", e.Message); // TODO: Remove after project completion (on staging phase)
                 return View(model);
             }
         }

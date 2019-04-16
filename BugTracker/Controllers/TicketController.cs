@@ -365,7 +365,7 @@ namespace BugTracker.Controllers
             }
             catch (Exception e)
             {
-                ModelState.AddModelError("", e.Message);
+                ModelState.AddModelError("", e.Message); // TODO: Remove after project completion (on staging phase)
                 TicketEditViewModel model = GenerateTicketEditViewModel(formData.Id);
 
                 if (model == null)

@@ -147,10 +147,7 @@
                                 @if (user.Roles.Any())
                                 {
                                     <td>
-                                        @foreach (var role in user.Roles)
-                                        {
-                                            <p>@role.Name</p>
-                                        }
+                                        <small class="small">@string.Join(", ", user.Roles.Select(role => role.Name))</small>
                                     </td>
                                 }
                             </tr>
