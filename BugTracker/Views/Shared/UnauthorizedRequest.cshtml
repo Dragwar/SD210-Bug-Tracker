@@ -19,6 +19,11 @@
             {
                 <p class="text-warning">@ViewBag.PermissionError</p>
             }
+            
+            @if (!string.IsNullOrWhiteSpace(ViewBag.Error))
+            {
+                <p class="text-warning">@ViewBag.Error</p>
+            }
 
             @* FOOTER HERE *@
             <div class="footer">

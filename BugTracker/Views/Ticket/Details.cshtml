@@ -91,31 +91,38 @@
             }
 
             <div class="footer">
-                <div class="legend">
-                    @*
-                        <p>
-                            <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
-                        </p>
-                        <p>
-                            @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
-                            {
-                                <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
-                            }
-                        </p>
-                        <p>
-                            <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
-                        </p>
-                    *@
-                </div>
-                <hr />
-                <div class="stats">
+                @*
+                    <div class="legend">
+                            <p>
+                                <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
+                            </p>
+                            <p>
+                                @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                                {
+                                    <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
+                                }
+                            </p>
+                            <p>
+                                <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
+                            </p>
+                    </div>
+                *@
+                <hr style="margin-top: 15px;" />
+                <div class="stats" style="display: flex; justify-content: space-between; align-items: center;">
                     @if (Model.DateUpdated.HasValue)
                     {
-                        <i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span>
+                        <span><i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span></span>
                     }
                     else
                     {
-                        <i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span>
+                        <span><i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span></span>
+                    }
+                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)) || User.Identity.Name == Model.Author.Email)
+                    {
+                        <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
+                            <i class="pe-7s-tools" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i>
+                            Edit
+                        </a>
                     }
                 </div>
             </div>
@@ -159,14 +166,14 @@
                 <p class="category">
                     @if (Model.AssignedUser == null && (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))))
                     {
-                        <a href="@Url.Action("AssignUserToTicket")">
+                        <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
                             <i class="pe-7s-add-user" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
                             <span>Assign a user to this ticket</span>
                         </a>
                     }
                     else if (Model.AssignedUser != null && (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))))
                     {
-                        <a href="@Url.Action("AssignUserToTicket")" class="text-warning">
+                        <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })" class="text-warning">
                             <i class="pe-7s-users" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
                             <span>Assign a different user to this ticket </span>
                         </a>

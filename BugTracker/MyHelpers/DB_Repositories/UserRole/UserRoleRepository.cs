@@ -68,7 +68,8 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
             foreach (ApplicationUser user in List)
             {
-                if (IsUserInRole(user.Id, nameof(roleName)))
+                var currentRoleList = UserManager.GetRoles(user.Id);
+                if (IsUserInRole(user.Id, roleName.ToString()))
                 {
                     resultList.Add(user);
                 }

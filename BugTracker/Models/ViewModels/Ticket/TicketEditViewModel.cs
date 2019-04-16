@@ -6,8 +6,10 @@ using System.Web.Mvc;
 
 namespace BugTracker.Models.ViewModels.Ticket
 {
-    public class TicketCreateViewModel
+    public class TicketEditViewModel
     {
+        public Guid Id { get; set; }
+
         [Required]
         [StringLength(20, MinimumLength = 4)]
         public string Title { get; set; }
@@ -30,6 +32,9 @@ namespace BugTracker.Models.ViewModels.Ticket
         [Display(Name = "Project")]
         public Guid ProjectId { get; set; }
 
-        public string AuthorId { get; set; }
+        public List<SelectListItem> DeveloperUsers { get; set; }
+
+        [Display(Name = "Assigned User")]
+        public string DeveloperId { get; set; }
     }
 }

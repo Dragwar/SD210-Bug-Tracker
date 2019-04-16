@@ -34,6 +34,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -202,6 +203,7 @@
     <Compile Include="Models\ViewModels\Project\ProjectIndexViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketDetailsViewModel.cs" />
+    <Compile Include="Models\ViewModels\Ticket\TicketEditViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketIndexViewModel.cs" />
     <Compile Include="Models\ViewModels\UserRole\ManageRolesViewModel.cs" />
     <Compile Include="MyHelpers\CONSTANTS.cs" />
@@ -624,6 +626,7 @@
     <Content Include="Views\Ticket\Details.cshtml" />
     <Content Include="Views\Ticket\Create.cshtml" />
     <Content Include="Views\Shared\UnauthorizedRequest.cshtml" />
+    <Content Include="Views\Ticket\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
