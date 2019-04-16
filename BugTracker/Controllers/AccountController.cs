@@ -1,4 +1,5 @@
 ﻿using BugTracker.Models;
+using BugTracker.Models.Filters.Actions;
 using BugTracker.MyHelpers;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -11,6 +12,7 @@ using System.Web.Mvc;
 namespace BugTracker.Controllers
 {
     [Authorize]
+    [OverrideCurrentNavLinkStyle("none")]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;

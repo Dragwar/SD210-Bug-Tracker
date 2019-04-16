@@ -1,4 +1,4 @@
-﻿using System.Web;
+﻿using BugTracker.Models.Filters.Actions;
 using System.Web.Mvc;
 
 namespace BugTracker
@@ -8,6 +8,7 @@ namespace BugTracker
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new OverrideCurrentNavLinkStyle(null));
         }
     }
 }

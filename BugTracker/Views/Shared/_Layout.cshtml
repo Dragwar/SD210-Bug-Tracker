@@ -1,10 +1,11 @@
 ﻿@{
     string overrideCurrentPage = ViewBag.OverrideCurrentPage;
-    string currentController = ViewContext.RouteData.Values["controller"] as string ?? "Home";
-    string currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
-    string currentPage = string.IsNullOrWhiteSpace(ViewBag.OverrideCurrentPage) ?
-        (currentController + "-" + currentAction).ToLower() :
-        overrideCurrentPage;
+    //string currentController = ViewContext.RouteData.Values["controller"] as string ?? "Home";
+    //string currentAction = ViewContext.RouteData.Values["action"] as string ?? "Index";
+    //string currentPage = string.IsNullOrWhiteSpace(overrideCurrentPage) ?
+    //    (currentController + "-" + currentAction).ToLower() :
+    //    overrideCurrentPage;
+    string currentPage = overrideCurrentPage;
     bool guestMode = !User.Identity.IsAuthenticated;
 }
 

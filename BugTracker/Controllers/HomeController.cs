@@ -1,4 +1,5 @@
 ﻿using BugTracker.Models;
+using BugTracker.Models.Filters.Actions;
 using BugTracker.Models.ViewModels.Home;
 using BugTracker.Models.ViewModels.Project;
 using BugTracker.MyHelpers.DB_Repositories;
@@ -19,7 +20,6 @@ namespace BugTracker.Controllers
             DbContext = new ApplicationDbContext();
             UserRepository = new UserRepository(DbContext);
         }
-
 
         public ActionResult Index()
         {
@@ -45,6 +45,7 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        [OverrideCurrentNavLinkStyle("none")]
         public ActionResult UnauthorizedRequest(string error)
         {
             ViewBag.PermissionError = TempData?["PermissionError"]?.ToString();

@@ -192,6 +192,7 @@
     <Compile Include="Models\Domain\TicketPriorities.cs" />
     <Compile Include="Models\Domain\TicketStatuses.cs" />
     <Compile Include="Models\Domain\TicketTypes.cs" />
+    <Compile Include="Models\Filters\Actions\OverrideCurrentNavLinkStyle.cs" />
     <Compile Include="Models\Filters\Authorize\BugTrackerAuthorize.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />

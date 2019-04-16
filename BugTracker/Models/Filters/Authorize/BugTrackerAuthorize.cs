@@ -1,4 +1,5 @@
 ﻿using BugTracker.Controllers;
+using System.Runtime.InteropServices;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -6,6 +7,11 @@ namespace BugTracker.Models.Filters.Authorize
 {
     public class BugTrackerAuthorize : AuthorizeAttribute
     {
+        public BugTrackerAuthorize([Optional] params string[] roles)
+        {
+            Roles = string.Join(",", roles);
+        }
+
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
             if (filterContext.HttpContext.User.Identity.IsAuthenticated)

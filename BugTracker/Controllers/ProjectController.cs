@@ -1,5 +1,6 @@
 ﻿using BugTracker.Models;
 using BugTracker.Models.Domain;
+using BugTracker.Models.Filters.Actions;
 using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels;
 using BugTracker.Models.ViewModels.Project;
@@ -48,7 +49,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/All
-        [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
+        [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
         public ActionResult All()
         {
             bool isUserAdmin = UserRoleRepository.IsUserInRole(User.Identity.GetUserId(), nameof(UserRolesEnum.Admin));
@@ -78,9 +79,9 @@ namespace BugTracker.Controllers
 
         // GET: Project/Details/{id}
         [BugTrackerAuthorize]
+        [OverrideCurrentNavLinkStyle("project-index")]
         public ActionResult Details(Guid id)
         {
-            ViewBag.OverrideCurrentPage = "project-index";
             string userId = User.Identity.GetUserId();
             Project foundProject = ProjectRepository.GetProject(id);
 
@@ -111,11 +112,8 @@ namespace BugTracker.Controllers
             return View(ProjectDetailsViewModel.CreateNewViewModel(foundProject, DbContext));
         }
 
-        // GET: Project/Create
-        [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
-        public ActionResult Create()
+        private ProjectCreateViewModel GenerateCreateViewModel()
         {
-            ViewBag.OverrideCurrentPage = "project-index";
             SelectListGroup initialAssignedUserGroup = new SelectListGroup()
             {
                 Name = "Assign Initial Users",
@@ -137,7 +135,7 @@ namespace BugTracker.Controllers
 
             if (projectCreator == null)
             {
-                return RedirectToAction(nameof(Index));
+                return null;
             }
 
             projectCreator.Selected = true; // set the project creator selected by default
@@ -149,13 +147,26 @@ namespace BugTracker.Controllers
                 Users = new List<HelperUserViewModel>(),
                 UsersAddList = userList,
             };
+            return model;
+        }
+
+        // GET: Project/Create
+        [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
+        [OverrideCurrentNavLinkStyle("project-index")]
+        public ActionResult Create()
+        {
+            ProjectCreateViewModel model = GenerateCreateViewModel();
+            if (model == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
             return View(model);
         }
 
         // POST: Project/Create
         [HttpPost]
-        [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
+        [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
         public ActionResult Create(ProjectCreateViewModel formData)
         {
             try
@@ -236,40 +247,53 @@ namespace BugTracker.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception e)
             {
-                ModelState.AddModelError("", "Error");
-                return View();
+                ProjectCreateViewModel model = GenerateCreateViewModel();
+                if (model == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError("", e.Message);
+                return View(model);
             }
         }
 
 
-
-        // GET: Project/Edit/{id}
-        [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
-        public ActionResult Edit(Guid id)
+        private ProjectEditViewModel GenerateEditViewModel(Guid? id)
         {
-            ViewBag.OverrideCurrentPage = "project-index";
             if (id == null)
             {
-                return RedirectToAction(nameof(Index));
+                return null;
             }
 
-            Project foundProject = ProjectRepository.GetProject(id);
+            Project foundProject = ProjectRepository.GetProject(id.Value);
 
             if (foundProject == null)
             {
-                return RedirectToAction(nameof(Index));
+                return null;
             }
 
-            ProjectEditViewModel model = ProjectEditViewModel.CreateNewViewModel(foundProject, UserRepository);
+            return ProjectEditViewModel.CreateNewViewModel(foundProject, UserRepository);
+        }
 
+        // GET: Project/Edit/{id}
+        [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
+        [OverrideCurrentNavLinkStyle("project-index")]
+        public ActionResult Edit(Guid id)
+        {
+            ProjectEditViewModel model = GenerateEditViewModel(id);
+
+            if (model == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             return View(model);
         }
 
         // POST: Project/Edit/{id}
         [HttpPost]
-        [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Admin) + "," + nameof(UserRolesEnum.ProjectManager))]
+        [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
         public ActionResult Edit(ProjectEditViewModel formData)
         {
             try
@@ -367,9 +391,17 @@ namespace BugTracker.Controllers
 
                 return RedirectToAction(nameof(Details), new { Id = formData.Id });
             }
-            catch
+            catch (Exception e)
             {
-                return View(formData);
+                ProjectEditViewModel model = GenerateEditViewModel(formData.Id);
+
+                if (model == null)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ModelState.AddModelError("", e.Message);
+                return View(model);
             }
         }
 

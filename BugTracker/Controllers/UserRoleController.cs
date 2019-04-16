@@ -1,4 +1,5 @@
 ﻿using BugTracker.Models;
+using BugTracker.Models.Filters.Actions;
 using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels;
 using BugTracker.Models.ViewModels.UserRole;
@@ -11,7 +12,7 @@ using System.Web.Mvc;
 
 namespace BugTracker.Controllers
 {
-    [BugTrackerAuthorize(Roles = nameof(UserRolesEnum.Admin))]
+    [BugTrackerAuthorize(nameof(UserRolesEnum.Admin))]
     public class UserRoleController : Controller
     {
         public readonly ApplicationDbContext DbContext;
@@ -47,9 +48,9 @@ namespace BugTracker.Controllers
         }
 
         // GET: UserRole/ManageRoles/{id}
+        [OverrideCurrentNavLinkStyle("userrole-index")]
         public ActionResult ManageRoles(string id)
         {
-            ViewBag.OverrideCurrentPage = "userrole-index";
             ApplicationUser foundUser = UserRepository.GetUserById(id);
             if (foundUser == null)
             {
