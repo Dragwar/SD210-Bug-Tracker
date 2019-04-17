@@ -28,8 +28,8 @@ namespace BugTracker.Models.ViewModels.Project
                 {
                     Id = project.Id == null ? throw new ArgumentNullException() : project.Id,
                     Name = string.IsNullOrWhiteSpace(project.Name) ? throw new ArgumentNullException() : project.Name,
-                    UsersCount = project?.Users?.Count ?? 0,
-                    TicketCount = 0, // TODO: Change in second deliverable
+                    UsersCount = project.Users?.Count ?? 0,
+                    TicketCount = project.Tickets?.Count ?? 0,
                     DateCreated = project.DateCreated == null ? throw new ArgumentNullException() : project.DateCreated,
                     DateUpdated = project.DateUpdated,
                 };

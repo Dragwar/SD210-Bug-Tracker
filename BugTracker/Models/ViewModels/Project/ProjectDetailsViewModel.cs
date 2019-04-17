@@ -17,7 +17,7 @@ namespace BugTracker.Models.ViewModels.Project
         public int UsersCount => Users?.Count ?? 0;
 
         [Display(Name = "Total Tickets")]
-        public int TicketCount => 0;
+        public int TicketCount { get; set; }
 
         public static ProjectDetailsViewModel CreateNewViewModel(Domain.Project project, ApplicationDbContext dbContext)
         {
@@ -33,6 +33,7 @@ namespace BugTracker.Models.ViewModels.Project
                     Id = project.Id == null ? throw new ArgumentNullException() : project.Id,
                     Name = string.IsNullOrWhiteSpace(project.Name) ? throw new ArgumentNullException() : project.Name,
                     Users = project.Users?.Select(user => HelperUserViewModel.CreateNewViewModel(user, dbContext)).ToList() ?? throw new ArgumentNullException(),
+                    TicketCount = project.Tickets?.Count ?? 0,
                     DateCreated = project.DateCreated == null ? throw new ArgumentNullException() : project.DateCreated,
                     DateUpdated = project.DateUpdated,
                 };
