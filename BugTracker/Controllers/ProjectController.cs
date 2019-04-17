@@ -404,28 +404,5 @@ namespace BugTracker.Controllers
                 return View(model);
             }
         }
-
-        //? Is project deletion needed?
-        //// GET: Project/Delete/{id}
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: Project/Delete/{id}
-        //[HttpPost]
-        //public ActionResult Delete(int id, FormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add delete logic here
-
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
     }
 }

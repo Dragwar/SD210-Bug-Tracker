@@ -31,6 +31,45 @@ namespace BugTracker.Controllers
             ProjectRepository = new ProjectRepository(DbContext);
         }
 
+        [NonAction]
+        private IReadOnlyDictionary<UserRolesEnum, bool> UserRoleBools(string userId)
+        {
+            Dictionary<UserRolesEnum, bool> isRole = Enum.GetValues(typeof(UserRolesEnum))
+                .Cast<UserRolesEnum>()
+                .ToDictionary(key => key, x => false);
+
+            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Admin))
+            {
+                isRole[UserRolesEnum.Admin] = true;
+            }
+
+            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.ProjectManager))
+            {
+                isRole[UserRolesEnum.ProjectManager] = true;
+            }
+
+            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter))
+            {
+                isRole[UserRolesEnum.Submitter] = true;
+            }
+
+            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Developer))
+            {
+                isRole[UserRolesEnum.Developer] = true;
+            }
+
+            if (isRole.Any(pair => pair.Value == true))
+            {
+                isRole[UserRolesEnum.None] = false;
+            }
+            else
+            {
+                isRole[UserRolesEnum.None] = true;
+            }
+
+            return isRole;
+        }
+
         // GET: Ticket
         [BugTrackerAuthorize]
         public ActionResult Index(string error = "")
@@ -47,22 +86,25 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
             }
 
+            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictoinary = UserRoleBools(userId);
+
+
             List<TicketIndexViewModel> model;
-            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Admin) || UserRoleRepository.IsUserInRole(userId, UserRolesEnum.ProjectManager))
+            if (isRoleDictoinary[UserRolesEnum.Admin] || isRoleDictoinary[UserRolesEnum.ProjectManager])
             {
                 //! ONLY admins/project-managers can see all tickets
                 model = TicketRepository.GetAllTickets()
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList();
             }
-            else if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter) && !UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Developer))
+            else if (isRoleDictoinary[UserRolesEnum.Submitter] && !isRoleDictoinary[UserRolesEnum.Developer])
             {
                 //! submitters can ONLY see their created tickets
                 model = currentUser.CreatedTickets
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList();
             }
-            else if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Developer) && !UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter))
+            else if (isRoleDictoinary[UserRolesEnum.Developer] && !isRoleDictoinary[UserRolesEnum.Submitter])
             {
                 //! developers can ONLY see their assigned tickets
                 model = currentUser.AssignedTickets
@@ -91,12 +133,15 @@ namespace BugTracker.Controllers
             Ticket foundTicket = TicketRepository.GetTicket(id.Value);
             string userId = User.Identity.GetUserId();
 
+            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictoinary = UserRoleBools(userId);
+
+
             // TODO: Re-factor this
-            if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+            if (isRoleDictoinary[UserRolesEnum.Admin] || isRoleDictoinary[UserRolesEnum.ProjectManager])
             {
                 //! ONLY admins/project-managers can see all tickets
             }
-            else if (User.IsInRole(nameof(UserRolesEnum.Submitter)) && !User.IsInRole(nameof(UserRolesEnum.Developer)))
+            else if (isRoleDictoinary[UserRolesEnum.Submitter] && !isRoleDictoinary[UserRolesEnum.Developer])
             {
                 //! submitters can ONLY see their created tickets
                 if (foundTicket.Author == null || foundTicket.Author.Id != userId)
@@ -104,7 +149,7 @@ namespace BugTracker.Controllers
                     foundTicket = null;
                 }
             }
-            else if (User.IsInRole(nameof(UserRolesEnum.Developer)) && !User.IsInRole(nameof(UserRolesEnum.Submitter)))
+            else if (isRoleDictoinary[UserRolesEnum.Developer] && !isRoleDictoinary[UserRolesEnum.Submitter])
             {
                 //! developers can ONLY see their assigned tickets
                 if (foundTicket.AssignedUser == null || foundTicket.AssignedUser.Id != userId)
@@ -182,23 +227,7 @@ namespace BugTracker.Controllers
                 return View(formData);
             }
 
-            // TODO: Move this check to the edit method for tickets and decide whether to remove this
-            //! because only admins/project managers can give tickets statuses
-            //! BUT only submitters can create tickets, therefore this check is useless
-            if (!formData.Status.HasValue)
-            {
-                if (User.IsInRole(nameof(UserRolesEnum.Submitter)) && !User.IsInRole(nameof(UserRolesEnum.Admin)) && !User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
-                {
-                    formData.Status = TicketStatusesEnum.Open;
-                }
-                else
-                {
-                    ModelState.AddModelError(nameof(TicketCreateViewModel.Status), "You need to provide a ticket status");
-                    formData = GenerateCreateViewModel(formData.ProjectId, formData) ?? throw new Exception("bad data");
-
-                    return View(formData);
-                }
-            }
+            formData.Status = TicketStatusesEnum.Open;
 
             try
             {
@@ -215,15 +244,8 @@ namespace BugTracker.Controllers
                     Title = formData.Title,
                     Description = formData.Description,
                     PriorityId = priority.Id,
-                    //Priority = priority,
                     StatusId = status.Id,
-                    //Status = status,
                     TypeId = type.Id,
-                    //Type = type,
-                    AuthorId = foundAuthor.Id,
-                    //Author = foundAuthor,
-                    ProjectId = foundProject.Id,
-                    //Project = foundProject,
                 };
 
                 foundAuthor.CreatedTickets.Add(newTicket);
@@ -248,7 +270,6 @@ namespace BugTracker.Controllers
         [OverrideCurrentNavLinkStyle("ticket-index")]
         private TicketCreateViewModel GenerateCreateViewModel(Guid projectId, TicketCreateViewModel formData)
         {
-            //ViewBag.OverrideCurrentPage = "ticket-index";
             string userId = User.Identity.GetUserId();
             List<SelectListItem> userProjects = ProjectRepository
                 .GetUserProjects(userId)
@@ -337,7 +358,6 @@ namespace BugTracker.Controllers
         [OverrideCurrentNavLinkStyle("ticket-index")]
         public ActionResult Edit(Guid? id)
         {
-
             TicketEditViewModel model = GenerateTicketEditViewModel(id);
             if (model == null)
             {
@@ -386,27 +406,5 @@ namespace BugTracker.Controllers
                 return View(nameof(Edit), model);
             }
         }
-
-        //// GET: Ticket/Delete/{id}
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
-
-        //// POST: Ticket/Delete/{id}
-        //[HttpPost]
-        //public ActionResult Delete(int id, FormCollection collection)
-        //{
-        //    try
-        //    {
-        //        // TODO: Add delete logic here
-
-        //        return RedirectToAction("Index");
-        //    }
-        //    catch
-        //    {
-        //        return View();
-        //    }
-        //}
     }
 }
