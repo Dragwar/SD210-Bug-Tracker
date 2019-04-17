@@ -34,40 +34,40 @@ namespace BugTracker.Controllers
         [NonAction]
         private IReadOnlyDictionary<UserRolesEnum, bool> UserRoleBools(string userId)
         {
-            Dictionary<UserRolesEnum, bool> isRole = Enum.GetValues(typeof(UserRolesEnum))
+            Dictionary<UserRolesEnum, bool> isInRole = Enum.GetValues(typeof(UserRolesEnum))
                 .Cast<UserRolesEnum>()
                 .ToDictionary(key => key, x => false);
 
             if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Admin))
             {
-                isRole[UserRolesEnum.Admin] = true;
+                isInRole[UserRolesEnum.Admin] = true;
             }
 
             if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.ProjectManager))
             {
-                isRole[UserRolesEnum.ProjectManager] = true;
+                isInRole[UserRolesEnum.ProjectManager] = true;
             }
 
             if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter))
             {
-                isRole[UserRolesEnum.Submitter] = true;
+                isInRole[UserRolesEnum.Submitter] = true;
             }
 
             if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Developer))
             {
-                isRole[UserRolesEnum.Developer] = true;
+                isInRole[UserRolesEnum.Developer] = true;
             }
 
-            if (isRole.Any(pair => pair.Value == true))
+            if (isInRole.Any(pair => pair.Value == true))
             {
-                isRole[UserRolesEnum.None] = false;
+                isInRole[UserRolesEnum.None] = false;
             }
             else
             {
-                isRole[UserRolesEnum.None] = true;
+                isInRole[UserRolesEnum.None] = true;
             }
 
-            return isRole;
+            return isInRole;
         }
 
         // GET: Ticket
@@ -86,25 +86,25 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
             }
 
-            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictoinary = UserRoleBools(userId);
+            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictionary = UserRoleBools(userId);
 
 
             List<TicketIndexViewModel> model;
-            if (isRoleDictoinary[UserRolesEnum.Admin] || isRoleDictoinary[UserRolesEnum.ProjectManager])
+            if (isRoleDictionary[UserRolesEnum.Admin] || isRoleDictionary[UserRolesEnum.ProjectManager])
             {
                 //! ONLY admins/project-managers can see all tickets
                 model = TicketRepository.GetAllTickets()
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList();
             }
-            else if (isRoleDictoinary[UserRolesEnum.Submitter] && !isRoleDictoinary[UserRolesEnum.Developer])
+            else if (isRoleDictionary[UserRolesEnum.Submitter] && !isRoleDictionary[UserRolesEnum.Developer])
             {
                 //! submitters can ONLY see their created tickets
                 model = currentUser.CreatedTickets
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList();
             }
-            else if (isRoleDictoinary[UserRolesEnum.Developer] && !isRoleDictoinary[UserRolesEnum.Submitter])
+            else if (isRoleDictionary[UserRolesEnum.Developer] && !isRoleDictionary[UserRolesEnum.Submitter])
             {
                 //! developers can ONLY see their assigned tickets
                 model = currentUser.AssignedTickets
@@ -133,15 +133,15 @@ namespace BugTracker.Controllers
             Ticket foundTicket = TicketRepository.GetTicket(id.Value);
             string userId = User.Identity.GetUserId();
 
-            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictoinary = UserRoleBools(userId);
+            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictionary = UserRoleBools(userId);
 
 
             // TODO: Re-factor this
-            if (isRoleDictoinary[UserRolesEnum.Admin] || isRoleDictoinary[UserRolesEnum.ProjectManager])
+            if (isRoleDictionary[UserRolesEnum.Admin] || isRoleDictionary[UserRolesEnum.ProjectManager])
             {
                 //! ONLY admins/project-managers can see all tickets
             }
-            else if (isRoleDictoinary[UserRolesEnum.Submitter] && !isRoleDictoinary[UserRolesEnum.Developer])
+            else if (isRoleDictionary[UserRolesEnum.Submitter] && !isRoleDictionary[UserRolesEnum.Developer])
             {
                 //! submitters can ONLY see their created tickets
                 if (foundTicket.Author == null || foundTicket.Author.Id != userId)
@@ -149,7 +149,7 @@ namespace BugTracker.Controllers
                     foundTicket = null;
                 }
             }
-            else if (isRoleDictoinary[UserRolesEnum.Developer] && !isRoleDictoinary[UserRolesEnum.Submitter])
+            else if (isRoleDictionary[UserRolesEnum.Developer] && !isRoleDictionary[UserRolesEnum.Submitter])
             {
                 //! developers can ONLY see their assigned tickets
                 if (foundTicket.AssignedUser == null || foundTicket.AssignedUser.Id != userId)
@@ -222,7 +222,7 @@ namespace BugTracker.Controllers
             if (formData == null || !ModelState.IsValid || !formData.Type.HasValue || !formData.Priority.HasValue)
             {
                 ModelState.AddModelError("", "Error - Bad data");
-                formData = GenerateCreateViewModel(formData.ProjectId, formData) ?? throw new Exception("bad data");
+                formData = GenerateCreateViewModel(formData) ?? throw new Exception("bad data");
 
                 return View(formData);
             }
@@ -231,28 +231,7 @@ namespace BugTracker.Controllers
 
             try
             {
-                Project foundProject = ProjectRepository.GetProject(formData.ProjectId) ?? throw new Exception();
-                ApplicationUser foundAuthor = UserRepository.GetUserById(formData.AuthorId) ?? throw new Exception();
-
-                TicketPriorities priority = DbContext.TicketPriorities.First(tp => tp.Id == (int)formData.Priority.Value);
-                TicketTypes type = DbContext.TicketTypes.First(tt => tt.Id == (int)formData.Type.Value);
-                TicketStatuses status = DbContext.TicketStatuses.First(ts => ts.Id == (int)formData.Status.Value);
-
-
-                Ticket newTicket = new Ticket()
-                {
-                    Title = formData.Title,
-                    Description = formData.Description,
-                    PriorityId = priority.Id,
-                    StatusId = status.Id,
-                    TypeId = type.Id,
-                };
-
-                foundAuthor.CreatedTickets.Add(newTicket);
-                foundProject.Tickets.Add(newTicket);
-
-                DbContext.SaveChanges();
-
+                Ticket newTicket = Ticket.CreateNewTicket(DbContext, formData);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -260,7 +239,7 @@ namespace BugTracker.Controllers
             {
                 ModelState.AddModelError("", "Error - Bad data");
                 ModelState.AddModelError("", e.Message); // TODO: Remove after project completion (on staging phase)
-                formData = GenerateCreateViewModel(formData.ProjectId, formData) ?? throw new Exception("bad data");
+                formData = GenerateCreateViewModel(formData) ?? throw new Exception("bad data");
 
                 return View(formData);
             }
@@ -268,7 +247,7 @@ namespace BugTracker.Controllers
 
         [NonAction]
         [OverrideCurrentNavLinkStyle("ticket-index")]
-        private TicketCreateViewModel GenerateCreateViewModel(Guid projectId, TicketCreateViewModel formData)
+        private TicketCreateViewModel GenerateCreateViewModel(TicketCreateViewModel formData)
         {
             string userId = User.Identity.GetUserId();
             List<SelectListItem> userProjects = ProjectRepository
@@ -285,19 +264,9 @@ namespace BugTracker.Controllers
                 return null;
             }
 
-            TicketCreateViewModel model = new TicketCreateViewModel()
-            {
-                Title = formData?.Title,
-                Description = formData?.Description,
-                Priority = formData?.Priority,
-                Status = formData?.Status,
-                Type = formData?.Type,
-                Projects = userProjects,
-                ProjectId = formData.ProjectId == Guid.Empty ? projectId : formData.ProjectId, // can't be left empty or null
-                AuthorId = formData?.AuthorId,
-            };
+            formData.Projects = userProjects;
 
-            return model;
+            return formData;
         }
 
         [NonAction]
@@ -336,19 +305,7 @@ namespace BugTracker.Controllers
                 })
                 .ToList();
 
-            TicketEditViewModel model = new TicketEditViewModel()
-            {
-                Id = foundTicket.Id,
-                Title = foundTicket.Title,
-                Description = foundTicket.Description,
-                Priority = (TicketPrioritiesEnum)foundTicket.PriorityId,
-                Status = (TicketStatusesEnum)foundTicket.StatusId,
-                Type = (TicketTypesEnum)foundTicket.TypeId,
-                ProjectId = foundTicket.ProjectId,
-                Projects = userProjects,
-                DeveloperUsers = developers,
-                DeveloperId = foundTicket.AssignedUserId,
-            };
+            TicketEditViewModel model = TicketEditViewModel.CreateNewViewModel(foundTicket, developers, userProjects);
 
             return model;
         }
@@ -378,20 +335,9 @@ namespace BugTracker.Controllers
 
             try
             {
-                Ticket foundTicket = TicketRepository.GetTicket(formData.Id);
+                Ticket.EditExistingTicket(DbContext, formData);
 
-                foundTicket.Title = formData.Title;
-                foundTicket.Description = formData.Description;
-                foundTicket.PriorityId = (int)formData.Priority;
-                foundTicket.StatusId = ((int?)formData?.Status ?? (DbContext.TicketStatuses.First(ts => ts.StatusString == TicketStatusesEnum.Open.ToString()).Id));
-                foundTicket.TypeId = (int)formData.Type;
-                foundTicket.ProjectId = formData.ProjectId;
-                foundTicket.AssignedUserId = formData.DeveloperId;
-                foundTicket.DateUpdated = DateTime.Now;
-
-                DbContext.SaveChanges();
-
-                return RedirectToAction(nameof(Details), new { Id = foundTicket.Id });
+                return RedirectToAction(nameof(Details), new { Id = formData.Id });
             }
             catch (Exception e)
             {

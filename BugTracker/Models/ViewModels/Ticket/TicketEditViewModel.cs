@@ -36,5 +36,34 @@ namespace BugTracker.Models.ViewModels.Ticket
 
         [Display(Name = "Assigned User")]
         public string DeveloperId { get; set; }
+
+        public static TicketEditViewModel CreateNewViewModel(Domain.Ticket ticket, List<SelectListItem> developersToChooseFrom, List<SelectListItem> projectsToChooseFrom)
+        {
+            if (ticket == null || developersToChooseFrom == null || projectsToChooseFrom == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            try
+            {
+                return new TicketEditViewModel()
+                {
+                    Id = ticket.Id,
+                    Title = ticket.Title,
+                    Description = ticket.Description,
+                    Priority = (TicketPrioritiesEnum)ticket.PriorityId,
+                    Status = (TicketStatusesEnum)ticket.StatusId,
+                    Type = (TicketTypesEnum)ticket.TypeId,
+                    ProjectId = ticket.ProjectId,
+                    Projects = projectsToChooseFrom,
+                    DeveloperUsers = developersToChooseFrom,
+                    DeveloperId = ticket.AssignedUserId,
+                };
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message, e);
+            }
+        }
     }
 }
