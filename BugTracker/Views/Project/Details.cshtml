@@ -1,7 +1,7 @@
 ﻿@model ProjectDetailsViewModel
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = Model.Name;
 }
 
 @section Styles
@@ -35,7 +35,7 @@
         <div class="header">
             <h4 class="title">@ViewBag.Title</h4>
             <p class="category">
-                @Model.Name
+                Details
             </p>
         </div>
         <div class="content">
@@ -141,7 +141,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var user in Model.Users)
+                        @foreach (HelperUserViewModel user in Model.Users)
                         {
                             <tr>
                                 <td>@user.DisplayName</td>

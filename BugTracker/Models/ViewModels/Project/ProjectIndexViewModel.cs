@@ -11,10 +11,10 @@ namespace BugTracker.Models.ViewModels.Project
         public DateTime? DateUpdated { get; set; }
 
         [Display(Name = "Total Users")]
-        public int UsersCount { get; set;/* get => UsersCount; set => UsersCount = value >= 0 ? value : 0; */}
+        public int UsersCount { get; set; }
 
         [Display(Name = "Total Tickets")]
-        public int TicketCount { get; set;/*get => TicketCount; set => TicketCount = value < 0 ? 0 : value;*/ } // TODO: Change in second deliverable
+        public int TicketCount { get; set; }
         public static ProjectIndexViewModel CreateNewViewModel(Domain.Project project)
         {
             if (project == null)

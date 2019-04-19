@@ -1,10 +1,10 @@
 ﻿@model TicketDetailsViewModel
 @{
     ViewBag.Title = $"{Model.Title}";
-    bool canEditTicket = User.IsInRole(nameof(UserRolesEnum.Admin)) ||
-                        User.IsInRole(nameof(UserRolesEnum.ProjectManager)) ||
+    bool isAdminOrProjectManager = User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager));
+    bool canEditTicket = (isAdminOrProjectManager ||
                         User.Identity.Name == Model.Author.Email ||
-                        (!string.IsNullOrWhiteSpace(Model?.AssignedUser?.Email) && User.Identity.Name == Model.AssignedUser.Email);
+                        (!string.IsNullOrWhiteSpace(Model?.AssignedUser?.Email) && User.Identity.Name == Model.AssignedUser.Email));
 }
 
 <div class="col-lg-4">
@@ -178,7 +178,7 @@
                             <span>Assign a user to this ticket</span>
                         </a>
                     }
-                    else if ((User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))) && canEditTicket)
+                    else if (isAdminOrProjectManager && canEditTicket)
                     {
                         <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })" class="text-warning">
                             <i class="pe-7s-users" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
@@ -218,7 +218,7 @@
                 </p>
             </div>
             <div class="content">
-                @foreach (var attachment in Model.Attachments)
+                @foreach (BugTracker.Models.Domain.TicketAttachments attachment in Model.Attachments)
                 {
                     <!--Attachment-->
                     <div class="card">
@@ -251,7 +251,7 @@
                 </p>
             </div>
             <div class="content">
-                @foreach (var comment in Model.Comments)
+                @foreach (BugTracker.Models.Domain.TicketComments comment in Model.Comments)
                 {
                     <!--Comment-->
                     <div class="card">

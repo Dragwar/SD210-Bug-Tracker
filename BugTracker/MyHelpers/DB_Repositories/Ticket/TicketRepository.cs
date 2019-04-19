@@ -20,21 +20,21 @@ namespace BugTracker.MyHelpers.DB_Repositories.Ticket
         public bool DoesTicketExist(Guid id) => DBContext.Tickets.Any(ticket => ticket.Id == id);
         public bool CanUserViewTicket(string userId, Guid ticketId)
         {
-            IReadOnlyDictionary<UserRolesEnum, bool> IsInRole = new UserRoleRepository(DBContext).GetIsUserInRoleDictionary(userId);
+            IReadOnlyDictionary<UserRolesEnum, bool> isInRole = new UserRoleRepository(DBContext).GetIsUserInRoleDictionary(userId);
 
             Models.Domain.Ticket foundTicket = GetTicket(ticketId) ?? throw new Exception("Ticket not found");
 
             bool isUserAssignedToProject = foundTicket.Project.Users.Any(user => user.Id == userId);
 
-            if (IsInRole[UserRolesEnum.Admin] || IsInRole[UserRolesEnum.ProjectManager])
+            if (isInRole[UserRolesEnum.Admin] || isInRole[UserRolesEnum.ProjectManager])
             {
                 return true;
             }
-            else if (foundTicket.Author != null && IsInRole[UserRolesEnum.Submitter] && foundTicket.Author.Id == userId)
+            else if (foundTicket.Author != null && isInRole[UserRolesEnum.Submitter] && foundTicket.Author.Id == userId)
             {
                 return true;
             }
-            else if (foundTicket.AssignedUser != null && IsInRole[UserRolesEnum.Developer] && foundTicket.AssignedUser.Id == userId)
+            else if (foundTicket.AssignedUser != null && isInRole[UserRolesEnum.Developer] && foundTicket.AssignedUser.Id == userId)
             {
                 return true;
             }
@@ -53,19 +53,19 @@ namespace BugTracker.MyHelpers.DB_Repositories.Ticket
                 throw new ArgumentNullException(nameof(ticket));
             }
 
-            IReadOnlyDictionary<UserRolesEnum, bool> IsInRole = new UserRoleRepository(DBContext).GetIsUserInRoleDictionary(userId);
+            IReadOnlyDictionary<UserRolesEnum, bool> isInRole = new UserRoleRepository(DBContext).GetIsUserInRoleDictionary(userId);
 
             bool isUserAssignedToProject = ticket.Project.Users.Any(user => user.Id == userId);
 
-            if (IsInRole[UserRolesEnum.Admin] || IsInRole[UserRolesEnum.ProjectManager])
+            if (isInRole[UserRolesEnum.Admin] || isInRole[UserRolesEnum.ProjectManager])
             {
                 return true;
             }
-            else if (ticket.Author != null && IsInRole[UserRolesEnum.Submitter] && ticket.Author.Id == userId)
+            else if (ticket.Author != null && isInRole[UserRolesEnum.Submitter] && ticket.Author.Id == userId)
             {
                 return true;
             }
-            else if (ticket.AssignedUser != null && IsInRole[UserRolesEnum.Developer] && ticket.AssignedUser.Id == userId)
+            else if (ticket.AssignedUser != null && isInRole[UserRolesEnum.Developer] && ticket.AssignedUser.Id == userId)
             {
                 return true;
             }

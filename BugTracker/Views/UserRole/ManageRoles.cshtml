@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Manage Roles";
+    bool isAdminOrProjectManager = User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager));
 }
 
 @section Styles
@@ -118,7 +119,7 @@
                         [
                         <span>@Html.ActionLink("Manage Users", nameof(UserRoleController.Index), new { }, new { @class = "text-warning" }) |</span>
 
-                        @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                        @if (isAdminOrProjectManager)
                         {
                             <span>@Html.ActionLink("All Projects", nameof(ProjectController.All), "Project", new { }, new { @class = "text-warning" })</span>
                         }

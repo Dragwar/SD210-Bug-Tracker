@@ -29,7 +29,7 @@
                 <div class="content">
                     @if (Model.LatestProjects.Any())
                     {
-                        foreach (var project in Model.LatestProjects)
+                        foreach (ProjectIndexViewModel project in Model.LatestProjects)
                         {
                             <!--TODO: style bug -> when user clicks this link, the _Layout.cshtml page doesn't update the nav-links-->
                             <div style="font-size: 16px;">
