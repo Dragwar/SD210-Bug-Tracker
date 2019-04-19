@@ -64,13 +64,13 @@ namespace BugTracker.MyHelpers.DB_Repositories
                 return false;
             }
         }
-        public List<Project> GetUserProjects(string userId) => DBContext.Projects
+        public IQueryable<Project> GetUserProjects(string userId) => DBContext.Projects
             .Where(project => project.Users.Any(user => userId == user.Id))
-            .ToList();
+            .AsQueryable();
         public bool IsProjectNameAlreadyTaken(string projectName) => DBContext.Projects
             .Any(project => project.Name.ToLower() == projectName.ToLower());
         public bool IsProjectNameAlreadyTaken(string projectName, Guid projectId) => DBContext.Projects
             .Any(project => project.Name.ToLower() == projectName.ToLower() && project.Id != projectId);
-        public List<Project> GetAllProjects() => DBContext.Projects.ToList(); 
+        public IQueryable<Project> GetAllProjects() => DBContext.Projects.AsQueryable(); 
     }
 }

@@ -36,6 +36,7 @@ namespace BugTracker.Models.ViewModels.Home
 
             List<ProjectIndexViewModel> latestProjects = repo
                 .GetUserProjects(applicationUser.Id)?
+                .ToList()
                 .OrderByDescending(project => project?.DateUpdated ?? project.DateCreated)
                 .Take(latestProjectIntakeLimit)
                 .Select(project => ProjectIndexViewModel.CreateNewViewModel(project))
@@ -84,7 +85,7 @@ namespace BugTracker.Models.ViewModels.Home
                     UserId = string.IsNullOrWhiteSpace(applicationUser.Id) ? throw new ArgumentNullException() : applicationUser.Id,
                     DisplayName = string.IsNullOrWhiteSpace(applicationUser.DisplayName) ? throw new ArgumentNullException() : applicationUser.DisplayName,
                     Email = string.IsNullOrWhiteSpace(applicationUser.Email) ? throw new ArgumentNullException() : applicationUser.Email,
-                    TotalProjectCount = repo.GetUserProjects(applicationUser.Id)?.Count ?? 0,
+                    TotalProjectCount = repo.GetUserProjects(applicationUser.Id)?.Count() ?? 0,
                     LatestProjects = latestProjects?.Any() ?? false ? latestProjects : new List<ProjectIndexViewModel>(),
                     Roles = (roles?.Any() ?? false) ? roles : new List<IdentityRole>(),
                     TotalCreatedTicketCount = numberOfCreatedTickets,

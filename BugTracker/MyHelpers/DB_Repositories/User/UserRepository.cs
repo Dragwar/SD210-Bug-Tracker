@@ -26,6 +26,6 @@ namespace BugTracker.MyHelpers.DB_Repositories
         //    .Where(user => user.Projects.Any(project => project.Id == projectId))
         //    .ToList();
 
-        public List<ApplicationUser> GetAllUsers() => DBContext.Users.ToList();
+        public IQueryable<ApplicationUser> GetAllUsers() => DBContext.Users.AsQueryable();
     }
 }

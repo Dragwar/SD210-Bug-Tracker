@@ -57,7 +57,9 @@ namespace BugTracker
 
             string dataTablecssBootstrap3 = @"https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css";
 #pragma warning disable CS0219 // The variable 'dataTablecss' is assigned but its value is never used
+#pragma warning disable IDE0059 // Value assigned to symbol is never used
             string dataTablecss = @"https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css";
+#pragma warning restore IDE0059 // Value assigned to symbol is never used
 #pragma warning restore CS0219 // The variable 'dataTablecss' is assigned but its value is never used
             bundles.Add(new StyleBundle(@"~/data-tables/css", dataTablecssBootstrap3).IncludeDirectory(
                 @"~/Content\DataTables\css\", "*.css"));

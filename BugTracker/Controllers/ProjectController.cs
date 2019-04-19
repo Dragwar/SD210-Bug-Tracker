@@ -33,12 +33,12 @@ namespace BugTracker.Controllers
         [BugTrackerAuthorize]
         public ActionResult Index()
         {
-            List<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
+            IQueryable<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
             List<ProjectIndexViewModel> viewModels;
 
             if (userProjects.Any())
             {
-                viewModels = userProjects.Select(project => ProjectIndexViewModel.CreateNewViewModel(project)).ToList();
+                viewModels = userProjects.ToList().Select(project => ProjectIndexViewModel.CreateNewViewModel(project)).ToList();
             }
             else
             {
@@ -62,12 +62,12 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            List<Project> allProjects = ProjectRepository.GetAllProjects();
+            IQueryable<Project> allProjects = ProjectRepository.GetAllProjects();
             List<ProjectIndexViewModel> viewModels;
 
             if (allProjects.Any())
             {
-                viewModels = allProjects.Select(project => ProjectIndexViewModel.CreateNewViewModel(project)).ToList();
+                viewModels = allProjects.ToList().Select(project => ProjectIndexViewModel.CreateNewViewModel(project)).ToList();
             }
             else
             {

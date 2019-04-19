@@ -31,45 +31,6 @@ namespace BugTracker.Controllers
             ProjectRepository = new ProjectRepository(DbContext);
         }
 
-        [NonAction]
-        private IReadOnlyDictionary<UserRolesEnum, bool> UserRoleBools(string userId)
-        {
-            Dictionary<UserRolesEnum, bool> isInRole = Enum.GetValues(typeof(UserRolesEnum))
-                .Cast<UserRolesEnum>()
-                .ToDictionary(key => key, x => false);
-
-            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Admin))
-            {
-                isInRole[UserRolesEnum.Admin] = true;
-            }
-
-            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.ProjectManager))
-            {
-                isInRole[UserRolesEnum.ProjectManager] = true;
-            }
-
-            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Submitter))
-            {
-                isInRole[UserRolesEnum.Submitter] = true;
-            }
-
-            if (UserRoleRepository.IsUserInRole(userId, UserRolesEnum.Developer))
-            {
-                isInRole[UserRolesEnum.Developer] = true;
-            }
-
-            if (isInRole.Any(pair => pair.Value == true))
-            {
-                isInRole[UserRolesEnum.None] = false;
-            }
-            else
-            {
-                isInRole[UserRolesEnum.None] = true;
-            }
-
-            return isInRole;
-        }
-
         // GET: Ticket
         [BugTrackerAuthorize]
         public ActionResult Index(string error = "")
@@ -86,36 +47,15 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
             }
 
-            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictionary = UserRoleBools(userId);
+            //! Demo for .GetIsUserInRoleDictionary()
+            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictionary1 = UserRoleRepository.GetIsUserInRoleDictionary(userId);
+            IReadOnlyDictionary<string, bool> isRoleDictionary2 = UserRoleRepository.GetIsUserInRoleDictionary(userId, "Admin", "Developer", "Submitter", "ProjectManager", "None");
 
-
-            List<TicketIndexViewModel> model;
-            if (isRoleDictionary[UserRolesEnum.Admin] || isRoleDictionary[UserRolesEnum.ProjectManager])
-            {
-                //! ONLY admins/project-managers can see all tickets
-                model = TicketRepository.GetAllTickets()
-                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
-                    .ToList();
-            }
-            else if (isRoleDictionary[UserRolesEnum.Submitter] && !isRoleDictionary[UserRolesEnum.Developer])
-            {
-                //! submitters can ONLY see their created tickets
-                model = currentUser.CreatedTickets
-                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
-                    .ToList();
-            }
-            else if (isRoleDictionary[UserRolesEnum.Developer] && !isRoleDictionary[UserRolesEnum.Submitter])
-            {
-                //! developers can ONLY see their assigned tickets
-                model = currentUser.AssignedTickets
-                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
-                    .ToList();
-            }
-            else
-            {
-                //! if user isn't in any of the roles above redirect home
-                return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
-            }
+            List<TicketIndexViewModel> model = TicketRepository.GetAllTickets()
+                .ToList()
+                .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
+                .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                .ToList();
 
             return View(model);
         }
@@ -131,40 +71,19 @@ namespace BugTracker.Controllers
             }
 
             Ticket foundTicket = TicketRepository.GetTicket(id.Value);
-            string userId = User.Identity.GetUserId();
-
-            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictionary = UserRoleBools(userId);
-
-
-            // TODO: Re-factor this
-            if (isRoleDictionary[UserRolesEnum.Admin] || isRoleDictionary[UserRolesEnum.ProjectManager])
-            {
-                //! ONLY admins/project-managers can see all tickets
-            }
-            else if (isRoleDictionary[UserRolesEnum.Submitter] && !isRoleDictionary[UserRolesEnum.Developer])
-            {
-                //! submitters can ONLY see their created tickets
-                if (foundTicket.Author == null || foundTicket.Author.Id != userId)
-                {
-                    foundTicket = null;
-                }
-            }
-            else if (isRoleDictionary[UserRolesEnum.Developer] && !isRoleDictionary[UserRolesEnum.Submitter])
-            {
-                //! developers can ONLY see their assigned tickets
-                if (foundTicket.AssignedUser == null || foundTicket.AssignedUser.Id != userId)
-                {
-                    foundTicket = null;
-                }
-            }
-            else
-            {
-                //! if user isn't in any of the roles above redirect home
-                return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
-            }
 
             if (foundTicket == null)
             {
+                return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
+            }
+
+            string userId = User.Identity.GetUserId();
+            bool canViewTicket = TicketRepository.CanUserViewTicket(userId, foundTicket);
+
+            if (!canViewTicket)
+            {
+                // TODO: Move the UnauthorizedRequest View page to the Shared folder
+                // Add just `return View(nameof(HomeController.UnauthorizedRequest, new { error = "..." }))`
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "You cannot view this ticket (you don't have permission)" });
             }
 
@@ -222,7 +141,7 @@ namespace BugTracker.Controllers
             if (formData == null || !ModelState.IsValid || !formData.Type.HasValue || !formData.Priority.HasValue)
             {
                 ModelState.AddModelError("", "Error - Bad data");
-                formData = GenerateCreateViewModel(formData) ?? throw new Exception("bad data");
+                formData = GenerateTicketCreateViewModel(formData) ?? throw new Exception("bad data");
 
                 return View(formData);
             }
@@ -239,7 +158,7 @@ namespace BugTracker.Controllers
             {
                 ModelState.AddModelError("", "Error - Bad data");
                 ModelState.AddModelError("", e.Message); // TODO: Remove after project completion (on staging phase)
-                formData = GenerateCreateViewModel(formData) ?? throw new Exception("bad data");
+                formData = GenerateTicketCreateViewModel(formData) ?? throw new Exception("bad data");
 
                 return View(formData);
             }
@@ -247,7 +166,7 @@ namespace BugTracker.Controllers
 
         [NonAction]
         [OverrideCurrentNavLinkStyle("ticket-index")]
-        private TicketCreateViewModel GenerateCreateViewModel(TicketCreateViewModel formData)
+        private TicketCreateViewModel GenerateTicketCreateViewModel(TicketCreateViewModel formData)
         {
             string userId = User.Identity.GetUserId();
             List<SelectListItem> userProjects = ProjectRepository

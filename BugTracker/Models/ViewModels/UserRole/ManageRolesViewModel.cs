@@ -30,7 +30,7 @@ namespace BugTracker.Models.ViewModels.UserRole
         [Display(Name = "Revoke Roles")]
         public string[] SelectedRolesToRemove { get; set; }
 
-        public static ManageRolesViewModel CreateNewViewModel(string currentUserId, ApplicationUser user, List<IdentityRole> allRoles, ApplicationDbContext dbContext)
+        public static ManageRolesViewModel CreateNewViewModel(string currentUserId, ApplicationUser user, IQueryable<IdentityRole> allRoles, ApplicationDbContext dbContext)
         {
             if (allRoles == null || dbContext == null || user == null)
             {
