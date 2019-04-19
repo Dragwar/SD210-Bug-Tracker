@@ -108,14 +108,14 @@
                             <th>
                                 @Html.DisplayNameFor(model => model[0].ProjectName)
                             </th>
-                            <th></th>
+                            <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-file"></i></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (TicketIndexViewModel ticket in Model)
                         {
-                            bool canEditTicket = User.IsInRole(nameof(UserRolesEnum.Admin)) || 
-                                        User.IsInRole(nameof(UserRolesEnum.ProjectManager)) || 
+                            bool canEditTicket = User.IsInRole(nameof(UserRolesEnum.Admin)) ||
+                                        User.IsInRole(nameof(UserRolesEnum.ProjectManager)) ||
                                         (User.IsInRole(nameof(UserRolesEnum.Submitter)) && ticket.IsCurrentUserTheAuthorOrIsAssigned) ||
                                         (User.IsInRole(nameof(UserRolesEnum.Developer)) && ticket.IsCurrentUserTheAuthorOrIsAssigned);
                             <tr>
@@ -131,10 +131,10 @@
                                 <td>
                                     @ticket.Status
                                 </td>
-                                <td>
+                                <td class="small">
                                     @ticket.DateCreated.ToShortDateString()
                                 </td>
-                                <td>
+                                <td class="small">
                                     @(ticket.DateUpdated?.ToShortDateString())
                                 </td>
                                 <!--
@@ -147,7 +147,7 @@
                                 -->
                                 <td>@ticket.AttachmentCount</td>
                                 <td>@ticket.CommentCount</td>
-                                <td>
+                                <td class="small">
                                     @ticket.ProjectName
                                 </td>
                                 <td>

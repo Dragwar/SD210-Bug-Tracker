@@ -52,7 +52,7 @@
                             <th>
                                 @Html.DisplayNameFor(model => model[0].DateUpdated)
                             </th>
-                            <th></th>
+                            <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-file"></i></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,10 +68,10 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => project.TicketCount)
                                 </td>
-                                <td>
+                                <td class="small">
                                     @Html.DisplayFor(modelItem => project.DateCreated)
                                 </td>
-                                <td>
+                                <td class="small">
                                     @Html.DisplayFor(modelItem => project.DateUpdated)
                                 </td>
                                 @*

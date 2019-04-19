@@ -7,7 +7,11 @@ namespace BugTracker.Models.ViewModels.Ticket
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
+
+        [Display(Name = "Created")]
         public DateTime DateCreated { get; set; }
+
+        [Display(Name = "Updated")]
         public DateTime? DateUpdated { get; set; }
         public string Priority { get; set; }
         public string Status { get; set; }

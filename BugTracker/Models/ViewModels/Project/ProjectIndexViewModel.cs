@@ -7,7 +7,11 @@ namespace BugTracker.Models.ViewModels.Project
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+
+        [Display(Name = "Created")]
         public DateTime DateCreated { get; set; }
+
+        [Display(Name = "Updated")]
         public DateTime? DateUpdated { get; set; }
 
         [Display(Name = "Total Users")]
