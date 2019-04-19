@@ -78,6 +78,23 @@ namespace BugTracker.MyHelpers.DB_Repositories.Ticket
         }
         #endregion
 
+        public IQueryable<Models.Domain.Ticket> GetUserCreatedTickets(string userId) => GetAllTickets()
+            .Where(ticket => ticket.Author.Id == userId)
+            .AsQueryable();
+        public IQueryable<Models.Domain.Ticket> GetUserAssignedTickets(string userId) => GetAllTickets()
+            .Where(ticket => ticket.AssignedUser != null && ticket.AssignedUser.Id == userId)
+            .AsQueryable();
+
+        //! Easier way than above (using the List that exists on the ApplicationUser instead of directly querying the all ticket List)
+        //public IQueryable<Models.Domain.Ticket> GetUserCreatedTickets(string userId) => DBContext.Users
+        //    .FirstOrDefault(user => user.Id == userId)?
+        //    .CreatedTickets
+        //    .AsQueryable() ?? new List<Models.Domain.Ticket>().AsQueryable();
+        //public IQueryable<Models.Domain.Ticket> GetUserAssignedTickets(string userId) => DBContext.Users
+        //    .FirstOrDefault(user => user.Id == userId)?
+        //    .AssignedTickets
+        //    .AsQueryable() ?? new List<Models.Domain.Ticket>().AsQueryable();
+
         public IQueryable<Models.Domain.Ticket> GetAllTickets() => DBContext.Tickets.AsQueryable();
     }
 }

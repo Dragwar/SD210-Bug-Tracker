@@ -79,7 +79,9 @@
             <div class="card">
                 <div class="header">
                     <h4 class="title">Created Tickets</h4>
-                    <p class="category">You have created @Model.TotalCreatedTicketCount @(Model.TotalCreatedTicketCount > 1 ? $"tickets" : "ticket")</p>
+                    <p class="category">
+                        @Model.LatestCreatedTickets.Count of your latest created @(Model.TotalCreatedTicketCount > 1 ? $"tickets" : "ticket")
+                    </p>
                 </div>
                 <div class="content">
                     @if (Model.LatestCreatedTickets.Any())
@@ -103,7 +105,7 @@
                                 @if (Model.TotalCreatedTicketCount > 0)
                                 {
                                     <i style="font-size: 125%; font-weight: 500; position: relative; top: 3px;" class="pe-7s-ticket"></i>
-                                    <a href="@Url.Action(nameof(ProjectController.Index), "ticket")">
+                                    <a href="@Url.Action(nameof(ProjectController.Index), "ticket", new { whatTickets = "Created" })">
                                         <span>
                                             View the @Model.TotalCreatedTicketCount @(Model.TotalCreatedTicketCount > 1 ? $"tickets" : "ticket") that you have created
                                         </span>
@@ -128,7 +130,9 @@
             <div class="card">
                 <div class="header">
                     <h4 class="title">Assigned Tickets</h4>
-                    <p class="category">You are assigned to @Model.TotalAssignedTicketCount @(Model.TotalAssignedTicketCount > 1 ? $"tickets" : "ticket")</p>
+                    <p class="category">
+                        @Model.LatestAssignedTickets.Count of your latest assigned @(Model.TotalAssignedTicketCount > 1 ? $"tickets" : "ticket")
+                    </p>
                 </div>
                 <div class="content">
                     @if (Model.LatestAssignedTickets.Any())
@@ -152,7 +156,7 @@
                                 @if (Model.TotalAssignedTicketCount > 0)
                                 {
                                     <i style="font-size: 125%; font-weight: 500; position: relative; top: 3px;" class="pe-7s-ticket"></i>
-                                    <a href="@Url.Action(nameof(ProjectController.Index), "ticket")">
+                                    <a href="@Url.Action(nameof(ProjectController.Index), "ticket", new { whatTickets = "Assigned" })">
                                         <span>
                                             View the @Model.TotalAssignedTicketCount @(Model.TotalAssignedTicketCount > 1 ? $"tickets" : "ticket") that you are assigned to
                                         </span>

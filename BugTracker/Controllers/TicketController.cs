@@ -33,7 +33,8 @@ namespace BugTracker.Controllers
 
         // GET: Ticket
         [BugTrackerAuthorize]
-        public ActionResult Index(string error = "")
+        [Route("Ticket/{whatTickets?}")]
+        public ActionResult Index(string whatTickets = "", string error = "")
         {
             string userId = User.Identity.GetUserId();
             ApplicationUser currentUser = UserRepository.GetUserById(userId);
@@ -47,11 +48,45 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
             }
 
-            List<TicketIndexViewModel> model = TicketRepository.GetAllTickets()
-                .ToList()
-                .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
-                .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
-                .ToList();
+            List<TicketIndexViewModel> model;
+
+            if (!string.IsNullOrWhiteSpace(whatTickets))
+            {
+                if (whatTickets.ToLower() == "assigned")
+                {
+                    ViewBag.whatTickets = "Assigned";
+                    model = TicketRepository.GetUserAssignedTickets(userId)
+                        .ToList()
+                        //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user is assigned to the ticket
+                        .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                        .ToList();
+                }
+                else if (whatTickets.ToLower() == "created")
+                {
+                    ViewBag.whatTickets = "Created";
+                    model = TicketRepository.GetUserCreatedTickets(userId)
+                    .ToList()
+                    //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user created the ticket
+                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                    .ToList();
+                }
+                else //if (whatTickets.ToLower() == "all") // defaults to this else block { ... }
+                {
+                    model = TicketRepository.GetAllTickets()
+                        .ToList()
+                        .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
+                        .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                        .ToList();
+                }
+            }
+            else
+            {
+                model = TicketRepository.GetAllTickets()
+                    .ToList()
+                    .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
+                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                    .ToList();
+            }
 
             return View(model);
         }

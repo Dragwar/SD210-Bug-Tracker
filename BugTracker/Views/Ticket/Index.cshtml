@@ -1,7 +1,11 @@
 ﻿@model List<TicketIndexViewModel>
 
 @{
-    ViewBag.Title = "Tickets";
+    ViewBag.Title = "All Tickets";
+    if (!string.IsNullOrWhiteSpace((string)ViewBag.whatTickets))
+    {
+        ViewBag.Title = $"{ViewBag.whatTickets} Tickets";
+    }
 }
 
 @section Styles
@@ -28,9 +32,46 @@
                     </a>
                 }
             </p>
+            <div style="margin-top: 15px;">
+                @{
+                    #region Ticket Filters
+                    bool isDeveloper = User.IsInRole(nameof(UserRolesEnum.Developer));
+                    bool isSubmitter = User.IsInRole(nameof(UserRolesEnum.Submitter));
+
+                    if (isSubmitter || isDeveloper)
+                    {
+                        <span>[</span>
+                        <a class="small text-muted" href="@Url.Action(nameof(TicketController.Index), new { whatTickets = "" })">
+                            View All Tickets
+                        </a>
+                        if (isSubmitter)
+                        {
+                            <span>|</span>
+                            <a class="small text-muted" href="@Url.Action(nameof(TicketController.Index), new { whatTickets = "Created" })">
+                                View My Created Tickets
+                            </a>
+                            if (!isDeveloper)
+                            {
+                                <span>]</span>
+                            }
+                        }
+
+                        if (isDeveloper)
+                        {
+                            <span>|</span>
+                            <a class="small text-muted" href="@Url.Action(nameof(TicketController.Index), new { whatTickets = "Assigned" })">
+                                View My Assigned Tickets
+                            </a>
+                            <span>]</span>
+                        }
+                    }
+                    #endregion
+                }
+            </div>
         </div>
         <div class="content">
             @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
             @if (Model.Any())
             {
                 <table id="my-projects" class="table table-bordered table-striped">

@@ -57,9 +57,14 @@ namespace BugTracker.Models.ViewModels.Home
                    .Take(latestCreatedTicketIntakeLimit)
                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                    .ToList() ?? new List<TicketIndexViewModel>();
-                latestAssignedTickets = new List<TicketIndexViewModel>();
             }
-            else if (roles.Any(role => role.Name == nameof(UserRolesEnum.Developer)))
+            else
+            {
+                //! if not (Submitter)
+                latestCreatedTickets = new List<TicketIndexViewModel>();
+            }
+
+            if (roles.Any(role => role.Name == nameof(UserRolesEnum.Developer)))
             {
                 //! get assigned tickets (Developer)
                 numberOfAssignedTickets = applicationUser.AssignedTickets?.Count ?? 0;
@@ -68,12 +73,10 @@ namespace BugTracker.Models.ViewModels.Home
                     .Take(latestAssignedTicketIntakeLimit)
                     .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
                     .ToList() ?? new List<TicketIndexViewModel>();
-                latestCreatedTickets = new List<TicketIndexViewModel>();
             }
             else
             {
-                //! if not (Developer) or (Submitter)
-                latestCreatedTickets = new List<TicketIndexViewModel>();
+                //! if not (Developer)
                 latestAssignedTickets = new List<TicketIndexViewModel>();
             }
 
