@@ -47,7 +47,7 @@ namespace BugTracker.Models.ViewModels.Project
                     Disabled = false,
                 };
 
-                foreach (ApplicationUser user in userRepository.GetAllUsers())
+                foreach (ApplicationUser user in userRepository.GetAllUsers().ToList())
                 {
                     if (project.Users.Contains(user))
                     {

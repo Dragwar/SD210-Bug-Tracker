@@ -58,7 +58,7 @@ namespace BugTracker.Controllers
                     model = TicketRepository.GetUserAssignedTickets(userId)
                         .ToList()
                         //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user is assigned to the ticket
-                        .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                        .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
                         .ToList();
                 }
                 else if (whatTickets.ToLower() == "created")
@@ -67,7 +67,7 @@ namespace BugTracker.Controllers
                     model = TicketRepository.GetUserCreatedTickets(userId)
                     .ToList()
                     //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user created the ticket
-                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                    .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
                     .ToList();
                 }
                 else //if (whatTickets.ToLower() == "all") // defaults to this else block { ... }
@@ -75,7 +75,7 @@ namespace BugTracker.Controllers
                     model = TicketRepository.GetAllTickets()
                         .ToList()
                         .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
-                        .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                        .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
                         .ToList();
                 }
             }
@@ -84,7 +84,7 @@ namespace BugTracker.Controllers
                 model = TicketRepository.GetAllTickets()
                     .ToList()
                     .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
-                    .Select(ticket => TicketIndexViewModel.CreateViewModel(ticket))
+                    .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
                     .ToList();
             }
 
@@ -126,7 +126,8 @@ namespace BugTracker.Controllers
         // GET: Ticket/Create
         [BugTrackerAuthorize(nameof(UserRolesEnum.Submitter))]
         [OverrideCurrentNavLinkStyle("ticket-index")]
-        public ActionResult Create()
+        [Route("Ticket/Create")] //! this is needed because of the route on the index (I don't know why)
+        public ActionResult Create(Guid? projectId)
         {
             string userId = User.Identity.GetUserId();
 
@@ -137,10 +138,12 @@ namespace BugTracker.Controllers
 
             List<SelectListItem> userProjects = ProjectRepository
                 .GetUserProjects(userId)
+                .ToList()
                 .Select(project => new SelectListItem()
                 {
                     Text = project.Name,
                     Value = project.Id.ToString(),
+                    Selected = projectId.HasValue ? project.Id == projectId.Value : false,
                 })
                 .ToList();
 
@@ -167,6 +170,7 @@ namespace BugTracker.Controllers
         // POST: Ticket/Create
         [HttpPost]
         [BugTrackerAuthorize(nameof(UserRolesEnum.Submitter))]
+        [Route("Ticket/Create")] //! this is needed because of the route on the index (I don't know why)
         public ActionResult Create(TicketCreateViewModel formData)
         {
             if (formData == null || !ModelState.IsValid || !formData.Type.HasValue || !formData.Priority.HasValue)
@@ -270,6 +274,7 @@ namespace BugTracker.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+
             return View(model);
         }
 

@@ -26,6 +26,7 @@
 {
     @Scripts.Render(@"~/data-tables/js")
     <script type="text/javascript" src="~/Scripts/MyScripts/DataTablesProjectDetails.js"></script>
+    <script type="text/javascript" src="~/Scripts/MyScripts/DataTablesProjectAll.js"></script>
 }
 
 
@@ -92,15 +93,17 @@
                     <p>
                         <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
                     </p>
-                    <p>
-                        @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
-                        {
-                            <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
-                        }
-                    </p>
-                    <p>
-                        <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
-                    </p>
+                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                    {
+                        <p>
+                            <i class="fa fa-circle text-primary"></i> 
+                            @Html.ActionLink("See All Projects", nameof(ProjectController.All))
+                        </p>
+                        <p>
+                            <i class="fa fa-circle text-warning"></i> 
+                            @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
+                        </p>
+                    }
                 </div>
                 <hr />
                 <div class="stats">
@@ -158,6 +161,121 @@
             else
             {
                 <p class="text-danger">No users assigned to project</p>
+            }
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-12">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">@Model.Name's Tickets</h4>
+            <p class="category">
+                @if (User.IsInRole(nameof(UserRolesEnum.Submitter)))
+                {
+                    <a href="@Url.Action(nameof(TicketController.Create), "Ticket", new { projectId = Model.Id })">
+                        Create New Ticket For @Model.Name
+                        <i style="position: relative; top: 5px; font-weight: 500; font-size:25px;" class="pe-7s-note"></i>
+                    </a>
+                }
+            </p>
+        </div>
+        <div class="content">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            @if (Model.Tickets?.Any() != null)
+            {
+                <table id="all-projects" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Tickets[0].Title)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Tickets[0].Priority)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Tickets[0].Type)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Tickets[0].Status)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Tickets[0].DateCreated)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Tickets[0].DateUpdated)
+                            </th>
+                            <!--
+                                <th>
+                                    @@Html.DisplayNameFor(model => model[0].AuthorName)
+                                </th>
+                                <th>
+                                    @@Html.DisplayNameFor(model => model[0].AssignedUserName)
+                                </th>
+                            -->
+                            <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-link"></i></th>
+                            <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-comment"></i></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (TicketIndexViewModel ticket in Model.Tickets)
+                        {
+                            bool canEditTicket = User.IsInRole(nameof(UserRolesEnum.Admin)) ||
+                                        User.IsInRole(nameof(UserRolesEnum.ProjectManager)) ||
+                                        (User.IsInRole(nameof(UserRolesEnum.Submitter)) && ticket.IsCurrentUserTheAuthorOrIsAssigned) ||
+                                        (User.IsInRole(nameof(UserRolesEnum.Developer)) && ticket.IsCurrentUserTheAuthorOrIsAssigned);
+                            <tr>
+                                <td>
+                                    @ticket.Title
+                                </td>
+                                <td>
+                                    @ticket.Priority
+                                </td>
+                                <td>
+                                    @ticket.Type
+                                </td>
+                                <td>
+                                    @ticket.Status
+                                </td>
+                                <td>
+                                    @ticket.DateCreated.ToShortDateString()
+                                </td>
+                                <td>
+                                    @(ticket.DateUpdated?.ToShortDateString())
+                                </td>
+                                <!--
+                                    <td>
+                                        @@ticket.AuthorName
+                                    </td>
+                                    <td>
+                                        @@ticket.AssignedUserName
+                                    </td>
+                                -->
+                                <td>@ticket.AttachmentCount</td>
+                                <td>@ticket.CommentCount</td>
+                                <td>
+                                    @if (canEditTicket)
+                                    {
+                                        <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), "Ticket", new { Id = ticket.Id })">
+                                            @nameof(ProjectController.Edit) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-tools"></i>
+                                        </a>
+                                        <div style="margin: 0px 6px;"></div>
+                                    }
+                                    <a class="small text-muted" href="@Url.Action(nameof(TicketController.Details), "Ticket", new { Id = ticket.Id })">
+                                        @nameof(ProjectController.Details) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-info"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="text-danger">You have no tickets</p>
             }
         </div>
     </div>

@@ -23,19 +23,28 @@ namespace BugTracker.Models.ViewModels.Ticket
         public string ProjectName { get; set; }
         public Guid ProjectId { get; set; }
 
-        //[Display(Name = "Author")]
-        //public string AuthorName { get; set; }
-        //public string AuthorId { get; set; }
+        [Display(Name = "Author")]
+        public string AuthorName { get; set; }
+        public string AuthorId { get; set; }
 
-        //[Display(Name = "Assigned User")]
-        //public string AssignedUserName { get; set; }
-        //public string AssignedUserId { get; set; }
+        [Display(Name = "Assigned User")]
+        public string AssignedUserName { get; set; }
+        public string AssignedUserId { get; set; }
 
-        public static TicketIndexViewModel CreateViewModel(Domain.Ticket ticket)
+        public bool IsCurrentUserTheAuthorOrIsAssigned { get; set; }
+
+        public static TicketIndexViewModel CreateViewModel(string currentUserId, Domain.Ticket ticket)
         {
             if (ticket == null)
             {
                 throw new ArgumentNullException();
+            }
+
+            bool isCurrentUserTheAuthorOrIsAssigned = ticket.AuthorId == currentUserId;
+
+            if (!isCurrentUserTheAuthorOrIsAssigned)
+            {
+                isCurrentUserTheAuthorOrIsAssigned = ticket?.AssignedUserId != null ? ticket.AssignedUserId == currentUserId : false;
             }
 
             try
@@ -51,12 +60,13 @@ namespace BugTracker.Models.ViewModels.Ticket
                     CommentCount = ticket.Comments.Count,
                     DateCreated = ticket.DateCreated,
                     DateUpdated = ticket.DateUpdated,
-                    //AssignedUserId = ticket.AssignedUserId,
-                    //AssignedUserName = ticket.AssignedUser.UserName,
-                    //AuthorId = ticket.AuthorId,
-                    //AuthorName = ticket.Author.UserName,
+                    AssignedUserId = ticket?.AssignedUserId,
+                    AssignedUserName = ticket?.AssignedUser?.UserName,
+                    AuthorId = ticket.AuthorId,
+                    AuthorName = ticket.Author.UserName,
                     ProjectId = ticket.ProjectId,
                     ProjectName = ticket.Project.Name,
+                    IsCurrentUserTheAuthorOrIsAssigned = isCurrentUserTheAuthorOrIsAssigned,
                 };
             }
             catch (Exception e)

@@ -1,6 +1,10 @@
 ﻿@model TicketDetailsViewModel
 @{
     ViewBag.Title = $"{Model.Title}";
+    bool canEditTicket = User.IsInRole(nameof(UserRolesEnum.Admin)) ||
+                        User.IsInRole(nameof(UserRolesEnum.ProjectManager)) ||
+                        User.Identity.Name == Model.Author.Email ||
+                        (!string.IsNullOrWhiteSpace(Model?.AssignedUser?.Email) && User.Identity.Name == Model.AssignedUser.Email);
 }
 
 <div class="col-lg-4">
@@ -48,6 +52,9 @@
                 </strong>
                 <span>
                     @Model.Project.Name
+                    <a href="@Url.Action(nameof(ProjectController.Details), "Project", new { id = Model.ProjectId })">
+                        <i class="pe-7s-info" style="font-weight: 100; font-size: 110%; position: relative; top: 3px;"></i>
+                    </a>
                 </span>
             </div>
             <div>
@@ -117,7 +124,7 @@
                     {
                         <span><i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span></span>
                     }
-                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)) || User.Identity.Name == Model.Author.Email)
+                    @if (canEditTicket)
                     {
                         <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
                             <i class="pe-7s-tools" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i>
@@ -164,14 +171,14 @@
             <div class="header">
                 <h4 class="title">Assigned User</h4>
                 <p class="category">
-                    @if (Model.AssignedUser == null && (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))))
+                    @if (Model.AssignedUser == null && canEditTicket)
                     {
                         <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
                             <i class="pe-7s-add-user" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
                             <span>Assign a user to this ticket</span>
                         </a>
                     }
-                    else if (Model.AssignedUser != null && (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))))
+                    else if ((User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager))) && canEditTicket)
                     {
                         <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })" class="text-warning">
                             <i class="pe-7s-users" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>

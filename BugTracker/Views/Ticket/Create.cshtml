@@ -2,6 +2,7 @@
 
 @{
     ViewBag.Title = "Create";
+    bool isAdminOrProjectManager = User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager));
 }
 
 @section Scripts {
@@ -60,7 +61,7 @@
                         </div>
                     </div>
 
-                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)))
+                    @if (isAdminOrProjectManager)
                     {
                         <div class="form-group">
                             @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -102,7 +103,7 @@
                         | @Html.ActionLink("My Projects", nameof(ProjectController.Index), "Project", new { }, new { @class = "text-warning" })
                     </span>
 
-                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                    @if (isAdminOrProjectManager)
                     {
                         <span>| @Html.ActionLink("All Projects", nameof(ProjectController.All), "Project", new { }, new { @class = "text-warning" })</span>
                     }

@@ -80,10 +80,15 @@ namespace BugTracker.Controllers
         // GET: Project/Details/{id}
         [BugTrackerAuthorize]
         [OverrideCurrentNavLinkStyle("project-index")]
-        public ActionResult Details(Guid id)
+        public ActionResult Details(Guid? id)
         {
+            if (!id.HasValue || id.Value == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             string userId = User.Identity.GetUserId();
-            Project foundProject = ProjectRepository.GetProject(id);
+            Project foundProject = ProjectRepository.GetProject(id.Value);
 
             #region Null Checks
             if (foundProject == null)
@@ -109,7 +114,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(ProjectDetailsViewModel.CreateNewViewModel(foundProject, DbContext));
+            return View(ProjectDetailsViewModel.CreateNewViewModel(userId, foundProject, DbContext));
         }
 
         private ProjectCreateViewModel GenerateCreateViewModel()
@@ -122,14 +127,16 @@ namespace BugTracker.Controllers
 
             string userId = User.Identity.GetUserId();
 
-            List<SelectListItem> userList = UserRepository.GetAllUsers().Select(user => new SelectListItem()
-            {
-                Text = user.DisplayName,
-                Value = user.Id,
-                Selected = false,
-                Disabled = false,
-                Group = initialAssignedUserGroup,
-            }).ToList();
+            List<SelectListItem> userList = UserRepository.GetAllUsers()
+                .ToList()
+                .Select(user => new SelectListItem()
+                {
+                    Text = user.DisplayName,
+                    Value = user.Id,
+                    Selected = false,
+                    Disabled = false,
+                    Group = initialAssignedUserGroup,
+                }).ToList();
 
             SelectListItem projectCreator = userList.FirstOrDefault(user => user.Value == userId);
 
@@ -262,7 +269,7 @@ namespace BugTracker.Controllers
 
         private ProjectEditViewModel GenerateEditViewModel(Guid? id)
         {
-            if (id == null)
+            if (!id.HasValue || id.Value == Guid.Empty)
             {
                 return null;
             }
@@ -280,8 +287,14 @@ namespace BugTracker.Controllers
         // GET: Project/Edit/{id}
         [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
         [OverrideCurrentNavLinkStyle("project-index")]
-        public ActionResult Edit(Guid id)
+        [Route("Project/Edit")] //! I am not displaying the {id} parameter via this route
+        public ActionResult Edit(Guid? id)
         {
+            if (!id.HasValue || id.Value == Guid.Empty)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             ProjectEditViewModel model = GenerateEditViewModel(id);
 
             if (model == null)
@@ -294,6 +307,7 @@ namespace BugTracker.Controllers
         // POST: Project/Edit/{id}
         [HttpPost]
         [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
+        [Route("Project/Edit")] //! this is needed because the get action has a route
         public ActionResult Edit(ProjectEditViewModel formData)
         {
             try

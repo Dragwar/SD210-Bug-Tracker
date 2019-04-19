@@ -114,6 +114,10 @@
                     <tbody>
                         @foreach (TicketIndexViewModel ticket in Model)
                         {
+                            bool canEditTicket = User.IsInRole(nameof(UserRolesEnum.Admin)) || 
+                                        User.IsInRole(nameof(UserRolesEnum.ProjectManager)) || 
+                                        (User.IsInRole(nameof(UserRolesEnum.Submitter)) && ticket.IsCurrentUserTheAuthorOrIsAssigned) ||
+                                        (User.IsInRole(nameof(UserRolesEnum.Developer)) && ticket.IsCurrentUserTheAuthorOrIsAssigned);
                             <tr>
                                 <td>
                                     @ticket.Title
@@ -147,10 +151,13 @@
                                     @ticket.ProjectName
                                 </td>
                                 <td>
-                                    <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = ticket.Id })">
-                                        @nameof(ProjectController.Edit) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-tools"></i>
-                                    </a>
-                                    <div style="margin: 0px 6px;"></div>
+                                    @if (canEditTicket)
+                                    {
+                                        <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = ticket.Id })">
+                                            @nameof(ProjectController.Edit) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-tools"></i>
+                                        </a>
+                                        <div style="margin: 0px 6px;"></div>
+                                    }
                                     <a class="small text-muted" href="@Url.Action(nameof(TicketController.Details), new { Id = ticket.Id })">
                                         @nameof(ProjectController.Details) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-info"></i>
                                     </a>
