@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-#pragma warning disable IDE1006
 
 namespace BugTracker.MyHelpers
 {

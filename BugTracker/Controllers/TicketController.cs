@@ -47,10 +47,6 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
             }
 
-            //! Demo for .GetIsUserInRoleDictionary()
-            IReadOnlyDictionary<UserRolesEnum, bool> isRoleDictionary1 = UserRoleRepository.GetIsUserInRoleDictionary(userId);
-            IReadOnlyDictionary<string, bool> isRoleDictionary2 = UserRoleRepository.GetIsUserInRoleDictionary(userId, "Admin", "Developer", "Submitter", "ProjectManager", "None");
-
             List<TicketIndexViewModel> model = TicketRepository.GetAllTickets()
                 .ToList()
                 .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Web;
 
 namespace BugTracker.MyHelpers.DB_Repositories
@@ -33,9 +32,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
             IdentityResult result = UserManager.AddToRole(userId, roleName);
             return result.Succeeded;
         }
-#pragma warning disable IDE0060 // Remove unused parameter
         public bool AddUserToRole(string userId, UserRolesEnum roleName)
-#pragma warning restore IDE0060 // Remove unused parameter
         {
             IdentityResult result = UserManager.AddToRole(userId, nameof(roleName));
             return result.Succeeded;
@@ -45,9 +42,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
             IdentityResult result = UserManager.RemoveFromRole(userId, roleName);
             return result.Succeeded;
         }
-#pragma warning disable IDE0060 // Remove unused parameter
         public bool RemoveUserFromRole(string userId, UserRolesEnum roleName)
-#pragma warning restore IDE0060 // Remove unused parameter
         {
             IdentityResult result = UserManager.RemoveFromRole(userId, nameof(roleName));
             return result.Succeeded;
@@ -98,9 +93,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
             return resultList;
         }
-#pragma warning disable IDE0060 // Remove unused parameter
         public List<ApplicationUser> UsersNotInRole(UserRolesEnum roleName)
-#pragma warning restore IDE0060 // Remove unused parameter
         {
             List<ApplicationUser> resultList = new List<ApplicationUser>();
             List<ApplicationUser> List = UserManager.Users.ToList();
@@ -205,7 +198,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
                     isInRole[roleName] = true;
                 }
             }
-            
+
             return isInRole;
         }
     }
