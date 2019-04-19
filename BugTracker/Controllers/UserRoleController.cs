@@ -31,6 +31,7 @@ namespace BugTracker.Controllers
         {
             List<HelperUserViewModel> model = UserRepository
                 .GetAllUsers()
+                .ToList()
                 .Select(user => HelperUserViewModel.CreateNewViewModel(user, DbContext))
                 .ToList();
 
