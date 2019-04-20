@@ -1,0 +1,48 @@
+﻿@model TicketCommentDeleteViewModel
+
+@{
+    ViewBag.Title = "Delete Ticket Comment";
+}
+
+<div class="col-lg-6">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">
+                @* TITLE HERE *@
+                Are you sure you want to delete this comment
+            </h4>
+            <p class="category">
+                @* SUBTITLE HERE *@
+                from "@Html.DisplayFor(model => model.TicketName)" ticket
+            </p>
+        </div>
+        <div class="content">
+            @* CONTENT HERE *@
+            <dl>
+                <dt>
+                    @Html.DisplayNameFor(model => model.Comment):
+                </dt>
+                <dd style="overflow-wrap: break-word;">
+                    @Html.DisplayFor(model => model.Comment)
+                </dd>
+            </dl>
+
+
+            @* FOOTER HERE *@
+            <div class="footer">
+                <hr />
+                @using (Html.BeginForm())
+                {
+                    @Html.HiddenFor(model => model.TicketId)
+                    @Html.AntiForgeryToken()
+                    <div class="stats">
+                        <div class="form-actions no-color">
+                            @Html.ActionLink("Do Not Delete", nameof(TicketCommentController.Index), new { ticketId = Model.TicketId }, new { @class = "btn btn-primary", style = "" })
+                            <input type="submit" value="Delete" class="btn btn-danger" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

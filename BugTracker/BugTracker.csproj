@@ -178,6 +178,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
+    <Compile Include="Controllers\TicketCommentController.cs" />
     <Compile Include="Controllers\TicketController.cs" />
     <Compile Include="Controllers\UserRoleController.cs" />
     <Compile Include="Global.asax.cs">
@@ -202,6 +203,10 @@
     <Compile Include="Models\ViewModels\HelperUserViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\ProjectEditViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\ProjectIndexViewModel.cs" />
+    <Compile Include="Models\ViewModels\TicketComment\ITicketCommentCreateEditViewModel.cs" />
+    <Compile Include="Models\ViewModels\TicketComment\TicketCommentDeleteViewModel.cs" />
+    <Compile Include="Models\ViewModels\TicketComment\TicketCommentEditViewModel.cs" />
+    <Compile Include="Models\ViewModels\TicketComment\TicketCommentCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketEditViewModel.cs" />
@@ -210,6 +215,7 @@
     <Compile Include="MyHelpers\CONSTANTS.cs" />
     <Compile Include="MyHelpers\DateHelper.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
+    <Compile Include="MyHelpers\DB_Repositories\TicketComment\TicketCommentRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Ticket\TicketRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\User\UserRepository.cs" />
@@ -628,6 +634,9 @@
     <Content Include="Views\Ticket\Create.cshtml" />
     <Content Include="Views\Shared\UnauthorizedRequest.cshtml" />
     <Content Include="Views\Ticket\Edit.cshtml" />
+    <Content Include="Views\TicketComment\Create.cshtml" />
+    <Content Include="Views\TicketComment\Edit.cshtml" />
+    <Content Include="Views\TicketComment\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

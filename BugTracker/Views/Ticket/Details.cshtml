@@ -7,214 +7,166 @@
                         (!string.IsNullOrWhiteSpace(Model?.AssignedUser?.Email) && User.Identity.Name == Model.AssignedUser.Email));
 }
 
+@section Styles
+{
+    <style>
+        .delete-link:hover {
+            color: red;
+        }
+
+        .edit-link:hover {
+            color: orange
+        }
+    </style>
+}
+
+@* Main Details and Attachments Cards *@
 <div class="col-lg-4">
-    <div class="card">
-        <div class="header">
-            <h4 class="title">@ViewBag.Title</h4>
-            <p class="category"></p>
-        </div>
-        <div class="content">
-            <div>
-                <strong>
-                    @Html.DisplayNameFor(model => model.Title) :
-                </strong>
-                <span>
-                    @Html.DisplayFor(model => model.Title)
-                </span>
-            </div>
-            <div>
-                <strong>
-                    @Html.DisplayNameFor(model => model.Status) :
-                </strong>
-                <span>
-                    @Html.DisplayFor(model => model.Status)
-                </span>
-            </div>
-            <div>
-                <strong>
-                    @Html.DisplayNameFor(model => model.Priority) :
-                </strong>
-                <span>
-                    @Html.DisplayFor(model => model.Priority)
-                </span>
-            </div>
-            <div>
-                <strong>
-                    @Html.DisplayNameFor(model => model.Type) :
-                </strong>
-                <span>
-                    @Html.DisplayFor(model => model.Type)
-                </span>
-            </div>
-            <div>
-                <strong>
-                    @Html.DisplayNameFor(model => model.Project) :
-                </strong>
-                <span>
-                    @Model.Project.Name
-                    <a href="@Url.Action(nameof(ProjectController.Details), "Project", new { id = Model.ProjectId })">
-                        <i class="pe-7s-info" style="font-weight: 100; font-size: 110%; position: relative; top: 3px;"></i>
-                    </a>
-                </span>
-            </div>
-            <div>
-                <strong>
-                    @Html.DisplayNameFor(model => model.Author) :
-                </strong>
-                <span>
-                    @Model.Author.DisplayName
-                </span>
-            </div>
-            @if (Model.AssignedUser != null)
-            {
-                <div>
-                    <strong>
-                        @Html.DisplayNameFor(model => model.AssignedUser) :
-                    </strong>
-                    <span>
-                        @Model.AssignedUser.DisplayName
-                    </span>
-                </div>
-            }
-            <div>
-                <strong>
-                    @Html.DisplayNameFor(model => model.DateCreated) :
-                </strong>
-                <span>
-                    @Html.DisplayFor(model => model.DateCreated)
-                </span>
-            </div>
-
-            @if (Model.DateUpdated.HasValue)
-            {
-                <div>
-                    <strong>
-                        @Html.DisplayNameFor(model => model.DateUpdated) :
-                    </strong>
-                    <span>
-                        @Html.DisplayFor(model => model.DateUpdated)
-                    </span>
-                </div>
-            }
-
-            <div class="footer">
-                @*
-                    <div class="legend">
-                            <p>
-                                <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
-                            </p>
-                            <p>
-                                @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
-                                {
-                                    <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
-                                }
-                            </p>
-                            <p>
-                                <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
-                            </p>
-                    </div>
-                *@
-                <hr style="margin-top: 15px;" />
-                <div class="stats" style="display: flex; justify-content: space-between; align-items: center;">
-                    @if (Model.DateUpdated.HasValue)
-                    {
-                        <span><i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span></span>
-                    }
-                    else
-                    {
-                        <span><i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span></span>
-                    }
-                    @if (canEditTicket)
-                    {
-                        <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
-                            <i class="pe-7s-tools" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i>
-                            Edit
-                        </a>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
-<div class="col-lg-8">
-    <div class="card">
-        <div class="header">
-            <h4 class="title">Ticket Description</h4>
-            <p class="category"></p>
-        </div>
-        <div class="content">
-            <div>@Model.Description</div>
-        </div>
-    </div>
-</div>
-
-<div>
-    <div class="col-lg-6">
+    @* Main Details Card *@
+    <div @*class="col-lg-4"*@>
         <div class="card">
             <div class="header">
-                <h4 class="title">Author</h4>
+                <h4 class="title">@ViewBag.Title</h4>
                 <p class="category"></p>
             </div>
             <div class="content">
-                <p class="small" style="font-weight: 600;">@Model.Author.DisplayName - <em>@Model.Author.Email</em></p>
-                <small>Roles: <em>@(string.Join(", ", Model.Author.Roles.Select(role => role.Name)))</em></small>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="header">
-                <h4 class="title">Assigned User</h4>
-                <p class="category">
-                    @if (Model.AssignedUser == null && canEditTicket)
-                    {
-                        <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
-                            <i class="pe-7s-add-user" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
-                            <span>Assign a user to this ticket</span>
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.Title) :
+                    </strong>
+                    <span>
+                        @Html.DisplayFor(model => model.Title)
+                    </span>
+                </div>
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.Status) :
+                    </strong>
+                    <span>
+                        @Html.DisplayFor(model => model.Status)
+                    </span>
+                </div>
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.Priority) :
+                    </strong>
+                    <span>
+                        @Html.DisplayFor(model => model.Priority)
+                    </span>
+                </div>
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.Type) :
+                    </strong>
+                    <span>
+                        @Html.DisplayFor(model => model.Type)
+                    </span>
+                </div>
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.Project) :
+                    </strong>
+                    <span>
+                        @Model.Project.Name
+                        <a href="@Url.Action(nameof(ProjectController.Details), "Project", new { id = Model.ProjectId })">
+                            <i class="pe-7s-info" style="font-weight: 100; font-size: 110%; position: relative; top: 3px;"></i>
                         </a>
-                    }
-                    else if (isAdminOrProjectManager && canEditTicket)
-                    {
-                        <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })" class="text-warning">
-                            <i class="pe-7s-users" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
-                            <span>Assign a different user to this ticket </span>
-                        </a>
-                    }
-                </p>
-            </div>
-            <div class="content">
+                    </span>
+                </div>
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.Author) :
+                    </strong>
+                    <span>
+                        @Model.Author.DisplayName
+                    </span>
+                </div>
                 @if (Model.AssignedUser != null)
                 {
-                    <p class="small" style="font-weight: 600;">@Model.AssignedUser.DisplayName - <em>@Model.AssignedUser.Email</em></p>
-                    <small>Roles: <em>@(string.Join(", ", Model.AssignedUser.Roles.Select(role => role.Name)))</em></small>
+                    <div>
+                        <strong>
+                            @Html.DisplayNameFor(model => model.AssignedUser) :
+                        </strong>
+                        <span>
+                            @Model.AssignedUser.DisplayName
+                        </span>
+                    </div>
                 }
-                else
+                <div>
+                    <strong>
+                        @Html.DisplayNameFor(model => model.DateCreated) :
+                    </strong>
+                    <span>
+                        @Html.DisplayFor(model => model.DateCreated)
+                    </span>
+                </div>
+
+                @if (Model.DateUpdated.HasValue)
                 {
-                    <p class="text-danger">no assigned user yet</p>
+                    <div>
+                        <strong>
+                            @Html.DisplayNameFor(model => model.DateUpdated) :
+                        </strong>
+                        <span>
+                            @Html.DisplayFor(model => model.DateUpdated)
+                        </span>
+                    </div>
                 }
+
+                <div class="footer">
+                    @*
+                        <div class="legend">
+                                <p>
+                                    <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
+                                </p>
+                                <p>
+                                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                                    {
+                                        <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
+                                    }
+                                </p>
+                                <p>
+                                    <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
+                                </p>
+                        </div>
+                    *@
+                    <hr style="margin-top: 15px;" />
+                    <div class="stats" style="display: flex; justify-content: space-between; align-items: center;">
+                        @if (Model.DateUpdated.HasValue)
+                        {
+                            <span><i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span></span>
+                        }
+                        else
+                        {
+                            <span><i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span></span>
+                        }
+                        @if (canEditTicket)
+                        {
+                            <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
+                                <i class="pe-7s-tools" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i>
+                                Edit
+                            </a>
+                        }
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-
-<div>
     <!--Attachments-->
-    <div class="col-lg-5">
+    <div @*class="col-lg-4"*@>
         <div class="card">
             <div class="header">
                 <h4 class="title">Attachments (@Model.Attachments.Count)</h4>
                 <p class="category">
-                    <!--TODO: Check if user is the ticket owner before displaying this-->
-                    <a href="@Url.Action("Attachment", "Ticket")">
-                        <i class="pe-7s-upload" style="font-size:125%;font-weight:600;position:relative; top:3px;"></i>
-                        Add attachment
-                    </a>
+                    @if (canEditTicket)
+                    {
+                        <a class="text-muted" href="@Url.Action("Attachment", "Ticket")">
+                            <i class="pe-7s-chat" style="font-size:125%;font-weight:600;position:relative; top:3px;"></i>
+                            Add attachment
+                        </a>
+                    }
+
                 </p>
             </div>
             <div class="content">
@@ -223,7 +175,7 @@
                     <!--Attachment-->
                     <div class="card">
                         <div class="header">
-                            <h4 class="title">@attachment.User.Email</h4>
+                            <h5 class="title">@attachment.User.Email</h5>
                             <p class="category">@attachment.DateCreated.GetDateAndTime()</p>
                         </div>
                         <div class="content">
@@ -236,36 +188,119 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!--Comments-->
-    <div class="col-lg-7">
-        <div class="card">
-            <div class="header">
-                <h4 class="title">Comments (@Model.Comments.Count)</h4>
-                <p class="category">
-                    <!--TODO: Check who can leave a comment before displaying this link-->
-                    <a href="@Url.Action("Comment", "Ticket")">
+@* Ticket Description Card *@
+<div class="col-lg-8">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">Ticket Description</h4>
+            <p class="category"></p>
+        </div>
+        <div class="content">
+            <div>@Model.Description</div>
+        </div>
+    </div>
+</div>
+
+@* Author User Card *@
+<div class="col-lg-6">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">Author</h4>
+            <p class="category"></p>
+        </div>
+        <div class="content">
+            <p class="small" style="font-weight: 600;">@Model.Author.DisplayName - <em>@Model.Author.Email</em></p>
+            <small>Roles: <em>@(string.Join(", ", Model.Author.Roles.Select(role => role.Name)))</em></small>
+        </div>
+    </div>
+</div>
+
+@* Assigned User Card *@
+<div class="col-lg-6">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">Assigned User</h4>
+            <p class="category">
+                @if (Model.AssignedUser == null && isAdminOrProjectManager)
+                {
+                    <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
+                        <i class="pe-7s-add-user" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
+                        <span>Assign a user to this ticket</span>
+                    </a>
+                }
+                else if (isAdminOrProjectManager && isAdminOrProjectManager)
+                {
+                    <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })" class="text-warning">
+                        <i class="pe-7s-users" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
+                        <span>Assign a different user to this ticket </span>
+                    </a>
+                }
+            </p>
+        </div>
+        <div class="content">
+            @if (Model.AssignedUser != null)
+            {
+                <p class="small" style="font-weight: 600;">@Model.AssignedUser.DisplayName - <em>@Model.AssignedUser.Email</em></p>
+                <small>Roles: <em>@(string.Join(", ", Model.AssignedUser.Roles.Select(role => role.Name)))</em></small>
+            }
+            else
+            {
+                <p class="text-danger">no assigned user yet</p>
+            }
+        </div>
+    </div>
+</div>
+
+
+@* Comments Card *@
+<!--Comments-->
+<div class="col-lg-12">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">Comments (@Model.Comments.Count)</h4>
+            <p class="category">
+                @if (canEditTicket)
+                {
+                    <a class="text-muted" href="@Url.Action(nameof(TicketCommentController.Create), "TicketComment", new { ticketId = Model.Id })">
                         <i class="pe-7s-chat" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
                         Leave a comment
                     </a>
-                </p>
-            </div>
-            <div class="content">
-                @foreach (BugTracker.Models.Domain.TicketComments comment in Model.Comments)
-                {
-                    <!--Comment-->
-                    <div class="card">
-                        <div class="header">
-                            <h4 class="title">@comment.User.Email</h4>
-                            <p class="category">@comment.DateCreated.GetDateAndTime()</p>
-                        </div>
-                        <div class="content">
-                            <pre>@comment.Comment</pre>
-                        </div>
-                    </div>
                 }
+            </p>
+        </div>
+        <div class="content">
+            @foreach (BugTracker.Models.Domain.TicketComments comment in Model.Comments)
+            {
+                <!--Comment-->
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title" style="display: flex; justify-content: space-between;">
+                            @comment.User.Email
+                            @if (canEditTicket)
+                            {
+                                <a class="small edit-link" href="@Url.Action(nameof(TicketCommentController.Edit), "TicketComment", new { id = comment.Id })">
+                                    Edit <i class="pe-7s-tools" style="font-size: 125%; position: relative; top: 3px;"></i>
+                                </a>
+                            }
+                        </h4>
+                        <p class="category" style="display: flex; justify-content: space-between;">
+                            @comment.DateCreated.GetDateAndTime()
+                            @if (canEditTicket)
+                            {
+                                <a class="small text-muted delete-link" href="@Url.Action(nameof(TicketCommentController.Delete), "TicketComment", new { id = comment.Id })">
+                                    Delete <i class="pe-7s-trash" style="font-size: 150%; position: relative; top: 3px;"></i>
+                                </a>
+                            }
+                        </p>
+                    </div>
+                    <div class="content">
+                        <pre>@comment.Comment</pre>
+                    </div>
+                </div>
+            }
 
-            </div>
         </div>
     </div>
 </div>

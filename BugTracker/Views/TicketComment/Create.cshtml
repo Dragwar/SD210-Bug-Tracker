@@ -1,0 +1,78 @@
+﻿@model TicketCommentCreateViewModel
+
+@{
+    ViewBag.Title = "Create New Comment";
+    bool isAdminOrProjectManager = User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager));
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<div class="col-lg-6">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">
+                @* TITLE HERE *@
+                @ViewBag.Title
+            </h4>
+            <p class="category">
+                @* SUBTITLE HERE *@
+                for "@Model.TicketName" ticket
+            </p>
+        </div>
+        <div class="content">
+            @* CONTENT HERE *@
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.TicketId)
+                @Html.HiddenFor(model => model.UserId)
+                @Html.HiddenFor(model => model.TicketName)
+
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Comment, new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.Comment, new { @class = "form-control", style = "min-width: 100%; min-height: 45px;" })
+                            @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Save New Comment" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* FOOTER HERE *@
+            <div class="footer">
+                @*
+                    <div class="legend">
+                        <i class="fa fa-circle text-info"></i> Open
+                        <i class="fa fa-circle text-danger"></i> Bounce
+                        <i class="fa fa-circle text-warning"></i> Unsubscribe
+                    </div>
+                *@
+                <hr />
+                <div class="stats">
+                    <i style="font-size: 16px; font-weight: 600;" class="pe-7s-back"></i>
+                    <span class="text-danger">Discard Draft</span> and Go To
+                    [
+                    <span>
+                        @Html.ActionLink($"{Model.TicketName}", nameof(TicketCommentController.Index), new { ticketId = Model.TicketId }, new { @class = "text-warning" })
+                    </span>
+                    @*<span>| @Html.ActionLink("My Projects", nameof(ProjectController.Index), "Project", new { }, new { @class = "text-warning" })</span>
+                    @if (isAdminOrProjectManager)
+                    {
+                        <span>| @Html.ActionLink("All Projects", nameof(ProjectController.All), "Project", new { }, new { @class = "text-warning" })</span>
+                    }*@
+                    ]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
