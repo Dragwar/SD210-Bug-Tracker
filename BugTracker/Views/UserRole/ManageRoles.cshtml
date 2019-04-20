@@ -76,25 +76,6 @@
                         </span>
                     </div>
 
-                    @*
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.SelectedUsersToAdd, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.ListBoxFor(model => model.SelectedUsersToAdd, Model.UsersAddList, new { size = 8, @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.SelectedUsersToAdd, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.SelectedUsersToRemove, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10">
-                                @Html.ListBoxFor(model => model.SelectedUsersToRemove, Model.UsersRemoveList, new { size = 8, @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.SelectedUsersToRemove, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-                    *@
-
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
                             <input type="submit" value="Save Role Changes" class="btn btn-primary" />
@@ -105,13 +86,6 @@
 
                 @* FOOTER HERE *@
                 <div class="footer">
-                    @*
-                        <div class="legend">
-                            <i class="fa fa-circle text-info"></i> info
-                            <i class="fa fa-circle text-danger"></i> danger
-                            <i class="fa fa-circle text-warning"></i> warning
-                        </div>
-                    *@
                     <hr />
                     <div class="stats">
                         <i class="pe-7s-back"></i>

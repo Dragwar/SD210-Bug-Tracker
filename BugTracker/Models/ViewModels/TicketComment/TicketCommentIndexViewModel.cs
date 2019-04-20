@@ -12,7 +12,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
         public string UserId { get; set; }
         public string UserEmail { get; set; }
 
-        public static TicketCommentIndexViewModel CreateNewViewModel(TicketComments ticketComment)
+        public static TicketCommentIndexViewModel CreateNewViewModel(Domain.TicketComment ticketComment)
         {
             if (ticketComment == null)
             {

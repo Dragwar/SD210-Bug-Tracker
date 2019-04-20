@@ -26,9 +26,9 @@ namespace BugTracker.Models.Domain
         public virtual TicketTypes Type { get; set; }
         public int TypeId { get; set; }
 
-        public virtual List<TicketAttachments> Attachments { get; set; }
+        public virtual List<TicketAttachment> Attachments { get; set; }
 
-        public virtual List<TicketComments> Comments { get; set; }
+        public virtual List<TicketComment> Comments { get; set; }
 
         public virtual Project Project { get; set; }
         public Guid ProjectId { get; set; }
@@ -42,8 +42,8 @@ namespace BugTracker.Models.Domain
         {
             Id = Guid.NewGuid();
             DateCreated = DateTime.Now;
-            Attachments = new List<TicketAttachments>();
-            Comments = new List<TicketComments>();
+            Attachments = new List<TicketAttachment>();
+            Comments = new List<TicketComment>();
         }
 
         public static Ticket CreateNewTicket(ApplicationDbContext dbContext, TicketCreateViewModel model)

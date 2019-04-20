@@ -10,7 +10,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
         public Guid TicketId { get; set; }
         public string TicketName { get; set; }
 
-        public static TicketCommentDeleteViewModel CreateNewViewModel(TicketComments ticketComment)
+        public static TicketCommentDeleteViewModel CreateNewViewModel(Domain.TicketComment ticketComment)
         {
             if (ticketComment == null)
             {

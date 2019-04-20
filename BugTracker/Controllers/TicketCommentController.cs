@@ -98,7 +98,7 @@ namespace BugTracker.Controllers
             {
                 Ticket foundTicket = TicketRepository.GetTicket(formData.TicketId) ?? throw new ArgumentException("Ticket not found");
 
-                TicketComments newTicketComment = new TicketComments()
+                TicketComment newTicketComment = new TicketComment()
                 {
                     Comment = formData.Comment,
                     UserId = formData.UserId,
@@ -126,7 +126,7 @@ namespace BugTracker.Controllers
             string userId = User.Identity.GetUserId();
             bool doesUserExist = UserRepository.DoesUserExist(userId);
 
-            TicketComments foundTicketComment = TicketCommentRepository.GetTicketComment(id.Value);
+            TicketComment foundTicketComment = TicketCommentRepository.GetTicketComment(id.Value);
 
             if (foundTicketComment == null)
             {
@@ -150,7 +150,7 @@ namespace BugTracker.Controllers
 
             try
             {
-                TicketComments foundTicketComment = TicketCommentRepository.GetTicketComment(formData.Id) ?? throw new Exception("Ticket Comment Not Found");
+                TicketComment foundTicketComment = TicketCommentRepository.GetTicketComment(formData.Id) ?? throw new Exception("Ticket Comment Not Found");
                 foundTicketComment.Comment = formData.Comment;
                 DbContext.SaveChanges();
                 return RedirectToAction(nameof(Index), new { ticketId = formData.TicketId });
@@ -169,7 +169,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "Something went wrong (Comment Wasn't deleted)" });
             }
 
-            TicketComments foundTicketComment = TicketCommentRepository.GetTicketComment(id.Value);
+            TicketComment foundTicketComment = TicketCommentRepository.GetTicketComment(id.Value);
 
             if (foundTicketComment == null)
             {

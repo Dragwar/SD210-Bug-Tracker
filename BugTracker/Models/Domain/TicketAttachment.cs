@@ -2,7 +2,7 @@
 
 namespace BugTracker.Models.Domain
 {
-    public class TicketAttachments
+    public class TicketAttachment
     {
         public Guid Id { get; set; }
         public string Description { get; set; }
@@ -17,7 +17,7 @@ namespace BugTracker.Models.Domain
         public string UserId { get; set; }
 
 
-        public TicketAttachments()
+        public TicketAttachment()
         {
             Id = Guid.NewGuid();
             DateCreated = DateTime.Now;

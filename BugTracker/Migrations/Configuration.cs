@@ -59,7 +59,7 @@ namespace BugTracker.Migrations
 
                 Project project = author.Projects.FirstOrDefault() ?? context.Projects.First();
 
-                TicketAttachments attachment = new TicketAttachments()
+                TicketAttachment attachment = new TicketAttachment()
                 {
                     Description = "testing attachment description",
                     FilePath = "this is a file path",
@@ -67,7 +67,7 @@ namespace BugTracker.Migrations
                     UserId = author.Id,
                 };
 
-                TicketComments comment = new TicketComments()
+                TicketComment comment = new TicketComment()
                 {
                     Comment = "this is a test comment",
                     UserId = assignedUser.Id,
@@ -94,8 +94,8 @@ namespace BugTracker.Migrations
                     ProjectId = project.Id,
                     Project = project,
 
-                    Attachments = new List<TicketAttachments>() { attachment },
-                    Comments = new List<TicketComments>() { comment },
+                    Attachments = new List<TicketAttachment>() { attachment },
+                    Comments = new List<TicketComment>() { comment },
                 };
 
                 context.Tickets.AddOrUpdate(t => t.Title, testTicket);

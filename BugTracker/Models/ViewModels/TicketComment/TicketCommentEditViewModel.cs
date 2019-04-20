@@ -16,7 +16,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
         public string TicketName { get; set; }
         public string UserId { get; set; }
 
-        public static TicketCommentEditViewModel CreateNewViewModel(TicketComments ticketComment)
+        public static TicketCommentEditViewModel CreateNewViewModel(Domain.TicketComment ticketComment)
         {
             if (ticketComment == null)
             {

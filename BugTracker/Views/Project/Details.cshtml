@@ -2,24 +2,12 @@
 
 @{
     ViewBag.Title = Model.Name;
+    bool isAdminOrProjectManager = User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager));
 }
 
 @section Styles
 {
     @Styles.Render(@"~/data-tables/css")
-    <style type="text/css">
-        .card div.legend {
-            display: flex;
-            flex-flow: column;
-            align-items: flex-start;
-        }
-
-            .card div.legend * {
-                padding: 0px;
-                margin: 0px;
-                font-size: small;
-            }
-    </style>
 }
 
 @section Scripts
@@ -93,27 +81,30 @@
                     <p>
                         <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
                     </p>
-                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+                    @if (isAdminOrProjectManager)
                     {
                         <p>
                             <i class="fa fa-circle text-primary"></i>
                             @Html.ActionLink("See All Projects", nameof(ProjectController.All))
                         </p>
-                        <p>
-                            <i class="fa fa-circle text-warning"></i>
-                            @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
-                        </p>
                     }
                 </div>
                 <hr />
-                <div class="stats">
+                <div class="stats" style="display: flex; justify-content: space-between; align-items: center;">
                     @if (Model.DateUpdated.HasValue)
                     {
-                        <i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span>
+                        <span><i class="fa fa-history"></i><span> Last Update: @Model.DateUpdated.Value.GetDateTimeFromNow()</span></span>
                     }
                     else
                     {
-                        <i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span>
+                        <span><i class="fa fa-history"></i><span> Created: @Model.DateCreated.GetDateTimeFromNow("Now")</span></span>
+                    }
+                    @if (isAdminOrProjectManager)
+                    {
+                        <a class="small text-muted edit-link" href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
+                            <i class="pe-7s-tools" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i>
+                            Edit
+                        </a>
                     }
                 </div>
             </div>
@@ -251,7 +242,7 @@
                                 <td>
                                     @if (canEditTicket)
                                     {
-                                        <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), "Ticket", new { Id = ticket.Id })">
+                                        <a class="small text-muted edit-link" href="@Url.Action(nameof(TicketController.Edit), "Ticket", new { Id = ticket.Id })">
                                             @nameof(ProjectController.Edit) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-tools"></i>
                                         </a>
                                         <div style="margin: 0px 6px;"></div>

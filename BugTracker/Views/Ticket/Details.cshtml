@@ -7,19 +7,6 @@
                         (!string.IsNullOrWhiteSpace(Model?.AssignedUser?.Email) && User.Identity.Name == Model.AssignedUser.Email));
 }
 
-@section Styles
-{
-    <style>
-        .delete-link:hover {
-            color: red;
-        }
-
-        .edit-link:hover {
-            color: orange
-        }
-    </style>
-}
-
 @* Main Details and Attachments Cards *@
 <div class="col-lg-4">
     @* Main Details Card *@
@@ -141,7 +128,7 @@
                         }
                         @if (canEditTicket)
                         {
-                            <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
+                            <a class="small text-muted edit-link" href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })">
                                 <i class="pe-7s-tools" style="font-weight: 600; font-size: 125%; position: relative; top: 3px;"></i>
                                 Edit
                             </a>
@@ -169,7 +156,7 @@
                 </p>
             </div>
             <div class="content">
-                @foreach (BugTracker.Models.Domain.TicketAttachments attachment in Model.Attachments)
+                @foreach (BugTracker.Models.Domain.TicketAttachment attachment in Model.Attachments)
                 {
                     <!--Attachment-->
                     <div class="card">

@@ -2,3 +2,23 @@
     display: flex;
     justify-content: space-between;
 }
+
+.edit-link:hover {
+    color: orange;
+}
+
+.delete-link:hover {
+    color: red;
+}
+
+.card div.legend {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+}
+
+    .card div.legend * {
+        padding: 0px;
+        margin: 0px;
+        font-size: small;
+    }

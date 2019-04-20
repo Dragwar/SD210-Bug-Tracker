@@ -17,7 +17,7 @@ namespace BugTracker.Models.ViewModels.Ticket
         public string Status { get; set; }
         public string Type { get; set; }
 
-        public List<TicketAttachments> Attachments { get; set; }
+        public List<TicketAttachment> Attachments { get; set; }
 
         public List<TicketCommentIndexViewModel> Comments { get; set; }
 
@@ -49,7 +49,7 @@ namespace BugTracker.Models.ViewModels.Ticket
                         .Select(ticketComment => TicketCommentIndexViewModel.CreateNewViewModel(ticketComment))
                         .ToList() ?? new List<TicketCommentIndexViewModel>(),
 
-                    Attachments = ticket.Attachments ?? new List<TicketAttachments>(),
+                    Attachments = ticket.Attachments ?? new List<TicketAttachment>(),
                     DateCreated = ticket.DateCreated,
                     DateUpdated = ticket.DateUpdated,
                     Author = HelperUserViewModel.CreateNewViewModel(ticket.Author, dbContext),

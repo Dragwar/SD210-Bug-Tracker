@@ -144,7 +144,7 @@
                                 <td>
                                     @if (canEditTicket)
                                     {
-                                        <a class="small text-muted" href="@Url.Action(nameof(TicketController.Edit), new { Id = ticket.Id })">
+                                        <a class="small text-muted edit-link" href="@Url.Action(nameof(TicketController.Edit), new { Id = ticket.Id })">
                                             @nameof(ProjectController.Edit) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-tools"></i>
                                         </a>
                                         <div style="margin: 0px 6px;"></div>
