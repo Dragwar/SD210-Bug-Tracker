@@ -37,7 +37,7 @@ namespace BugTracker.Models.ViewModels.Ticket
 
         public bool IsCurrentUserTheAuthorOrIsAssigned { get; set; }
 
-        public static TicketIndexViewModel CreateViewModel(string currentUserId, Domain.Ticket ticket)
+        public static TicketIndexViewModel CreateNewViewModel(string currentUserId, Domain.Ticket ticket)
         {
             if (ticket == null)
             {

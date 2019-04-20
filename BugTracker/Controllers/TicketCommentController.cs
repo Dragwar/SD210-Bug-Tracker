@@ -5,8 +5,6 @@ using BugTracker.Models.Domain;
 using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels.TicketComment;
 using BugTracker.MyHelpers.DB_Repositories;
-using BugTracker.MyHelpers.DB_Repositories.Ticket;
-using BugTracker.MyHelpers.DB_Repositories.TicketComment;
 using Microsoft.AspNet.Identity;
 
 namespace BugTracker.Controllers

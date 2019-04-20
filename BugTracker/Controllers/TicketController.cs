@@ -1,16 +1,15 @@
-﻿using BugTracker.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using BugTracker.Models;
 using BugTracker.Models.Domain;
 using BugTracker.Models.Filters.Actions;
 using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels.Ticket;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
-using BugTracker.MyHelpers.DB_Repositories.Ticket;
 using Microsoft.AspNet.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
 
 namespace BugTracker.Controllers
 {
@@ -58,7 +57,7 @@ namespace BugTracker.Controllers
                     model = TicketRepository.GetUserAssignedTickets(userId)
                         .ToList()
                         //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user is assigned to the ticket
-                        .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
+                        .Select(ticket => TicketIndexViewModel.CreateNewViewModel(userId, ticket))
                         .ToList();
                 }
                 else if (whatTickets.ToLower() == "created")
@@ -67,7 +66,7 @@ namespace BugTracker.Controllers
                     model = TicketRepository.GetUserCreatedTickets(userId)
                     .ToList()
                     //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user created the ticket
-                    .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
+                    .Select(ticket => TicketIndexViewModel.CreateNewViewModel(userId, ticket))
                     .ToList();
                 }
                 else //if (whatTickets.ToLower() == "all") // defaults to this else block { ... }
@@ -75,7 +74,7 @@ namespace BugTracker.Controllers
                     model = TicketRepository.GetAllTickets()
                         .ToList()
                         .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
-                        .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
+                        .Select(ticket => TicketIndexViewModel.CreateNewViewModel(userId, ticket))
                         .ToList();
                 }
             }
@@ -84,7 +83,7 @@ namespace BugTracker.Controllers
                 model = TicketRepository.GetAllTickets()
                     .ToList()
                     .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
-                    .Select(ticket => TicketIndexViewModel.CreateViewModel(userId, ticket))
+                    .Select(ticket => TicketIndexViewModel.CreateNewViewModel(userId, ticket))
                     .ToList();
             }
 
@@ -120,7 +119,7 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "You cannot view this ticket (you don't have permission)" });
             }
 
-            TicketDetailsViewModel model = TicketDetailsViewModel.CreateNewViewModel(foundTicket, DbContext);
+            TicketDetailsViewModel model = TicketDetailsViewModel.CreateNewViewModel(userId, foundTicket, DbContext);
 
             return View(model);
         }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using BugTracker.Models;
 
-namespace BugTracker.MyHelpers.DB_Repositories.TicketComment
+namespace BugTracker.MyHelpers.DB_Repositories
 {
     [NotMapped]
     public class TicketCommentRepository

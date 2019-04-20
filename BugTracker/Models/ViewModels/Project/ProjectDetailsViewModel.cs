@@ -38,7 +38,7 @@ namespace BugTracker.Models.ViewModels.Project
                     Name = string.IsNullOrWhiteSpace(project.Name) ? throw new ArgumentNullException() : project.Name,
                     Users = project.Users?.Select(user => HelperUserViewModel.CreateNewViewModel(user, dbContext)).ToList() ?? throw new ArgumentNullException(),
                     TicketCount = project.Tickets?.Count ?? 0,
-                    Tickets = project.Tickets?.Select(ticket => TicketIndexViewModel.CreateViewModel(currentUserId, ticket)).ToList() ?? new List<TicketIndexViewModel>(),
+                    Tickets = project.Tickets?.Select(ticket => TicketIndexViewModel.CreateNewViewModel(currentUserId, ticket)).ToList() ?? new List<TicketIndexViewModel>(),
                     DateCreated = project.DateCreated == null ? throw new ArgumentNullException() : project.DateCreated,
                     DateUpdated = project.DateUpdated,
                     CurrentUserId = currentUserId,
