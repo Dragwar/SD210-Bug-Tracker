@@ -1,9 +1,8 @@
-﻿using BugTracker.Models;
-using BugTracker.Models.Domain;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using BugTracker.Models;
+using BugTracker.Models.Domain;
 
 namespace BugTracker.MyHelpers.DB_Repositories
 {
@@ -12,10 +11,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
     {
         private readonly ApplicationDbContext DBContext;
 
-        public ProjectRepository(ApplicationDbContext dBContext)
-        {
-            DBContext = dBContext ?? throw new ArgumentNullException(nameof(dBContext));
-        }
+        public ProjectRepository(ApplicationDbContext dBContext) => DBContext = dBContext ?? throw new ArgumentNullException(nameof(dBContext));
 
         public Project GetProject(Guid id) => DBContext.Projects.FirstOrDefault(project => project.Id == id);
         public bool IsUserAssignedToProject(ApplicationUser applicationUser, Project project) => project?.Users.Any(user => user?.Id == applicationUser.Id) ?? false;
@@ -71,6 +67,6 @@ namespace BugTracker.MyHelpers.DB_Repositories
             .Any(project => project.Name.ToLower() == projectName.ToLower());
         public bool IsProjectNameAlreadyTaken(string projectName, Guid projectId) => DBContext.Projects
             .Any(project => project.Name.ToLower() == projectName.ToLower() && project.Id != projectId);
-        public IQueryable<Project> GetAllProjects() => DBContext.Projects.AsQueryable(); 
+        public IQueryable<Project> GetAllProjects() => DBContext.Projects.AsQueryable();
     }
 }
