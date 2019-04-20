@@ -1,8 +1,8 @@
-﻿using BugTracker.Models.Domain;
-using BugTracker.Models.ViewModels.TicketComment;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BugTracker.Models.ViewModels.TicketComment;
+using BugTracker.MyHelpers.DB_Repositories;
 
 namespace BugTracker.Models.ViewModels.Ticket
 {
@@ -17,7 +17,7 @@ namespace BugTracker.Models.ViewModels.Ticket
         public string Status { get; set; }
         public string Type { get; set; }
 
-        public List<TicketAttachment> Attachments { get; set; }
+        public List<TicketAttachment.TicketAttachmentIndexViewModel> Attachments { get; set; }
 
         public List<TicketCommentIndexViewModel> Comments { get; set; }
 
@@ -27,9 +27,9 @@ namespace BugTracker.Models.ViewModels.Ticket
         public HelperUserViewModel Author { get; set; }
         public HelperUserViewModel AssignedUser { get; set; }
 
-        public static TicketDetailsViewModel CreateNewViewModel(Domain.Ticket ticket, ApplicationDbContext dbContext)
+        public static TicketDetailsViewModel CreateNewViewModel(string currentUserId, Domain.Ticket ticket, ApplicationDbContext dbContext)
         {
-            if (ticket == null)
+            if (ticket == null || dbContext == null || !new UserRepository(dbContext).DoesUserExist(currentUserId))
             {
                 throw new ArgumentNullException();
             }
@@ -49,7 +49,10 @@ namespace BugTracker.Models.ViewModels.Ticket
                         .Select(ticketComment => TicketCommentIndexViewModel.CreateNewViewModel(ticketComment))
                         .ToList() ?? new List<TicketCommentIndexViewModel>(),
 
-                    Attachments = ticket.Attachments ?? new List<TicketAttachment>(),
+                    Attachments = ticket.Attachments?
+                        .Select(ticketAttachment => TicketAttachment.TicketAttachmentIndexViewModel.CreateNewViewModel(currentUserId, ticketAttachment, dbContext))
+                        .ToList() ?? new List<TicketAttachment.TicketAttachmentIndexViewModel>(),
+
                     DateCreated = ticket.DateCreated,
                     DateUpdated = ticket.DateUpdated,
                     Author = HelperUserViewModel.CreateNewViewModel(ticket.Author, dbContext),
