@@ -34,7 +34,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
         }
         public bool AddUserToRole(string userId, UserRolesEnum roleName)
         {
-            IdentityResult result = UserManager.AddToRole(userId, nameof(roleName));
+            IdentityResult result = UserManager.AddToRole(userId, roleName.ToString());
             return result.Succeeded;
         }
         public bool RemoveUserFromRole(string userId, string roleName)
@@ -44,15 +44,15 @@ namespace BugTracker.MyHelpers.DB_Repositories
         }
         public bool RemoveUserFromRole(string userId, UserRolesEnum roleName)
         {
-            IdentityResult result = UserManager.RemoveFromRole(userId, nameof(roleName));
+            IdentityResult result = UserManager.RemoveFromRole(userId, roleName.ToString());
             return result.Succeeded;
         }
         public List<ApplicationUser> UsersInRole(string roleName)
         {
             List<ApplicationUser> resultList = new List<ApplicationUser>();
-            List<ApplicationUser> List = UserManager.Users.ToList();
+            List<ApplicationUser> list = UserManager.Users.ToList();
 
-            foreach (ApplicationUser user in List)
+            foreach (ApplicationUser user in list)
             {
                 if (IsUserInRole(user.Id, roleName))
                 {
@@ -65,9 +65,9 @@ namespace BugTracker.MyHelpers.DB_Repositories
         public List<ApplicationUser> UsersInRole(UserRolesEnum roleName)
         {
             List<ApplicationUser> resultList = new List<ApplicationUser>();
-            List<ApplicationUser> List = UserManager.Users.ToList();
+            List<ApplicationUser> list = UserManager.Users.ToList();
 
-            foreach (ApplicationUser user in List)
+            foreach (ApplicationUser user in list)
             {
                 IList<string> currentRoleList = UserManager.GetRoles(user.Id);
                 if (IsUserInRole(user.Id, roleName.ToString()))
@@ -81,9 +81,9 @@ namespace BugTracker.MyHelpers.DB_Repositories
         public List<ApplicationUser> UsersNotInRole(string roleName)
         {
             List<ApplicationUser> resultList = new List<ApplicationUser>();
-            List<ApplicationUser> List = UserManager.Users.ToList();
+            List<ApplicationUser> list = UserManager.Users.ToList();
 
-            foreach (ApplicationUser user in List)
+            foreach (ApplicationUser user in list)
             {
                 if (!IsUserInRole(user.Id, roleName))
                 {
@@ -96,11 +96,11 @@ namespace BugTracker.MyHelpers.DB_Repositories
         public List<ApplicationUser> UsersNotInRole(UserRolesEnum roleName)
         {
             List<ApplicationUser> resultList = new List<ApplicationUser>();
-            List<ApplicationUser> List = UserManager.Users.ToList();
+            List<ApplicationUser> list = UserManager.Users.ToList();
 
-            foreach (ApplicationUser user in List)
+            foreach (ApplicationUser user in list)
             {
-                if (!IsUserInRole(user.Id, nameof(roleName)))
+                if (!IsUserInRole(user.Id, roleName.ToString()))
                 {
                     resultList.Add(user);
                 }
