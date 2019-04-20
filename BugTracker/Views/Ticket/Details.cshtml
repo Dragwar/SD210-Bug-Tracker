@@ -67,9 +67,8 @@
                         @Html.DisplayNameFor(model => model.Project) :
                     </strong>
                     <span>
-                        @Model.Project.Name
-                        <a href="@Url.Action(nameof(ProjectController.Details), "Project", new { id = Model.ProjectId })">
-                            <i class="pe-7s-info" style="font-weight: 100; font-size: 110%; position: relative; top: 3px;"></i>
+                        <a class="text-muted" href="@Url.Action(nameof(ProjectController.Details), "Project", new { id = Model.ProjectId })">
+                            @Model.Project.Name <i class="pe-7s-info" style="font-weight: 100; font-size: 110%; position: relative; top: 3px;"></i>
                         </a>
                     </span>
                 </div>
@@ -162,7 +161,7 @@
                     @if (canEditTicket)
                     {
                         <a class="text-muted" href="@Url.Action("Attachment", "Ticket")">
-                            <i class="pe-7s-chat" style="font-size:125%;font-weight:600;position:relative; top:3px;"></i>
+                            <i class="pe-7s-upload" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
                             Add attachment
                         </a>
                     }
@@ -264,27 +263,27 @@
                 @if (canEditTicket)
                 {
                     <a class="text-muted" href="@Url.Action(nameof(TicketCommentController.Create), "TicketComment", new { ticketId = Model.Id })">
-                        <i class="pe-7s-chat" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
+                        <i class="pe-7s-comment" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
                         Leave a comment
                     </a>
                 }
             </p>
         </div>
         <div class="content">
-            @foreach (BugTracker.Models.Domain.TicketComments comment in Model.Comments)
+            @foreach (TicketCommentIndexViewModel comment in Model.Comments)
             {
                 <!--Comment-->
                 <div class="card">
                     <div class="header">
-                        <h4 class="title" style="display: flex; justify-content: space-between;">
-                            @comment.User.Email
+                        <h5 class="title" style="display: flex; justify-content: space-between;">
+                            @comment.UserEmail
                             @if (canEditTicket)
                             {
                                 <a class="small edit-link" href="@Url.Action(nameof(TicketCommentController.Edit), "TicketComment", new { id = comment.Id })">
                                     Edit <i class="pe-7s-tools" style="font-size: 125%; position: relative; top: 3px;"></i>
                                 </a>
                             }
-                        </h4>
+                        </h5>
                         <p class="category" style="display: flex; justify-content: space-between;">
                             @comment.DateCreated.GetDateAndTime()
                             @if (canEditTicket)

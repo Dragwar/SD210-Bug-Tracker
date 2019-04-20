@@ -207,6 +207,7 @@
     <Compile Include="Models\ViewModels\TicketComment\TicketCommentDeleteViewModel.cs" />
     <Compile Include="Models\ViewModels\TicketComment\TicketCommentEditViewModel.cs" />
     <Compile Include="Models\ViewModels\TicketComment\TicketCommentCreateViewModel.cs" />
+    <Compile Include="Models\ViewModels\TicketComment\TicketCommentIndexViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketCreateViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketDetailsViewModel.cs" />
     <Compile Include="Models\ViewModels\Ticket\TicketEditViewModel.cs" />

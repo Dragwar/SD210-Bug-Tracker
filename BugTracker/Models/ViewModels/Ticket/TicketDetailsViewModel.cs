@@ -1,6 +1,8 @@
 ﻿using BugTracker.Models.Domain;
+using BugTracker.Models.ViewModels.TicketComment;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BugTracker.Models.ViewModels.Ticket
 {
@@ -17,7 +19,7 @@ namespace BugTracker.Models.ViewModels.Ticket
 
         public List<TicketAttachments> Attachments { get; set; }
 
-        public List<TicketComments> Comments { get; set; }
+        public List<TicketCommentIndexViewModel> Comments { get; set; }
 
         public Domain.Project Project { get; set; }
         public Guid ProjectId { get; set; }
@@ -42,7 +44,11 @@ namespace BugTracker.Models.ViewModels.Ticket
                     Priority = ticket.Priority.PriorityString,
                     Status = ticket.Status.StatusString,
                     Type = ticket.Type.TypeString,
-                    Comments = ticket.Comments ?? new List<TicketComments>(),
+
+                    Comments = ticket.Comments?
+                        .Select(ticketComment => TicketCommentIndexViewModel.CreateNewViewModel(ticketComment))
+                        .ToList() ?? new List<TicketCommentIndexViewModel>(),
+
                     Attachments = ticket.Attachments ?? new List<TicketAttachments>(),
                     DateCreated = ticket.DateCreated,
                     DateUpdated = ticket.DateUpdated,

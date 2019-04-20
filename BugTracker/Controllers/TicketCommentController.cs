@@ -16,7 +16,6 @@ namespace BugTracker.Controllers
     {
         private readonly ApplicationDbContext DbContext;
         private readonly TicketRepository TicketRepository;
-        private readonly UserRoleRepository UserRoleRepository;
         private readonly UserRepository UserRepository;
         private readonly TicketCommentRepository TicketCommentRepository;
 
@@ -25,7 +24,6 @@ namespace BugTracker.Controllers
             DbContext = new ApplicationDbContext();
             TicketRepository = new TicketRepository(DbContext);
             UserRepository = new UserRepository(DbContext);
-            UserRoleRepository = new UserRoleRepository(DbContext);
             TicketCommentRepository = new TicketCommentRepository(DbContext);
         }
 
