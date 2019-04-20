@@ -28,7 +28,10 @@
                 {
                     <a href="@Url.Action(nameof(TicketController.Create))">
                         Create New Ticket
-                        <i style="position: relative; top: 5px; font-weight: 500; font-size:25px;" class="pe-7s-note"></i>
+                        <span style="position: relative; right: 10px;">
+                            <i style="position: relative; top: -10px; left: 10px; font-size: 100%; font-weight: 600;" class="pe-7s-plus"></i>
+                            <i style="position: relative; top: 5px; font-weight: 500; font-size: 175%;" class="pe-7s-ticket"></i>
+                        </span>
                     </a>
                 }
             </p>
@@ -84,10 +87,10 @@
                                 @Html.DisplayNameFor(model => model[0].Priority)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model[0].Type)
+                                @Html.DisplayNameFor(model => model[0].Status)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model[0].Status)
+                                @Html.DisplayNameFor(model => model[0].Type)
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model[0].DateCreated)
@@ -108,7 +111,7 @@
                             <th>
                                 @Html.DisplayNameFor(model => model[0].ProjectName)
                             </th>
-                            <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-angle-up"></i></th>
+                            <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-gleam"></i></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,24 +122,12 @@
                                         (User.IsInRole(nameof(UserRolesEnum.Submitter)) && ticket.IsCurrentUserTheAuthorOrIsAssigned) ||
                                         (User.IsInRole(nameof(UserRolesEnum.Developer)) && ticket.IsCurrentUserTheAuthorOrIsAssigned);
                             <tr>
-                                <td>
-                                    @ticket.Title
-                                </td>
-                                <td>
-                                    @ticket.Priority
-                                </td>
-                                <td>
-                                    @ticket.Type
-                                </td>
-                                <td>
-                                    @ticket.Status
-                                </td>
-                                <td class="small">
-                                    @ticket.DateCreated.ToShortDateString()
-                                </td>
-                                <td class="small">
-                                    @(ticket.DateUpdated?.ToShortDateString())
-                                </td>
+                                <td style="font-family: 'Segoe UI'; font-weight: 600">@ticket.Title</td>
+                                <td style="font-family: Bahnschrift; font-weight: 700">@ticket.Priority</td>
+                                <td style="font-family: Bahnschrift; font-weight: 400">@ticket.Status</td>
+                                <td style="font-family: Bahnschrift; font-weight: 100">@ticket.Type</td>
+                                <td class="small">@ticket.DateCreated.ToShortDateString()</td>
+                                <td class="small">@(ticket.DateUpdated?.ToShortDateString())</td>
                                 <!--
                                     <td>
                                         @@ticket.AuthorName
@@ -147,7 +138,7 @@
                                 -->
                                 <td>@ticket.AttachmentCount</td>
                                 <td>@ticket.CommentCount</td>
-                                <td class="small">
+                                <td class="small" style="font-family: 'Segoe UI'; font-weight: 600">
                                     @ticket.ProjectName
                                 </td>
                                 <td>

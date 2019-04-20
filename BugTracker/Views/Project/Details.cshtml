@@ -96,11 +96,11 @@
                     @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
                     {
                         <p>
-                            <i class="fa fa-circle text-primary"></i> 
+                            <i class="fa fa-circle text-primary"></i>
                             @Html.ActionLink("See All Projects", nameof(ProjectController.All))
                         </p>
                         <p>
-                            <i class="fa fa-circle text-warning"></i> 
+                            <i class="fa fa-circle text-warning"></i>
                             @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
                         </p>
                     }
@@ -144,13 +144,13 @@
                         @foreach (HelperUserViewModel user in Model.Users)
                         {
                             <tr>
-                                <td>@user.DisplayName</td>
-                                <td>@user.Email</td>
+                                <td style="font-family: 'Segoe UI'; font-weight: 400">@user.DisplayName</td>
+                                <td style="font-family: 'Segoe UI'; font-weight: 400">@user.Email</td>
 
                                 @if (user.Roles.Any())
                                 {
                                     <td>
-                                        <small class="small">@string.Join(", ", user.Roles.Select(role => role.Name))</small>
+                                        <p style="font-family:'Franklin Gothic';" class="small">@string.Join(", ", user.Roles.Select(role => role.Name))</p>
                                     </td>
                                 }
                             </tr>
@@ -196,10 +196,10 @@
                                 @Html.DisplayNameFor(model => model.Tickets[0].Priority)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Tickets[0].Type)
+                                @Html.DisplayNameFor(model => model.Tickets[0].Status)
                             </th>
                             <th>
-                                @Html.DisplayNameFor(model => model.Tickets[0].Status)
+                                @Html.DisplayNameFor(model => model.Tickets[0].Type)
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => model.Tickets[0].DateCreated)
@@ -217,7 +217,7 @@
                             -->
                             <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-link"></i></th>
                             <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-comment"></i></th>
-                            <th></th>
+                            <th><i style="font-size: 16px; font-weight: 600;" class="pe-7s-gleam"></i></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -228,22 +228,14 @@
                                         (User.IsInRole(nameof(UserRolesEnum.Submitter)) && ticket.IsCurrentUserTheAuthorOrIsAssigned) ||
                                         (User.IsInRole(nameof(UserRolesEnum.Developer)) && ticket.IsCurrentUserTheAuthorOrIsAssigned);
                             <tr>
-                                <td>
-                                    @ticket.Title
-                                </td>
-                                <td>
-                                    @ticket.Priority
-                                </td>
-                                <td>
-                                    @ticket.Type
-                                </td>
-                                <td>
-                                    @ticket.Status
-                                </td>
-                                <td>
+                                <td style="font-family: 'Segoe UI'; font-weight: 600">@ticket.Title</td>
+                                <td style="font-family: Bahnschrift; font-weight: 700">@ticket.Priority</td>
+                                <td style="font-family: Bahnschrift; font-weight: 400">@ticket.Status</td>
+                                <td style="font-family: Bahnschrift; font-weight: 100">@ticket.Type</td>
+                                <td class="small">
                                     @ticket.DateCreated.ToShortDateString()
                                 </td>
-                                <td>
+                                <td class="small">
                                     @(ticket.DateUpdated?.ToShortDateString())
                                 </td>
                                 <!--
