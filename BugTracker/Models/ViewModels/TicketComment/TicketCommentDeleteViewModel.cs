@@ -8,7 +8,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
         public Guid Id { get; set; }
         public string Comment { get; set; }
         public Guid TicketId { get; set; }
-        public string TicketName { get; set; }
+        public string TicketTitle { get; set; }
 
         public static TicketCommentDeleteViewModel CreateNewViewModel(Domain.TicketComment ticketComment)
         {
@@ -22,7 +22,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
                 Id = ticketComment.Id,
                 Comment = ticketComment.Comment,
                 TicketId = ticketComment?.Ticket.Id ?? throw new ArgumentException("TicketComment wasn't attached to ticket"),
-                TicketName = ticketComment?.Ticket.Title ?? throw new ArgumentException("TicketComment wasn't attached to ticket"),
+                TicketTitle = ticketComment?.Ticket.Title ?? throw new ArgumentException("TicketComment wasn't attached to ticket"),
             };
         }
     }

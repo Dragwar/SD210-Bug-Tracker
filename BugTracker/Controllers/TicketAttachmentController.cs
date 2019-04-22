@@ -4,6 +4,7 @@ using BugTracker.Models;
 using BugTracker.Models.Domain;
 using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels.TicketAttachment;
+using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
 
@@ -52,7 +53,15 @@ namespace BugTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
             Ticket foundTicket = TicketRepository.GetTicket(ticketId.Value) ?? throw new Exception("This shouldn't happen");
-            return View(TicketAttachmentCreateViewModel.CreateNewViewModel(foundTicket));
+            string userId = User.Identity.GetUserId();
+            if (TicketRepository.CanUserEditTicket(userId, foundTicket.Id))
+            {
+                return View(TicketAttachmentCreateViewModel.CreateNewViewModel(foundTicket));
+            }
+            else
+            {
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a attachment to this ticket ({foundTicket.Title})" });
+            }
         }
 
         // POST: TicketAttachment/Create
@@ -74,7 +83,7 @@ namespace BugTracker.Controllers
                 }
                 if (!TicketRepository.CanUserEditTicket(userId, formData.TicketId))
                 {
-                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({formData.TicketTitle})" });
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a attachment to this ticket ({formData.TicketTitle})" });
                 }
                 if (formData.Media == null)
                 {
@@ -128,10 +137,15 @@ namespace BugTracker.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+            string userId = User.Identity.GetUserId();
             TicketAttachment foundTicketAttachment = TicketAttachmentRepository.GetTicketAttachment(id.Value);
             if (foundTicketAttachment == null)
             {
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"Ticket Attachment wasn't deleted (Not Found)" });
+            }
+            else if (!TicketRepository.CanUserEditTicket(userId, foundTicketAttachment.TicketId))
+            {
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a attachment to this ticket ({foundTicketAttachment.Ticket.Title})" });
             }
             return View(TicketAttachmentDeleteViewModel.CreateNewViewModel(foundTicketAttachment));
         }
@@ -147,10 +161,15 @@ namespace BugTracker.Controllers
 
             try
             {
+                string userId = User.Identity.GetUserId();
                 TicketAttachment foundTicketAttachment = TicketAttachmentRepository.GetTicketAttachment(formData.Id);
                 if (foundTicketAttachment == null)
                 {
                     return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"Ticket Attachment wasn't deleted (Not Found)" });
+                }
+                else if (!TicketRepository.CanUserEditTicket(userId, foundTicketAttachment.TicketId))
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a attachment to this ticket ({foundTicketAttachment.Ticket.Title})" });
                 }
                 DbContext.TicketAttachments.Remove(foundTicketAttachment);
                 int numberOfSavedEntities = DbContext.SaveChanges();

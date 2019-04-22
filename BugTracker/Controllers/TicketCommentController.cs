@@ -94,7 +94,12 @@ namespace BugTracker.Controllers
 
             try
             {
+                string userId = User.Identity.GetUserId();
                 Ticket foundTicket = TicketRepository.GetTicket(formData.TicketId) ?? throw new ArgumentException("Ticket not found");
+                if (!TicketRepository.CanUserEditTicket(userId, foundTicket.Id))
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({foundTicket.Title})" });
+                }
 
                 TicketComment newTicketComment = new TicketComment()
                 {
@@ -148,7 +153,12 @@ namespace BugTracker.Controllers
 
             try
             {
+                string userId = User.Identity.GetUserId();
                 TicketComment foundTicketComment = TicketCommentRepository.GetTicketComment(formData.Id) ?? throw new Exception("Ticket Comment Not Found");
+                if (!TicketRepository.CanUserEditTicket(userId, foundTicketComment.TicketId))
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({formData.TicketTitle})" });
+                }
                 foundTicketComment.Comment = formData.Comment;
                 DbContext.SaveChanges();
                 return RedirectToAction(nameof(Index), new { ticketId = formData.TicketId });
@@ -166,12 +176,16 @@ namespace BugTracker.Controllers
             {
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "Something went wrong (Comment Wasn't deleted)" });
             }
-
+            string userId = User.Identity.GetUserId();
             TicketComment foundTicketComment = TicketCommentRepository.GetTicketComment(id.Value);
 
             if (foundTicketComment == null)
             {
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "Something went wrong (Comment Wasn't deleted)" });
+            }
+            else if (!TicketRepository.CanUserEditTicket(userId, foundTicketComment.TicketId))
+            {
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({foundTicketComment.Ticket.Title})" });
             }
 
             return View(TicketCommentDeleteViewModel.CreateNewViewModel(foundTicketComment));
@@ -181,8 +195,19 @@ namespace BugTracker.Controllers
         [HttpPost]
         public ActionResult Delete(TicketCommentDeleteViewModel formData)
         {
+            if (formData == null)
+            {
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "Something went wrong (Comment Wasn't deleted)" });
+            }
+            
             try
             {
+                string userId = User.Identity.GetUserId();
+                if (!TicketRepository.CanUserEditTicket(userId, formData.Id))
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({formData.TicketTitle})" });
+                }
+
                 bool hasBeenDeleted = TicketCommentRepository.DeleteTicketComment(formData.Id);
 
                 if (!hasBeenDeleted)
