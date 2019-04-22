@@ -1,0 +1,99 @@
+﻿@model TicketAttachmentCreateViewModel
+
+@{
+    ViewBag.Title = "Add new Attachment";
+    bool isAdminOrProjectManager = User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager));
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        const fileInput = document.querySelector(".custom-file-input");
+        const fileButton = document.querySelector(".custom-file-upload");
+        const btnMsg = fileButton.textContent;
+        fileInput.addEventListener("change", (e) => {
+            const fileName = document.querySelector(".custom-file-input").files[0].name;
+            fileButton.lastElementChild.textContent = `${btnMsg} - ${fileName}`;
+        });
+
+        setTimeout(() => {
+            document.querySelector("div.tox-tinymce").setAttribute("style", "height: 300px;");
+        }, 500);
+    </script>
+}
+
+@section Styles
+{
+    <style>
+        input[type="file"] {
+            display: none;
+        }
+
+        .validation-summary-errors ul {
+            margin-left: 50px;
+        }
+    </style>
+}
+
+<div class="col-lg-7">
+    <div class="card">
+        <div class="header">
+            <h4 class="title">
+                @* TITLE HERE *@
+                @ViewBag.Title
+            </h4>
+            <p class="category">
+                @* SUBTITLE HERE *@
+                for "@Model.TicketTitle" ticket
+            </p>
+        </div>
+        <div class="content">
+            @* CONTENT HERE *@
+            @using (Html.BeginForm(nameof(TicketAttachmentController.Create), "TicketAttachment", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.TicketId)
+                @Html.HiddenFor(model => model.TicketTitle)
+
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.TextAreaFor(model => model.Description, new { @class = "form-control", style = "min-width: 80%;" })
+                            @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Media, htmlAttributes: new { @class = "form-check-label text-bold control-label col-md-2" })
+                        <div class="col-md-10">
+                            <label for="upload" class="custom-file-upload btn btn-default">
+                                <input id="upload" class="custom-file-input" type="file" name="@(nameof(Model.Media))" />
+                                <span>Upload A File</span>
+                            </label>
+                            @Html.ValidationMessageFor(model => model.Media, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="Add Attachment" class="btn btn-primary" />
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* FOOTER HERE *@
+            <div class="footer">
+                <hr />
+                <div class="stats">
+                    <i style="font-size: 150%; font-weight: 600; position: relative; top: 3.5px;" class="pe-7s-back"></i>
+                    <span class="text-danger">Discard Attachment</span> and Go To
+                    [
+                    <span>
+                        @Html.ActionLink($"{Model.TicketTitle} (Ticket Details)", nameof(TicketCommentController.Index), new { ticketId = Model.TicketId }, new { @class = "text-warning" })
+                    </span>
+                    ]
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

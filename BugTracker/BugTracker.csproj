@@ -204,6 +204,8 @@
     <Compile Include="Models\ViewModels\HelperUserViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\ProjectEditViewModel.cs" />
     <Compile Include="Models\ViewModels\Project\ProjectIndexViewModel.cs" />
+    <Compile Include="Models\ViewModels\TicketAttachment\TicketAttachmentCreateViewModel.cs" />
+    <Compile Include="Models\ViewModels\TicketAttachment\TicketAttachmentDeleteViewModel.cs" />
     <Compile Include="Models\ViewModels\TicketAttachment\TicketAttachmentIndexViewModel.cs" />
     <Compile Include="Models\ViewModels\TicketComment\ITicketCommentCreateEditViewModel.cs" />
     <Compile Include="Models\ViewModels\TicketComment\TicketCommentDeleteViewModel.cs" />
@@ -223,6 +225,7 @@
     <Compile Include="MyHelpers\DB_Repositories\Ticket\TicketRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\User\UserRepository.cs" />
+    <Compile Include="MyHelpers\DB_Repositories\FileSystemRepository.cs" />
     <Compile Include="MyHelpers\StringHelper.cs" />
     <Compile Include="MyHelpers\TicketPrioritiesEnum.cs" />
     <Compile Include="MyHelpers\TicketStatusesEnum.cs" />
@@ -641,10 +644,12 @@
     <Content Include="Views\TicketComment\Create.cshtml" />
     <Content Include="Views\TicketComment\Edit.cshtml" />
     <Content Include="Views\TicketComment\Delete.cshtml" />
+    <Content Include="Views\TicketAttachment\Create.cshtml" />
+    <Content Include="Views\TicketAttachment\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\TicketAttachment\" />
+    <Folder Include="UserUploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />

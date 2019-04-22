@@ -147,7 +147,7 @@
                 <p class="category">
                     @if (canEditTicket)
                     {
-                        <a class="text-muted" href="@Url.Action("Attachment", "Ticket")">
+                        <a class="text-muted" href="@Url.Action(nameof(TicketAttachmentController.Create), "TicketAttachment", new { ticketId = Model.Id })">
                             <i class="pe-7s-upload" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
                             Upload an attachment
                         </a>
@@ -162,12 +162,22 @@
                     <div class="card">
                         <div class="header">
                             <h5 class="title">@attachment.User.Email</h5>
-                            <p class="category">@attachment.DateCreated.GetDateAndTime()</p>
+                            <p class="category">
+                                @attachment.DateCreated.GetDateAndTime()
+                                <a class="text-muted" href="@attachment.FileUrl">
+                                    <i class="pe-7s-download" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
+                                </a>
+
+                                @if (isAdminOrProjectManager || attachment.User.Email == User.Identity.Name)
+                                {
+                                    <a class="delete-link text-muted" href="@Url.Action(nameof(TicketAttachmentController.Delete), "TicketAttachment", new { id = attachment.Id })">
+                                        <i class="pe-7s-trash" style="font-size: 115%; font-weight: 600; position: relative; top: 1px;"></i>
+                                    </a>
+                                }
+                            </p>
                         </div>
                         <div class="content">
                             <pre>@attachment.Description</pre>
-                            <pre>@attachment.FileUrl</pre>
-                            <pre>@attachment.FilePath</pre>
                         </div>
                     </div>
                 }
@@ -216,7 +226,7 @@
                         <span>Assign a user to this ticket</span>
                     </a>
                 }
-                else if (isAdminOrProjectManager && isAdminOrProjectManager)
+                else if (isAdminOrProjectManager)
                 {
                     <a href="@Url.Action(nameof(TicketController.Edit), new { Id = Model.Id })" class="text-warning">
                         <i class="pe-7s-users" style="font-size: 125%; font-weight: 600; position: relative; top: 3px;"></i>
@@ -264,7 +274,7 @@
                     <div class="header">
                         <h5 class="title" style="display: flex; justify-content: space-between;">
                             @comment.UserEmail
-                            @if (canEditTicket)
+                            @if (isAdminOrProjectManager || comment.UserEmail == User.Identity.Name)
                             {
                                 <a class="small edit-link" href="@Url.Action(nameof(TicketCommentController.Edit), "TicketComment", new { id = comment.Id })">
                                     Edit <i class="pe-7s-tools" style="font-size: 125%; position: relative; top: 3px;"></i>
@@ -273,7 +283,7 @@
                         </h5>
                         <p class="category" style="display: flex; justify-content: space-between;">
                             @comment.DateCreated.GetDateAndTime()
-                            @if (canEditTicket)
+                            @if (isAdminOrProjectManager || comment.UserEmail == User.Identity.Name)
                             {
                                 <a class="small text-muted delete-link" href="@Url.Action(nameof(TicketCommentController.Delete), "TicketComment", new { id = comment.Id })">
                                     Delete <i class="pe-7s-trash" style="font-size: 150%; position: relative; top: 3px;"></i>

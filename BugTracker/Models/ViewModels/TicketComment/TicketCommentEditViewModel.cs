@@ -13,7 +13,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
         public string Comment { get; set; }
 
         public Guid TicketId { get; set; }
-        public string TicketName { get; set; }
+        public string TicketTitle { get; set; }
         public string UserId { get; set; }
 
         public static TicketCommentEditViewModel CreateNewViewModel(Domain.TicketComment ticketComment)
@@ -28,7 +28,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
                 Id = ticketComment.Id,
                 Comment = ticketComment.Comment,
                 TicketId = ticketComment.TicketId,
-                TicketName = ticketComment.Ticket.Title,
+                TicketTitle = ticketComment.Ticket.Title,
                 UserId = ticketComment.UserId,
             };
         }

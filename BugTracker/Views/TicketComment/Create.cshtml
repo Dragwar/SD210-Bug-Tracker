@@ -18,7 +18,7 @@
             </h4>
             <p class="category">
                 @* SUBTITLE HERE *@
-                for "@Model.TicketName" ticket
+                for "@Model.TicketTitle" ticket
             </p>
         </div>
         <div class="content">
@@ -28,7 +28,7 @@
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.TicketId)
                 @Html.HiddenFor(model => model.UserId)
-                @Html.HiddenFor(model => model.TicketName)
+                @Html.HiddenFor(model => model.TicketTitle)
 
                 <div class="form-horizontal">
                     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -63,7 +63,7 @@
                     <span class="text-danger">Discard Draft</span> and Go To
                     [
                     <span>
-                        @Html.ActionLink($"{Model.TicketName}", nameof(TicketCommentController.Index), new { ticketId = Model.TicketId }, new { @class = "text-warning" })
+                        @Html.ActionLink($"{Model.TicketTitle}", nameof(TicketCommentController.Index), new { ticketId = Model.TicketId }, new { @class = "text-warning" })
                     </span>
                     @*<span>| @Html.ActionLink("My Projects", nameof(ProjectController.Index), "Project", new { }, new { @class = "text-warning" })</span>
                     @if (isAdminOrProjectManager)

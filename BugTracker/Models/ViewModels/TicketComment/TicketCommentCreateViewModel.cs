@@ -11,7 +11,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
 
         [Required]
         public Guid TicketId { get; set; }
-        public string TicketName { get; set; }
+        public string TicketTitle { get; set; }
 
         [Required]
         public string UserId { get; set; }
@@ -26,7 +26,7 @@ namespace BugTracker.Models.ViewModels.TicketComment
             return new TicketCommentCreateViewModel()
             {
                 TicketId = ticket?.Id ?? throw new ArgumentException(),
-                TicketName = ticket?.Title ?? throw new ArgumentException(),
+                TicketTitle = ticket?.Title ?? throw new ArgumentException(),
                 UserId = userId
             };
         }

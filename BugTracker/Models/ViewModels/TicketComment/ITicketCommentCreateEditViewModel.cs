@@ -7,6 +7,6 @@ namespace BugTracker.Models.ViewModels.TicketComment
         Guid TicketId { get; set; }
         string UserId { get; set; }
         string Comment { get; set; }
-        string TicketName { get; set; }
+        string TicketTitle { get; set; }
     }
 }

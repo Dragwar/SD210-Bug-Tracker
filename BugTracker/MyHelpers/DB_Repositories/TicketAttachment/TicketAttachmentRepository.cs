@@ -13,6 +13,8 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public TicketAttachmentRepository(ApplicationDbContext dbContext) => DBContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
+        public TicketAttachment GetTicketAttachment(Guid ticketAttachmentId) => DBContext.TicketAttachments.FirstOrDefault(ticketAttachment => ticketAttachment.Id == ticketAttachmentId);
         public IQueryable<TicketAttachment> GetAllTicketAttachments() => DBContext.TicketAttachments.AsQueryable();
+        public bool DoesTicketAttachmentExist(Guid ticketAttachmentId) => DBContext.TicketAttachments.Any(ticketAttachment => ticketAttachment.Id == ticketAttachmentId);
     }
 }

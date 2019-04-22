@@ -51,7 +51,7 @@ namespace BugTracker.Controllers
             }
             else if (!bools.canAddComment)
             {
-                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({model.TicketName})" });
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({model.TicketTitle})" });
             }
             else if (bools.doesTicketExist)
             {

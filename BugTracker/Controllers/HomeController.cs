@@ -45,6 +45,7 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
+        // TODO: make a custom error page
         [OverrideCurrentNavLinkStyle("none")]
         public ActionResult UnauthorizedRequest(string error)
         {

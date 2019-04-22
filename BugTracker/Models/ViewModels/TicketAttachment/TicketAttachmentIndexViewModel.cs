@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using TicketIndexViewModel = BugTracker.Models.ViewModels.Ticket.TicketIndexViewModel;
 
 namespace BugTracker.Models.ViewModels.TicketAttachment
@@ -7,8 +8,9 @@ namespace BugTracker.Models.ViewModels.TicketAttachment
     {
         public Guid Id { get; set; }
         public string Description { get; set; }
-        public string FilePath { get; set; }
         public string FileUrl { get; set; }
+        public string FilePath { get; set; }
+        public string FileName {get;set;}
         public DateTime DateCreated { get; set; }
 
         public TicketIndexViewModel Ticket { get; set; }
@@ -26,7 +28,7 @@ namespace BugTracker.Models.ViewModels.TicketAttachment
 
             TicketIndexViewModel ticket = TicketIndexViewModel.CreateNewViewModel(currentUserId, ticketAttachment.Ticket) ?? throw new ArgumentException();
             HelperUserViewModel user = HelperUserViewModel.CreateNewViewModel(ticketAttachment.User, dbContext) ?? throw new ArgumentException();
-
+            
             return new TicketAttachmentIndexViewModel()
             {
                 Id = ticketAttachment.Id,
@@ -34,7 +36,7 @@ namespace BugTracker.Models.ViewModels.TicketAttachment
                 FilePath = ticketAttachment.FilePath,
                 FileUrl = ticketAttachment.FileUrl,
                 DateCreated = ticketAttachment.DateCreated,
-
+                FileName = Path.GetFileName(ticketAttachment.FilePath),
                 User = user,
                 UserId = user.Id,
 

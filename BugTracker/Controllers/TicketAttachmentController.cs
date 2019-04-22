@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Web.Mvc;
 using BugTracker.Models;
+using BugTracker.Models.Domain;
 using BugTracker.Models.Filters.Authorize;
+using BugTracker.Models.ViewModels.TicketAttachment;
 using BugTracker.MyHelpers.DB_Repositories;
+using Microsoft.AspNet.Identity;
 
 namespace BugTracker.Controllers
 {
@@ -41,67 +44,127 @@ namespace BugTracker.Controllers
             }
         }
 
-        // GET: TicketAttachment/Details/{id}
-        public ActionResult Details(Guid? id) => throw new NotImplementedException();
-
         // GET: TicketAttachment/Create
-        public ActionResult Create() => throw new NotImplementedException();
+        public ActionResult Create(Guid? ticketId)
+        {
+            if (!ticketId.HasValue || !TicketRepository.DoesTicketExist(ticketId.Value))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            Ticket foundTicket = TicketRepository.GetTicket(ticketId.Value) ?? throw new Exception("This shouldn't happen");
+            return View(TicketAttachmentCreateViewModel.CreateNewViewModel(foundTicket));
+        }
 
         // POST: TicketAttachment/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(TicketAttachmentCreateViewModel formData)
         {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    // TODO: Add insert logic here
+            if (formData == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-            //    return RedirectToAction("Index");
-            //}
-            //catch
-            //{
-            //    return View();
-            //}
-        }
+            try
+            {
+                string userId = User.Identity.GetUserId();
+                if (!UserRepository.DoesUserExist(userId))
+                {
+                    throw new Exception("User Not Found");
+                }
+                if (!TicketRepository.CanUserEditTicket(userId, formData.TicketId))
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({formData.TicketTitle})" });
+                }
+                if (formData.Media == null)
+                {
+                    ModelState.AddModelError(nameof(TicketAttachmentCreateViewModel.Media), "You must attach/upload a file");
+                    return View(formData);
+                }
 
-        // GET: TicketAttachment/Edit/{id}
-        public ActionResult Edit(Guid? id) => throw new NotImplementedException();
+                FileSystemRepository fileSystemRepository = new FileSystemRepository(Server, null);
 
-        // POST: TicketAttachment/Edit/{id}
-        [HttpPost]
-        public ActionResult Edit(Guid? id, FormCollection collection)
-        {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    // TODO: Add update logic here
+                TicketAttachment newTicketAttachment = new TicketAttachment()
+                {
+                    Description = formData.Description,
+                    UserId = userId,
+                    TicketId = formData.TicketId,
+                };
 
-            //    return RedirectToAction("Index");
-            //}
-            //catch
-            //{
-            //    return View();
-            //}
+                (bool hasSuccessfullySaved, string filePath, string fileUrl, string resultMessage) = fileSystemRepository.SaveFile(formData.Media);
+
+                if (!hasSuccessfullySaved)
+                {
+                    throw new Exception($"File wasn't saved\n\tFileSystemRepository - Message: {resultMessage}");
+                }
+
+                newTicketAttachment.FilePath = filePath;
+                newTicketAttachment.FileUrl = Url.Content(fileUrl);
+
+                DbContext.TicketAttachments.Add(newTicketAttachment);
+                int savedEntities = DbContext.SaveChanges();
+
+                if (savedEntities <= 0)
+                {
+                    throw new Exception($"Database wasn't saved\n\tFileSystemRepository - Message: {resultMessage}");
+                }
+
+                return RedirectToAction(nameof(Index), new { ticketId = formData.TicketId });
+            }
+            catch
+            {
+                if (formData?.TicketId != null && !TicketRepository.DoesTicketExist(formData.TicketId))
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                return RedirectToAction(nameof(Create), new { ticketId = formData.TicketId });
+            }
         }
 
         // GET: TicketAttachment/Delete/{id}
-        public ActionResult Delete(Guid? id) => throw new NotImplementedException();
+        public ActionResult Delete(Guid? id)
+        {
+            if (!id.HasValue)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            TicketAttachment foundTicketAttachment = TicketAttachmentRepository.GetTicketAttachment(id.Value);
+            if (foundTicketAttachment == null)
+            {
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"Ticket Attachment wasn't deleted (Not Found)" });
+            }
+            return View(TicketAttachmentDeleteViewModel.CreateNewViewModel(foundTicketAttachment));
+        }
 
         // POST: TicketAttachment/Delete/{id}
         [HttpPost]
-        public ActionResult Delete(Guid? id, FormCollection collection)
+        public ActionResult Delete(Guid? id, TicketAttachmentDeleteViewModel formData)
         {
-            throw new NotImplementedException();
-            //try
-            //{
-            //    // TODO: Add delete logic here
+            if (!id.HasValue)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
-            //    return RedirectToAction("Index");
-            //}
-            //catch
-            //{
-            //    return View();
-            //}
+            try
+            {
+                TicketAttachment foundTicketAttachment = TicketAttachmentRepository.GetTicketAttachment(formData.Id);
+                if (foundTicketAttachment == null)
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"Ticket Attachment wasn't deleted (Not Found)" });
+                }
+                DbContext.TicketAttachments.Remove(foundTicketAttachment);
+                int numberOfSavedEntities = DbContext.SaveChanges();
+                if (numberOfSavedEntities <= 0)
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"Ticket Attachment wasn't deleted (Database Error)" });
+                }
+                return RedirectToAction(nameof(Index), new { ticketId = formData.TicketId });
+            }
+            catch
+            {
+                return RedirectToAction(nameof(Delete), new { id = formData.Id });
+            }
         }
+
     }
 }
