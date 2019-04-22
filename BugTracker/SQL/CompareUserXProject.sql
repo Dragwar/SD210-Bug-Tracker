@@ -1,6 +1,6 @@
 ﻿SELECT 
     [users].[Id] AS [User_Id],
-	[users].[DisplayName] AS [User_DisplayName],
+	[users].[Email] AS [User_Email],
 	[projects].[Name] AS [Project_Name],
     [projects].[Id] AS [Project_Id]
 FROM 

@@ -9,7 +9,6 @@ SELECT
 	[TA].[Description] AS [Attachment Description],
 	[TC].[Comment] AS [Comment],
 	[Project].[Name] AS [Project Name],
-	[Author].[DisplayName] AS [Author DisplayName],
 	[Author].[Email] AS [Author Email],
 	[AssignedUser].[DisplayName] AS [AssignedUser DisplayName],
 	[AssignedUser].[Email] AS [AssignedUser Email]

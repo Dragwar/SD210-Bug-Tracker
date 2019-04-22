@@ -13,6 +13,7 @@ using Microsoft.AspNet.Identity;
 
 namespace BugTracker.Controllers
 {
+    [BugTrackerAuthorize]
     public class TicketController : Controller
     {
         private readonly ApplicationDbContext DbContext;
@@ -31,7 +32,6 @@ namespace BugTracker.Controllers
         }
 
         // GET: Ticket
-        [BugTrackerAuthorize]
         [Route("Ticket/{whatTickets?}")]
         public ActionResult Index(string whatTickets = "", string error = "")
         {
@@ -91,7 +91,6 @@ namespace BugTracker.Controllers
         }
 
         // GET: Ticket/Details/{id}
-        [BugTrackerAuthorize]
         [OverrideCurrentNavLinkStyle("ticket-index")]
         public ActionResult Details(Guid? id)
         {
@@ -262,7 +261,6 @@ namespace BugTracker.Controllers
         }
 
         // GET: Ticket/Edit/{id}
-        [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager), nameof(UserRolesEnum.Submitter), nameof(UserRolesEnum.Developer))]
         [OverrideCurrentNavLinkStyle("ticket-index")]
         public ActionResult Edit(Guid? id)
         {
@@ -277,7 +275,6 @@ namespace BugTracker.Controllers
 
         // POST: Ticket/Edit/{id}
         [HttpPost]
-        [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager), nameof(UserRolesEnum.Submitter), nameof(UserRolesEnum.Developer))]
         public ActionResult Edit(TicketEditViewModel formData)
         {
             if (formData?.Id == null || formData.Id == Guid.Empty || formData?.ProjectId == null)
