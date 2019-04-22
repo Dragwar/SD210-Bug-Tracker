@@ -46,10 +46,12 @@ namespace BugTracker.Models.ViewModels.Ticket
                     Type = ticket.Type.TypeString,
 
                     Comments = ticket.Comments?
+                        .OrderByDescending(comment => comment.DateCreated)
                         .Select(ticketComment => TicketCommentIndexViewModel.CreateNewViewModel(ticketComment))
                         .ToList() ?? new List<TicketCommentIndexViewModel>(),
 
                     Attachments = ticket.Attachments?
+                        .OrderByDescending(attachment => attachment.DateCreated)
                         .Select(ticketAttachment => TicketAttachment.TicketAttachmentIndexViewModel.CreateNewViewModel(currentUserId, ticketAttachment, dbContext))
                         .ToList() ?? new List<TicketAttachment.TicketAttachmentIndexViewModel>(),
 

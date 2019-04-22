@@ -112,10 +112,6 @@ namespace BugTracker.Controllers
 
             if (!canViewTicket)
             {
-                //x TODO: Move the UnauthorizedRequest View page to the Shared folder
-                // just tried it and didn't pass the error data but it did render the page
-                //x Add just `return View(nameof(HomeController.UnauthorizedRequest), new { error = "..." }))`
-                // just stick with this
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "You cannot view this ticket (you don't have permission)" });
             }
 
