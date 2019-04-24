@@ -4,7 +4,6 @@ using BugTracker.Models;
 using BugTracker.Models.Domain;
 using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels.TicketAttachment;
-using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
 
@@ -16,7 +15,6 @@ namespace BugTracker.Controllers
         private readonly ApplicationDbContext DbContext;
         private readonly TicketRepository TicketRepository;
         private readonly UserRepository UserRepository;
-        private readonly TicketCommentRepository TicketCommentRepository;
         private readonly TicketAttachmentRepository TicketAttachmentRepository;
 
         public TicketAttachmentController()
@@ -24,7 +22,6 @@ namespace BugTracker.Controllers
             DbContext = new ApplicationDbContext();
             TicketRepository = new TicketRepository(DbContext);
             UserRepository = new UserRepository(DbContext);
-            TicketCommentRepository = new TicketCommentRepository(DbContext);
             TicketAttachmentRepository = new TicketAttachmentRepository(DbContext);
         }
 

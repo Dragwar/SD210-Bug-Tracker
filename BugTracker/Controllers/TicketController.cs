@@ -132,16 +132,29 @@ namespace BugTracker.Controllers
                 throw new Exception("This shouldn't happen");
             }
 
-            List<SelectListItem> userProjects = ProjectRepository
-                .GetUserProjects(userId)
-                .ToList()
-                .Select(project => new SelectListItem()
-                {
-                    Text = project.Name,
-                    Value = project.Id.ToString(),
-                    Selected = projectId.HasValue ? project.Id == projectId.Value : false,
-                })
-                .ToList();
+            List<SelectListItem> userProjects = null;
+
+            if (User.IsInRole(UserRolesEnum.Admin.ToString()) || User.IsInRole(UserRolesEnum.ProjectManager.ToString()))
+            {
+                userProjects = ProjectRepository.GetAllProjects()
+                    .Select(project => new SelectListItem()
+                    {
+                        Text = project.Name,
+                        Value = project.Id.ToString(),
+                        Selected = projectId.HasValue ? project.Id == projectId.Value : false,
+                    }).ToList();
+            }
+            else
+            {
+                userProjects = ProjectRepository.GetUserProjects(userId)
+                    .Select(project => new SelectListItem()
+                    {
+                        Text = project.Name,
+                        Value = project.Id.ToString(),
+                        Selected = projectId.HasValue ? project.Id == projectId.Value : false,
+                    }).ToList();
+            }
+
 
             if (userProjects == null)
             {
@@ -172,7 +185,7 @@ namespace BugTracker.Controllers
             if (formData == null || !ModelState.IsValid || !formData.Type.HasValue || !formData.Priority.HasValue)
             {
                 ModelState.AddModelError("", "Error - Bad data");
-                formData = GenerateTicketCreateViewModel(formData) ?? throw new Exception("bad data");
+                formData = GenerateTicketCreateViewModelFromExisting(formData) ?? throw new Exception("bad data");
 
                 return View(formData);
             }
@@ -189,7 +202,7 @@ namespace BugTracker.Controllers
             {
                 ModelState.AddModelError("", "Error - Bad data");
                 ModelState.AddModelError("", e.Message); // TODO: Remove after project completion (on staging phase)
-                formData = GenerateTicketCreateViewModel(formData) ?? throw new Exception("bad data");
+                formData = GenerateTicketCreateViewModelFromExisting(formData) ?? throw new Exception("bad data");
 
                 return View(formData);
             }
@@ -197,17 +210,29 @@ namespace BugTracker.Controllers
 
         [NonAction]
         [OverrideCurrentNavLinkStyle("ticket-index")]
-        private TicketCreateViewModel GenerateTicketCreateViewModel(TicketCreateViewModel formData)
+        private TicketCreateViewModel GenerateTicketCreateViewModelFromExisting(TicketCreateViewModel formData)
         {
             string userId = User.Identity.GetUserId();
-            List<SelectListItem> userProjects = ProjectRepository
-                .GetUserProjects(userId)
-                .Select(project => new SelectListItem()
-                {
-                    Text = project.Name,
-                    Value = project.Id.ToString(),
-                })
-                .ToList();
+            List<SelectListItem> userProjects = null;
+
+            if (User.IsInRole(UserRolesEnum.Admin.ToString()) || User.IsInRole(UserRolesEnum.ProjectManager.ToString()))
+            {
+                userProjects = ProjectRepository.GetAllProjects()
+                       .Select(project => new SelectListItem()
+                       {
+                           Text = project.Name,
+                           Value = project.Id.ToString(),
+                       }).ToList();
+            }
+            else
+            {
+                userProjects = ProjectRepository.GetUserProjects(userId)
+                    .Select(project => new SelectListItem()
+                    {
+                        Text = project.Name,
+                        Value = project.Id.ToString(),
+                    }).ToList();
+            }
 
             if (!userProjects?.Any() == null)
             {
@@ -228,22 +253,35 @@ namespace BugTracker.Controllers
                 return null;
             }
 
-            Ticket foundTicket = DbContext.Tickets.FirstOrDefault(ticket => ticket.Id == id.Value);
+            Ticket foundTicket = TicketRepository.GetTicket(id.Value);
 
             if (foundTicket == null)
             {
                 return null;
             }
             #endregion
+
             string userId = User.Identity.GetUserId();
-            List<SelectListItem> userProjects = ProjectRepository
-                .GetUserProjects(userId)
-                .Select(project => new SelectListItem()
-                {
-                    Text = project.Name,
-                    Value = project.Id.ToString(),
-                })
-                .ToList();
+            List<SelectListItem> userProjects = null;
+
+            if (User.IsInRole(UserRolesEnum.Admin.ToString()) || User.IsInRole(UserRolesEnum.ProjectManager.ToString()))
+            {
+                userProjects = ProjectRepository.GetAllProjects()
+                    .Select(project => new SelectListItem()
+                    {
+                        Text = project.Name,
+                        Value = project.Id.ToString(),
+                    }).ToList();
+            }
+            else
+            {
+                userProjects = ProjectRepository.GetUserProjects(userId)
+                    .Select(project => new SelectListItem()
+                    {
+                        Text = project.Name,
+                        Value = project.Id.ToString(),
+                    }).ToList();
+            }
 
             List<SelectListItem> developers = UserRoleRepository
                 .UsersInRole(UserRolesEnum.Developer)
@@ -255,9 +293,7 @@ namespace BugTracker.Controllers
                 })
                 .ToList();
 
-            TicketEditViewModel model = TicketEditViewModel.CreateNewViewModel(foundTicket, developers, userProjects);
-
-            return model;
+            return TicketEditViewModel.CreateNewViewModel(foundTicket, developers, userProjects);
         }
 
         // GET: Ticket/Edit/{id}

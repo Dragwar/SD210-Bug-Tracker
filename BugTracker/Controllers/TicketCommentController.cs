@@ -193,17 +193,18 @@ namespace BugTracker.Controllers
 
         // POST: TicketComment/Delete/{id}
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(TicketCommentDeleteViewModel formData)
         {
             if (formData == null)
             {
                 return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "Something went wrong (Comment Wasn't deleted)" });
             }
-            
+
             try
             {
                 string userId = User.Identity.GetUserId();
-                if (!TicketRepository.CanUserEditTicket(userId, formData.Id))
+                if (!TicketRepository.CanUserEditTicket(userId, formData.TicketId))
                 {
                     return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({formData.TicketTitle})" });
                 }
