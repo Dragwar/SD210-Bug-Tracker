@@ -1,19 +1,23 @@
-﻿using BugTracker.Controllers;
-using System.Runtime.InteropServices;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
+using BugTracker.Controllers;
+using BugTracker.MyHelpers;
 
 namespace BugTracker.Models.Filters.Authorize
 {
     public class BugTrackerAuthorize : AuthorizeAttribute
     {
-        public BugTrackerAuthorize([Optional] params string[] roles)
-        {
-            Roles = string.Join(",", roles);
-        }
+        public BugTrackerAuthorize() { }
+
+        public BugTrackerAuthorize(params string[] roles) => Roles = string.Join(",", roles);
+
+        public BugTrackerAuthorize(params UserRolesEnum[] roles) => Roles = string.Join(",", roles);
+
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
+            // {string.Join(", ", filterContext.RequestContext.RouteData.Values.Values)}
+            // Displays: {controller}, {action} (and maybe {QueryString/QueryVariables} as well)
             if (filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
                 filterContext.Result = new RedirectToRouteResult(
