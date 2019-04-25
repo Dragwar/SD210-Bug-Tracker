@@ -166,8 +166,11 @@
                 @if (User.IsInRole(nameof(UserRolesEnum.Submitter)))
                 {
                     <a href="@Url.Action(nameof(TicketController.Create), "Ticket", new { projectId = Model.Id })">
-                        Create New Ticket For @Model.Name
-                        <i style="position: relative; top: 5px; font-weight: 500; font-size:25px;" class="pe-7s-note"></i>
+                        Create New Ticket For "@Model.Name"
+                        <span style="position: relative; right: 10px;">
+                            <i style="position: relative; top: -10px; left: 10px; font-size: 100%; font-weight: 600;" class="pe-7s-plus"></i>
+                            <i style="position: relative; top: 5px; font-weight: 500; font-size: 175%;" class="pe-7s-ticket"></i>
+                        </span>
                     </a>
                 }
             </p>
