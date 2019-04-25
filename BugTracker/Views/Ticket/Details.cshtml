@@ -198,7 +198,7 @@
         </div>
     </div>
 </div>
-
+<!--
 @* Author User Card *@
 <div class="col-lg-6">
     <div class="card">
@@ -248,8 +248,7 @@
         </div>
     </div>
 </div>
-
-
+-->
 @* Comments Card *@
 <!--Comments-->
 <div class="col-lg-8">
@@ -296,7 +295,44 @@
                     </div>
                 </div>
             }
-
         </div>
     </div>
 </div>
+
+
+@if ((Model.TicketHistories?.Any() ?? false) && canEditTicket)
+{
+    @* Ticket History Card *@
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="header">
+                <h4 class="title">Change History</h4>
+                <p class="category"></p>
+            </div>
+            <div class="content">
+                @foreach (TicketHistoryIndexViewModel history in Model.TicketHistories)
+                {
+                    <!-- History -->
+                    <div class="card">
+                        <div class="header">
+                            <h5 class="title"><span style="font-style: italic; font-weight: 500; margin-right: 3px;">@history.Property</span> was changed</h5>
+                            <p class="category">
+                                changed by @history.UserWhoMadeTheChange.Email<br />
+                                <small><i class="fa fa-history" style="font-size: 125%; position: relative; top: 1px;"></i> @history.DateChanged.GetDateTimeFromNow()</small>
+                            </p>
+                        </div>
+                        <div class="content">
+                            <div>
+                                <strong>@(nameof(history.NewValue))</strong><pre>@history.NewValue</pre>
+                            </div>
+
+                            <div>
+                                <strong>@(nameof(history.OldValue))</strong><pre>@history.OldValue</pre>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

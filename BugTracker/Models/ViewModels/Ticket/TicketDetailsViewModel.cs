@@ -21,6 +21,8 @@ namespace BugTracker.Models.ViewModels.Ticket
 
         public List<TicketCommentIndexViewModel> Comments { get; set; }
 
+        public List<TicketHistory.TicketHistoryIndexViewModel> TicketHistories { get; set; }
+
         public Domain.Project Project { get; set; }
         public Guid ProjectId { get; set; }
 
@@ -54,6 +56,11 @@ namespace BugTracker.Models.ViewModels.Ticket
                         .OrderByDescending(attachment => attachment.DateCreated)
                         .Select(ticketAttachment => TicketAttachment.TicketAttachmentIndexViewModel.CreateNewViewModel(currentUserId, ticketAttachment, dbContext))
                         .ToList() ?? new List<TicketAttachment.TicketAttachmentIndexViewModel>(),
+
+                    TicketHistories = ticket.TicketHistories?
+                        .OrderByDescending(ticketHistory => ticketHistory.DateChanged)
+                        .Select(ticketHistory => TicketHistory.TicketHistoryIndexViewModel.CreateNewViewModel(dbContext, ticketHistory))
+                        .ToList() ?? new List<TicketHistory.TicketHistoryIndexViewModel>(),
 
                     DateCreated = ticket.DateCreated,
                     DateUpdated = ticket.DateUpdated,

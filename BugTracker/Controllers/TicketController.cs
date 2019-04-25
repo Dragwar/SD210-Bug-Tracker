@@ -132,6 +132,11 @@ namespace BugTracker.Controllers
                 throw new Exception("This shouldn't happen");
             }
 
+            if (projectId.HasValue && ProjectRepository.IsUserAssignedToProject(userId, projectId.Value))
+            {
+                projectId = null;
+            }
+
             List<SelectListItem> userProjects = null;
 
             if (User.IsInRole(UserRolesEnum.Admin.ToString()) || User.IsInRole(UserRolesEnum.ProjectManager.ToString()))
@@ -190,11 +195,19 @@ namespace BugTracker.Controllers
                 return View(formData);
             }
 
-            formData.Status = TicketStatusesEnum.Open;
+            // if user is submitter and admin or project manager, then allow him/her to give a different status on ticket creation
+            if (User.IsInRole(UserRolesEnum.Admin.ToString()) || User.IsInRole(UserRolesEnum.ProjectManager.ToString()))
+            {
+                formData.Status = formData.Status ?? TicketStatusesEnum.Open;
+            }
+            else
+            {
+                formData.Status = TicketStatusesEnum.Open;
+            }
 
             try
             {
-                Ticket newTicket = Ticket.CreateNewTicket(DbContext, formData);
+                Ticket newTicket = TicketRepository.CreateNewTicket(formData, true);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -320,8 +333,11 @@ namespace BugTracker.Controllers
 
             try
             {
-                Ticket.EditExistingTicket(DbContext, formData);
-
+                string userId = User.Identity.GetUserId();
+                Ticket foundTicket = TicketRepository.GetTicket(formData.Id);
+                TicketRepository.EditExistingTicket(foundTicket, formData, userId, (false, false));
+                
+                DbContext.SaveChanges();
                 return RedirectToAction(nameof(Details), new { Id = formData.Id });
             }
             catch (Exception e)

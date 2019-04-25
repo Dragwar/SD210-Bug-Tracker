@@ -1,9 +1,7 @@
-﻿using BugTracker.Models.ViewModels.Ticket;
-using BugTracker.MyHelpers;
-using BugTracker.MyHelpers.DB_Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using BugTracker.Models.ViewModels.Ticket;
+using BugTracker.MyHelpers;
 
 namespace BugTracker.Models.Domain
 {
@@ -30,6 +28,8 @@ namespace BugTracker.Models.Domain
 
         public virtual List<TicketComment> Comments { get; set; }
 
+        public virtual List<TicketHistory> TicketHistories { get; set; }
+
         public virtual Project Project { get; set; }
         public Guid ProjectId { get; set; }
 
@@ -46,61 +46,39 @@ namespace BugTracker.Models.Domain
             Comments = new List<TicketComment>();
         }
 
-        public static Ticket CreateNewTicket(ApplicationDbContext dbContext, TicketCreateViewModel model)
+        public override bool Equals(object obj)
         {
-            if (dbContext == null ||
-                model == null ||
-                string.IsNullOrWhiteSpace(model.Title) ||
-                string.IsNullOrWhiteSpace(model.Description) ||
-                !model.Priority.HasValue ||
-                !model.Type.HasValue)
+            if (obj is Ticket ticketToCompare)
             {
-                throw new ArgumentException("bad data");
+                return ticketToCompare.Id == Id &&
+                    ticketToCompare.Title == Title &&
+                    ticketToCompare.Description == Description &&
+                    ticketToCompare.AssignedUserId == AssignedUserId &&
+                    ticketToCompare.ProjectId == ticketToCompare.ProjectId &&
+                    ticketToCompare.StatusId == StatusId &&
+                    ticketToCompare.TypeId == TypeId &&
+                    ticketToCompare.PriorityId == PriorityId &&
+                    ticketToCompare.Attachments.Count == Attachments.Count &&
+                    ticketToCompare.Comments.Count == Comments.Count;
             }
-
-            Project foundProject = new ProjectRepository(dbContext).GetProject(model.ProjectId) ?? throw new Exception($"project not found {model.ProjectId}");
-            ApplicationUser foundAuthor = new UserRepository(dbContext).GetUserById(model.AuthorId) ?? throw new Exception($"user not found {model.AuthorId}");
-
-            Ticket newTicket = new Ticket()
+            else if (obj is TicketEditViewModel viewModelToCompare)
             {
-                Title = model.Title,
-                Description = model.Description,
-                TypeId = (int)model.Type.Value,
-                PriorityId = (int)model.Priority.Value,
-                StatusId = (int?)model?.Status ?? (int)TicketStatusesEnum.Open,
-            };
-
-            foundProject.Tickets.Add(newTicket);
-            foundAuthor.CreatedTickets.Add(newTicket);
-
-            dbContext.SaveChanges();
-
-            return newTicket;
+                return viewModelToCompare.Id == Id &&
+                    viewModelToCompare.Title == Title &&
+                    viewModelToCompare.Description == Description &&
+                    viewModelToCompare.DeveloperId == AssignedUserId &&
+                    viewModelToCompare.ProjectId == viewModelToCompare.ProjectId &&
+                    ((int?)viewModelToCompare.Status ?? (int)TicketStatusesEnum.Open) == StatusId &&
+                    (int)viewModelToCompare.Type == TypeId &&
+                    (int)viewModelToCompare.Priority == PriorityId;
+            }
+            else
+            {
+                return base.Equals(obj);
+            }
         }
 
-        public static Ticket EditExistingTicket(
-           ApplicationDbContext dbContext,
-           TicketEditViewModel model)
-        {
-            if (dbContext == null || string.IsNullOrWhiteSpace(model.Title) || string.IsNullOrWhiteSpace(model.Description) || !model.Priority.HasValue || !model.Type.HasValue)
-            {
-                throw new ArgumentException("bad data");
-            }
-
-            Ticket foundTicket = dbContext.Tickets.First(ticket => ticket.Id == model.Id);
-
-            foundTicket.Title = model.Title;
-            foundTicket.Description = model.Description;
-            foundTicket.PriorityId = (int)model.Priority;
-            foundTicket.StatusId = (int?)model?.Status ?? (int)TicketStatusesEnum.Open;
-            foundTicket.TypeId = (int)model.Type;
-            foundTicket.ProjectId = model.ProjectId;
-            foundTicket.AssignedUserId = model.DeveloperId;
-            foundTicket.DateUpdated = DateTime.Now;
-
-            dbContext.SaveChanges();
-
-            return foundTicket;
-        }
+        public override string ToString() => $"Ticket: {Title}";
+        public override int GetHashCode() => base.GetHashCode();
     }
 }

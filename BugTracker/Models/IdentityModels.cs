@@ -25,12 +25,15 @@ namespace BugTracker.Models
 
         public virtual List<TicketComment> TicketComments { get; set; }
 
+        public virtual List<TicketHistory> TicketHistories { get; set; }
+
         public ApplicationUser()
         {
             CreatedTickets = new List<Ticket>();
             AssignedTickets = new List<Ticket>();
             TicketAttachments = new List<TicketAttachment>();
             TicketComments = new List<TicketComment>();
+            TicketHistories = new List<TicketHistory>();
             Projects = new List<Project>();
         }
 
@@ -57,6 +60,7 @@ namespace BugTracker.Models
         public DbSet<TicketTypes> TicketTypes { get; set; }
         public DbSet<TicketAttachment> TicketAttachments { get; set; }
         public DbSet<TicketComment> TicketComments { get; set; }
+        public DbSet<TicketHistory> TicketHistories { get; set; }
 
         public static ApplicationDbContext Create() => new ApplicationDbContext();
 
@@ -76,6 +80,11 @@ namespace BugTracker.Models
             //! but this would be necessary when you're not following conventions.
 
             #region ApplicationUser (Entity)
+            modelBuilder.Entity<ApplicationUser>()
+                .Property(user => user.DisplayName)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
             //! Example: TicketComment Relationship (One To Many)
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(user => user.TicketComments)
@@ -105,14 +114,16 @@ namespace BugTracker.Models
                     .WithOptional(ticket => ticket.AssignedUser)
                     .HasForeignKey(ticket => ticket.AssignedUserId);
 
+            //! Example: TicketHistory Relationship (One To Many)
             modelBuilder.Entity<ApplicationUser>()
-                .Property(user => user.DisplayName)
-                    .IsRequired()
-                    .HasMaxLength(100);
+                .HasMany(user => user.TicketHistories)
+                    .WithRequired(ticketHistory => ticketHistory.User)
+                    .HasForeignKey(ticketHistory => ticketHistory.UserId);
             #endregion
 
             #region Project (Entity)
             modelBuilder.Entity<Project>()
+                .HasKey(ticketPriority => ticketPriority.Id)
                 .Property(project => project.Id)
                     .IsRequired();
 
@@ -143,6 +154,11 @@ namespace BugTracker.Models
 
             #region Ticket (Entity)
             modelBuilder.Entity<Ticket>()
+                .HasKey(ticket => ticket.Id)
+                .Property(ticket => ticket.Id)
+                    .IsRequired();
+
+            modelBuilder.Entity<Ticket>()
                 .Property(ticket => ticket.Title)
                     .IsRequired()
                     .HasMaxLength(100);
@@ -150,7 +166,7 @@ namespace BugTracker.Models
             modelBuilder.Entity<Ticket>()
                 .Property(ticket => ticket.Description)
                     .IsRequired();
-            
+
             modelBuilder.Entity<Ticket>()
                 .Property(ticket => ticket.DateCreated)
                     .IsRequired();
@@ -206,10 +222,17 @@ namespace BugTracker.Models
                 .HasMany(ticket => ticket.Attachments)
                     .WithRequired(ticketAttachment => ticketAttachment.Ticket)
                     .HasForeignKey(ticketAttachment => ticketAttachment.TicketId);
+
+            //! Example: TicketHistory Relationship (One To Many)
+            modelBuilder.Entity<Ticket>()
+                .HasMany(ticket => ticket.TicketHistories)
+                    .WithRequired(ticketHistory => ticketHistory.Ticket)
+                    .HasForeignKey(ticketHistory => ticketHistory.TicketId);
             #endregion
 
             #region TicketPriorities (Entity)
             modelBuilder.Entity<TicketPriorities>()
+                .HasKey(ticketPriority => ticketPriority.Id)
                 .Property(ticketPriority => ticketPriority.Id)
                     .IsRequired()
                     .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
@@ -230,6 +253,7 @@ namespace BugTracker.Models
 
             #region TicketStatuses (Entity)
             modelBuilder.Entity<TicketStatuses>()
+                .HasKey(ticketStatus => ticketStatus.Id)
                 .Property(ticketStatus => ticketStatus.Id)
                     .IsRequired()
                     .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
@@ -250,6 +274,7 @@ namespace BugTracker.Models
 
             #region TicketTypes (Entity)
             modelBuilder.Entity<TicketTypes>()
+                .HasKey(ticketType => ticketType.Id)
                 .Property(ticketType => ticketType.Id)
                     .IsRequired()
                     .HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
@@ -270,7 +295,8 @@ namespace BugTracker.Models
 
             #region TicketComment (Entity)
             modelBuilder.Entity<TicketComment>()
-                .Property(ticketType => ticketType.Id)
+                .HasKey(ticketComment => ticketComment.Id)
+                .Property(ticketComment => ticketComment.Id)
                     .IsRequired();
 
             modelBuilder.Entity<TicketComment>()
@@ -279,10 +305,6 @@ namespace BugTracker.Models
 
             modelBuilder.Entity<TicketComment>()
                 .Property(ticketType => ticketType.DateCreated)
-                    .IsRequired();
-
-            modelBuilder.Entity<TicketComment>()
-                .Property(ticketType => ticketType.TicketId)
                     .IsRequired();
 
             //! Example: ApplicationUser Relationship (One To Many)
@@ -295,10 +317,16 @@ namespace BugTracker.Models
             modelBuilder.Entity<TicketComment>()
                 .HasRequired(ticketComment => ticketComment.Ticket)
                     .WithMany(ticket => ticket.Comments)
-                    .HasForeignKey(ticketComment => ticketComment.TicketId);
+                    .HasForeignKey(ticketComment => ticketComment.TicketId)
+                    .WillCascadeOnDelete(false);
             #endregion
 
             #region TicketAttachment (Entity)
+            modelBuilder.Entity<TicketAttachment>()
+                .HasKey(ticketAttachment => ticketAttachment.Id)
+                .Property(ticketAttachment => ticketAttachment.Id)
+                    .IsRequired();
+
             modelBuilder.Entity<TicketAttachment>()
                 .Property(ticketType => ticketType.Id)
                     .IsRequired();
@@ -320,22 +348,54 @@ namespace BugTracker.Models
                 .Property(ticketType => ticketType.DateCreated)
                     .IsRequired();
 
-            modelBuilder.Entity<TicketAttachment>()
-                .Property(ticketType => ticketType.TicketId)
-                    .IsRequired();
-
             //! Example: ApplicationUser Relationship (One To Many)
             modelBuilder.Entity<TicketAttachment>()
                 .HasRequired(ticketComment => ticketComment.User)
                     .WithMany(user => user.TicketAttachments)
-                    .HasForeignKey(ticketComment => ticketComment.UserId)
-                    .WillCascadeOnDelete(false);
+                    .HasForeignKey(ticketComment => ticketComment.UserId);
 
             //! Example: Ticket Relationship (One To Many)
-            modelBuilder.Entity<TicketComment>()
-                .HasRequired(ticketComment => ticketComment.Ticket)
-                    .WithMany(ticket => ticket.Comments)
-                    .HasForeignKey(ticketComment => ticketComment.TicketId)
+            modelBuilder.Entity<TicketAttachment>()
+                .HasRequired(ticketAttachment => ticketAttachment.Ticket)
+                    .WithMany(ticket => ticket.Attachments)
+                    .HasForeignKey(ticketAttachment => ticketAttachment.TicketId)
+                    .WillCascadeOnDelete(false);
+            #endregion
+
+            #region TicketHistory (Entity)
+            modelBuilder.Entity<TicketHistory>()
+                .HasKey(ticketHistory => ticketHistory.Id)
+                .Property(ticketHistory => ticketHistory.Id)
+                    .IsRequired();
+
+            modelBuilder.Entity<TicketHistory>()
+                .Property(ticketHistory => ticketHistory.Property)
+                    .IsRequired()
+                    .HasMaxLength(150);
+
+            modelBuilder.Entity<TicketHistory>()
+               .Property(ticketHistory => ticketHistory.NewValue)
+                   .IsRequired();
+
+            modelBuilder.Entity<TicketHistory>()
+               .Property(ticketHistory => ticketHistory.OldValue)
+                   .IsRequired();
+
+            modelBuilder.Entity<TicketHistory>()
+               .Property(ticketHistory => ticketHistory.DateChanged)
+                   .IsRequired();
+
+            //! Example: Ticket Relationship (One To Many)
+            modelBuilder.Entity<TicketHistory>()
+                .HasRequired(ticketHistory => ticketHistory.Ticket)
+                    .WithMany(ticket => ticket.TicketHistories)
+                    .HasForeignKey(ticketHistory => ticketHistory.TicketId);
+
+            //! Example: ApplicationUser Relationship (One To Many)
+            modelBuilder.Entity<TicketHistory>()
+                .HasRequired(ticketHistory => ticketHistory.User)
+                    .WithMany(user => user.TicketHistories)
+                    .HasForeignKey(ticketHistory => ticketHistory.UserId)
                     .WillCascadeOnDelete(false);
             #endregion
         }
