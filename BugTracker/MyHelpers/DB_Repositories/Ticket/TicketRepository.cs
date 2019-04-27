@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
 using System.Linq;
 using BugTracker.Models;
 using BugTracker.Models.Domain;
@@ -201,11 +202,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
             return newTicket;
         }
 
-
-        /// <summary>
-        /// PLEASE FIND A BETTER WAY
-        /// </summary>
-        public Ticket EditExistingTicket(Ticket ticket, TicketEditViewModel model, string currentUserId, (bool forceChecks, bool saveDatabase) config)
+        public (Ticket editedTicket, bool wasChanged) EditExistingTicket(Ticket ticket, TicketEditViewModel model, string currentUserId, bool saveDatabase)
         {
             if (ticket == null || model == null ||
                 string.IsNullOrWhiteSpace(model.Title) ||
@@ -215,125 +212,62 @@ namespace BugTracker.MyHelpers.DB_Repositories
             {
                 throw new ArgumentException("bad data");
             }
-            bool wasEdited = !ticket.Equals(model);
-            List<TicketHistory> ticketHistories = new List<TicketHistory>();
+
+            if (ticket.Title != model.Title)
+            {
+                ticket.Title = model.Title;
+            }
+
+            if (ticket.Description != model.Description)
+            {
+                ticket.Description = model.Description;
+            }
+
+            if (ticket.PriorityId != (int)model.Priority)
+            {
+                ticket.PriorityId = (int)model.Priority;
+            }
+
+            if (ticket.StatusId != ((int?)model?.Status ?? (int)TicketStatusesEnum.Open))
+            {
+                ticket.StatusId = (int?)model?.Status ?? (int)TicketStatusesEnum.Open;
+            }
+
+            if (ticket.TypeId != (int)model.Type)
+            {
+                ticket.TypeId = (int)model.Type;
+            }
+
+            if (ticket.ProjectId != model.ProjectId)
+            {
+                ticket.ProjectId = model.ProjectId;
+            }
+
+            if (ticket.AssignedUserId != model.DeveloperId)
+            {
+                ticket.AssignedUserId = model.DeveloperId;
+            }
+
 
             TicketHistoryRepository ticketHistoryRepository = new TicketHistoryRepository(DbContext);
 
-            if (wasEdited || config.forceChecks)
+            // if "ticketHistoryRepository.GetTicketState(ticket.Id)" returned "null", then make "wasEdited" = "false"
+            bool wasEdited = (ticketHistoryRepository.GetTicketState(ticket.Id) ?? EntityState.Unchanged) == EntityState.Modified;
+
+            if (wasEdited)
             {
-                if (ticket.Title != model.Title)
-                {
-                    ticketHistories.Add(ticketHistoryRepository.CreateNewTicketHistory(
-                        false,
-                        currentUserId,
-                        ticket.Id,
-                        nameof(ticket.Title),
-                        ticket.Title,
-                        model.Title));
-
-                    ticket.Title = model.Title;
-                }
-
-                if (ticket.Description != model.Description)
-                {
-                    ticketHistories.Add(ticketHistoryRepository.CreateNewTicketHistory(
-                        false,
-                        currentUserId,
-                        ticket.Id,
-                        nameof(ticket.Description),
-                        ticket.Description,
-                        model.Description));
-
-                    ticket.Description = model.Description;
-                }
-
-                if (ticket.PriorityId != (int)model.Priority)
-                {
-                    ticketHistories.Add(ticketHistoryRepository.CreateNewTicketHistory(
-                        false,
-                        currentUserId,
-                        ticket.Id,
-                        nameof(ticket.Priority),
-                        ticket.Priority.PriorityString,
-                        model.Priority.ToString()));
-
-                    ticket.PriorityId = (int)model.Priority;
-                }
-
-                if (ticket.StatusId != ((int?)model?.Status ?? (int)TicketStatusesEnum.Open))
-                {
-                    ticketHistories.Add(ticketHistoryRepository.CreateNewTicketHistory(
-                        false,
-                        currentUserId,
-                        ticket.Id,
-                        nameof(ticket.Status),
-                        ticket.Status.StatusString,
-                        model.Status.ToString()));
-
-                    ticket.StatusId = (int?)model?.Status ?? (int)TicketStatusesEnum.Open;
-                }
-
-                if (ticket.TypeId != (int)model.Type)
-                {
-                    ticketHistories.Add(ticketHistoryRepository.CreateNewTicketHistory(
-                        false,
-                        currentUserId,
-                        ticket.Id,
-                        nameof(ticket.Type),
-                        ticket.Type.TypeString,
-                        model.Type.ToString()));
-
-                    ticket.TypeId = (int)model.Type;
-                }
-
-                if (ticket.ProjectId != model.ProjectId)
-                {
-                    Project foundProject = new ProjectRepository(DbContext)
-                        .GetProject(model.ProjectId) ?? throw new Exception(nameof(foundProject) + " wasn't found");
-
-                    ticketHistories.Add(ticketHistoryRepository.CreateNewTicketHistory(
-                        false,
-                        currentUserId,
-                        ticket.Id,
-                        nameof(ticket.Project),
-                        ticket.Project.Name,
-                        foundProject.Name));
-
-                    ticket.ProjectId = model.ProjectId;
-                }
-
-                if (ticket.AssignedUserId != model.DeveloperId)
-                {
-                    ApplicationUser foundDev = new UserRepository(DbContext)
-                        .GetUserById(model.DeveloperId) ?? throw new Exception(nameof(foundDev) + " wasn't found");
-
-                    ticketHistories.Add(ticketHistoryRepository.CreateNewTicketHistory(
-                        false,
-                        currentUserId,
-                        ticket.Id,
-                        nameof(ticket.AssignedUser),
-                        ticket.AssignedUser.Email,
-                        foundDev.Email));
-
-                    ticket.AssignedUserId = model.DeveloperId;
-                }
-
-
-                foreach (TicketHistory ticketHistory in ticketHistories)
-                {
-                    DbContext.TicketHistories.Add(ticketHistory);
-                }
-
                 ticket.DateUpdated = DateTime.Now;
+
+                DbContext.TicketHistories.AddRange(ticketHistoryRepository.GetTicketChanges(ticket, currentUserId, null));
             }
 
-            if (config.saveDatabase)
+
+            if (saveDatabase && wasEdited)
             {
                 DbContext.SaveChanges();
             }
 
-            return ticket;
+            return (ticket, wasEdited);
         }
 
         public IQueryable<Ticket> GetAllTickets() => DbContext.Tickets.AsQueryable();

@@ -335,9 +335,15 @@ namespace BugTracker.Controllers
             {
                 string userId = User.Identity.GetUserId();
                 Ticket foundTicket = TicketRepository.GetTicket(formData.Id);
-                TicketRepository.EditExistingTicket(foundTicket, formData, userId, (false, false));
-                
+                (_, bool wasChanged) = TicketRepository.EditExistingTicket(foundTicket, formData, userId, false);
+
+                if (!wasChanged)
+                {
+                    throw new Exception("Ticket was not edited");
+                }
+
                 DbContext.SaveChanges();
+
                 return RedirectToAction(nameof(Details), new { Id = formData.Id });
             }
             catch (Exception e)

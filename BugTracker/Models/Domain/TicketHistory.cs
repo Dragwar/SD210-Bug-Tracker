@@ -22,6 +22,6 @@ namespace BugTracker.Models.Domain
             DateChanged = DateTime.Now;
         }
 
-        
+        public override string ToString() => $"TicketHistory: {$"{nameof(Property)} - {Property}"}, {$"{nameof(OldValue)} - {OldValue}"}, {$"{nameof(NewValue)}-{NewValue}"}";
     }
 }
