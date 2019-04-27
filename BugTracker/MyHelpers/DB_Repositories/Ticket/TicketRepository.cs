@@ -202,16 +202,26 @@ namespace BugTracker.MyHelpers.DB_Repositories
             return newTicket;
         }
 
-        public (Ticket editedTicket, bool wasChanged) EditExistingTicket(Ticket ticket, TicketEditViewModel model, string currentUserId, bool saveDatabase)
+        public (Ticket editedTicket, bool wasChanged) EditExistingTicket(
+            Ticket ticket,
+            TicketEditViewModel model,
+            string currentUserId,
+            string callBackUrl,
+            bool saveDatabase)
         {
             if (ticket == null || model == null ||
                 string.IsNullOrWhiteSpace(model.Title) ||
                 string.IsNullOrWhiteSpace(model.Description) ||
+                string.IsNullOrWhiteSpace(callBackUrl) ||
                 !model.Priority.HasValue ||
                 !model.Type.HasValue)
             {
                 throw new ArgumentException("bad data");
             }
+
+            ApplicationUser userWhoMadeChanges = new UserRepository(DbContext).GetUserById(currentUserId) ?? throw new Exception("Editor wasn't found");
+            EmailSystemRepository emailRepo = new EmailSystemRepository();
+            bool isNewDev = false;
 
             if (ticket.Title != model.Title)
             {
@@ -245,20 +255,46 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
             if (ticket.AssignedUserId != model.DeveloperId)
             {
+                isNewDev = true;
                 ticket.AssignedUserId = model.DeveloperId;
-            }
 
+                // Send email to new assigned developer
+                string body = emailRepo.GetSampleBodyString(
+                    $"You Were Assigned To {ticket.Title}",
+                    $"assigned by {userWhoMadeChanges.Email}",
+                    $"Click here for the ticket details",
+                    $"{callBackUrl}");
+
+                emailRepo.Send(ticket.AssignedUserId, ("New Assigned Ticket", body));
+            }
 
             TicketHistoryRepository ticketHistoryRepository = new TicketHistoryRepository(DbContext);
 
-            // if "ticketHistoryRepository.GetTicketState(ticket.Id)" returned "null", then make "wasEdited" = "false"
+            // If "ticketHistoryRepository.GetTicketState(ticket.Id)" returned "null", then make "wasEdited" = "false"
             bool wasEdited = (ticketHistoryRepository.GetTicketState(ticket.Id) ?? EntityState.Unchanged) == EntityState.Modified;
 
             if (wasEdited)
             {
                 ticket.DateUpdated = DateTime.Now;
 
+                // Make TicketHistories
                 DbContext.TicketHistories.AddRange(ticketHistoryRepository.GetTicketChanges(ticket, currentUserId, null));
+
+                //TODO: Ask Gui for clarity on the TicketNotifications Table in the "DB Spec.png" picture
+                //UserRoleRepository userRoleRepo = new UserRoleRepository(DbContext);
+                //bool isUserAdminOrProjectManager = userRoleRepo.IsUserInRole(currentUserId, UserRolesEnum.Admin) || userRoleRepo.IsUserInRole(currentUserId, UserRolesEnum.ProjectManager);
+
+                // Send email to assigned developer (only send if the developer wasn't changed) when ticket was changed
+                if (!isNewDev /*|| isUserAdminOrProjectManager //Then check if opt-in or opt-out*/)
+                {
+                    string body = emailRepo.GetSampleBodyString(
+                        $"{ticket.Title} Was Modified",
+                        $"changes made by {userWhoMadeChanges.Email}",
+                        $"Click here for the ticket details",
+                        $"{callBackUrl}");
+
+                    emailRepo.Send(ticket.AssignedUserId, ($"{ticket.Title} (Ticket) was changed", body));
+                }
             }
 
 

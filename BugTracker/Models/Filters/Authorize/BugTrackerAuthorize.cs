@@ -26,11 +26,11 @@ namespace BugTracker.Models.Filters.Authorize
                         { "controller", "Home" },
                         { "action", nameof(HomeController.UnauthorizedRequest) }
                    });
-                filterContext.Controller.TempData["PermissionError"] = $"You don't have the required permissions to access {string.Join(", ", filterContext.RequestContext.RouteData.Values.Values)} page";
+                filterContext.Controller.TempData["PermissionError"] = $@"You don't have the required permissions to access ""{filterContext.ActionDescriptor.ControllerDescriptor.ControllerName}, {filterContext.ActionDescriptor.ActionName}"" page";
             }
             else
             {
-                filterContext.Controller.TempData["PermissionError"] = $"You need to be logged in to view {string.Join(", ", filterContext.RequestContext.RouteData.Values.Values)} page";
+                filterContext.Controller.TempData["PermissionError"] = $@"You need to be logged in to view ""{filterContext.ActionDescriptor.ControllerDescriptor.ControllerName}, {filterContext.ActionDescriptor.ActionName}"" page";
                 base.HandleUnauthorizedRequest(filterContext);
             }
         }

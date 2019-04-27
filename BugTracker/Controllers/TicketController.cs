@@ -335,12 +335,17 @@ namespace BugTracker.Controllers
             {
                 string userId = User.Identity.GetUserId();
                 Ticket foundTicket = TicketRepository.GetTicket(formData.Id);
-                (_, bool wasChanged) = TicketRepository.EditExistingTicket(foundTicket, formData, userId, false);
+
+                // Generate link to ticket details when sending a email
+                string callBackUrl = Url.Action(nameof(Details), "Ticket", new { id = foundTicket.Id }, Request.Url.Scheme);
+
+                (_, bool wasChanged) = TicketRepository.EditExistingTicket(foundTicket, formData, userId, callBackUrl, false);
 
                 if (!wasChanged)
                 {
                     throw new Exception("Ticket was not edited");
                 }
+
 
                 DbContext.SaveChanges();
 

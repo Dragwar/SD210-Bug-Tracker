@@ -221,6 +221,7 @@
     <Compile Include="Models\ViewModels\UserRole\ManageRolesViewModel.cs" />
     <Compile Include="MyHelpers\CONSTANTS.cs" />
     <Compile Include="MyHelpers\DateHelper.cs" />
+    <Compile Include="MyHelpers\DB_Repositories\EmailSystemRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Project\ProjectRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\TicketAttachment\TicketAttachmentRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\TicketComment\TicketCommentRepository.cs" />
