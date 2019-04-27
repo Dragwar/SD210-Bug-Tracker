@@ -418,5 +418,31 @@ namespace BugTracker.Controllers
                 return View(model);
             }
         }
+
+        [HttpPost]
+        [BugTrackerAuthorize(UserRolesEnum.Admin, UserRolesEnum.ProjectManager)]
+        public ActionResult ArchiveProject(Guid? id)
+        {
+            if (!id.HasValue || !ProjectRepository.DoesProjectExist(id.Value))
+            {
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "Project not found" });
+            }
+
+            try
+            {
+                ProjectRepository.MarkProjectAsArchived(id.Value);
+                bool hasSaved = DbContext.SaveChanges() <= 0 ? false : true;
+                if (!hasSaved)
+                {
+                    throw new Exception("Ticket wasn't saved");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"Error: {e.Message}" });
+            }
+
+            return RedirectToAction(nameof(All));
+        }
     }
 }

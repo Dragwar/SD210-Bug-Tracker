@@ -19,18 +19,19 @@ namespace BugTracker.MyHelpers.DB_Repositories
         /// <summary>This would get all tickets first, then this applies parameters</summary>
         public List<TSelectType> GetTickets<TSelectType>(Func<Ticket, bool> where, Func<Ticket, TSelectType> select) => GetAllTickets()
             .ToList()
-            .Where(ticket => where(ticket))
+            .Where(ticket => !ticket.Project.IsArchived && where(ticket))
             .Select(ticket => select(ticket))
             .ToList();
 
         /// <summary>This would get all tickets first, then this applies <paramref name="where"/> parameter</summary>
         public List<Ticket> GetTickets(Func<Ticket, bool> where) => GetAllTickets()
             .ToList()
-            .Where(ticket => where(ticket))
+            .Where(ticket => !ticket.Project.IsArchived && where(ticket))
             .ToList();
 
-        public Ticket GetTicket(Guid id) => DbContext.Tickets.FirstOrDefault(ticket => ticket.Id == id);
-        public bool DoesTicketExist(Guid id) => DbContext.Tickets.Any(ticket => ticket.Id == id);
+        public Ticket GetTicket(Guid id) => DbContext.Tickets.FirstOrDefault(ticket => !ticket.Project.IsArchived && ticket.Id == id);
+        public bool DoesTicketExist(Guid id) => DbContext.Tickets.Any(ticket => !ticket.Project.IsArchived && ticket.Id == id);
+        public bool DoesTicketExistOnAnArchivedProject(Guid id) => DbContext.Tickets.Any(ticket => ticket.Project.IsArchived && ticket.Id == id);
         public bool CanUserViewTicket(string userId, Guid ticketId)
         {
             if (ticketId == null || ticketId == Guid.Empty || string.IsNullOrWhiteSpace(userId))
@@ -64,11 +65,15 @@ namespace BugTracker.MyHelpers.DB_Repositories
             return false;
         }
         #region CanUserViewTicket (overloads)
-        public bool CanUserViewTicket(string userId, Models.Domain.Ticket ticket)
+        public bool CanUserViewTicket(string userId, Ticket ticket)
         {
             if (ticket == null || string.IsNullOrWhiteSpace(userId))
             {
                 throw new ArgumentNullException();
+            }
+            else if (DoesTicketExistOnAnArchivedProject(ticket.Id))
+            {
+                throw new ArgumentException("You can't interact with a ticket that belongs to an Archived project");
             }
 
             IReadOnlyDictionary<UserRolesEnum, bool> isInRole = new UserRoleRepository(DbContext).GetIsUserInRoleDictionary(userId);
@@ -102,10 +107,14 @@ namespace BugTracker.MyHelpers.DB_Repositories
             {
                 throw new ArgumentNullException();
             }
+            else if (DoesTicketExistOnAnArchivedProject(ticketId))
+            {
+                throw new ArgumentException("You can't interact with a ticket that belongs to an Archived project");
+            }
 
             IReadOnlyDictionary<UserRolesEnum, bool> isInRole = new UserRoleRepository(DbContext).GetIsUserInRoleDictionary(userId);
 
-            Models.Domain.Ticket foundTicket = GetTicket(ticketId) ?? throw new Exception("Ticket not found");
+            Ticket foundTicket = GetTicket(ticketId) ?? throw new Exception("Ticket not found");
 
             if (isInRole[UserRolesEnum.Admin] || isInRole[UserRolesEnum.ProjectManager])
             {
@@ -123,11 +132,15 @@ namespace BugTracker.MyHelpers.DB_Repositories
             return false;
         }
         #region CanUserViewTicket (overloads)
-        public bool CanUserEditTicket(string userId, Models.Domain.Ticket ticket)
+        public bool CanUserEditTicket(string userId, Ticket ticket)
         {
             if (ticket == null || string.IsNullOrWhiteSpace(userId))
             {
                 throw new ArgumentNullException();
+            }
+            else if (DoesTicketExistOnAnArchivedProject(ticket.Id))
+            {
+                throw new ArgumentException("You can't interact with a ticket that belongs to an Archived project");
             }
 
             IReadOnlyDictionary<UserRolesEnum, bool> isInRole = new UserRoleRepository(DbContext).GetIsUserInRoleDictionary(userId);
@@ -149,11 +162,11 @@ namespace BugTracker.MyHelpers.DB_Repositories
         }
         #endregion
 
-        public IQueryable<Models.Domain.Ticket> GetUserCreatedTickets(string userId) => GetAllTickets()
-            .Where(ticket => ticket.Author.Id == userId)
+        public IQueryable<Ticket> GetUserCreatedTickets(string userId) => GetAllTickets()
+            .Where(ticket => !ticket.Project.IsArchived && ticket.Author.Id == userId)
             .AsQueryable();
-        public IQueryable<Models.Domain.Ticket> GetUserAssignedTickets(string userId) => GetAllTickets()
-            .Where(ticket => ticket.AssignedUser != null && ticket.AssignedUser.Id == userId)
+        public IQueryable<Ticket> GetUserAssignedTickets(string userId) => GetAllTickets()
+            .Where(ticket => !ticket.Project.IsArchived && ticket.AssignedUser != null && ticket.AssignedUser.Id == userId)
             .AsQueryable();
 
         //! Easier way than above (using the List that exists on the ApplicationUser instead of directly querying the all ticket List)
@@ -217,6 +230,10 @@ namespace BugTracker.MyHelpers.DB_Repositories
                 !model.Type.HasValue)
             {
                 throw new ArgumentException("bad data");
+            }
+            else if (DoesTicketExistOnAnArchivedProject(ticket.Id))
+            {
+                throw new ArgumentException("You can't interact with tickets that belong to archived projects");
             }
 
             ApplicationUser userWhoMadeChanges = new UserRepository(DbContext).GetUserById(currentUserId) ?? throw new Exception("Editor wasn't found");
@@ -306,6 +323,9 @@ namespace BugTracker.MyHelpers.DB_Repositories
             return (ticket, wasEdited);
         }
 
-        public IQueryable<Ticket> GetAllTickets() => DbContext.Tickets.AsQueryable();
+        public IQueryable<Ticket> GetAllTickets() => DbContext.Tickets.Where(ticket => !ticket.Project.IsArchived).AsQueryable();
+
+        [Obsolete("Shouldn't really need to use this")]
+        public IQueryable<Ticket> GetAllTicketsOnArchivedProjects() => DbContext.Tickets.Where(ticket => ticket.Project.IsArchived).AsQueryable();
     }
 }

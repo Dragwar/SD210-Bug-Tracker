@@ -96,14 +96,14 @@ namespace BugTracker.Controllers
         {
             if (!id.HasValue || Guid.Empty == id.Value || string.IsNullOrWhiteSpace(id.Value.ToString()))
             {
-                return RedirectToAction(nameof(TicketController.Index));
+                return RedirectToAction(nameof(Index));
             }
 
             Ticket foundTicket = TicketRepository.GetTicket(id.Value);
 
             if (foundTicket == null)
             {
-                return RedirectToAction(nameof(HomeController.Index), new { controller = "Home" });
+                return RedirectToAction(nameof(Index), new { error = "Ticket wasn't found" });
             }
 
             string userId = User.Identity.GetUserId();
@@ -175,7 +175,7 @@ namespace BugTracker.Controllers
 
             if (!model.Projects.Any())
             {
-                return RedirectToAction(nameof(HomeController.Index), new { error = "You don't have any project to assign a ticket to.\nPLEASE CONTACT ADMIN to get assigned to a project" });
+                return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = "You don't have any project to assign a ticket to.\nPLEASE CONTACT ADMIN to get assigned to a project" });
             }
 
             return View(model);

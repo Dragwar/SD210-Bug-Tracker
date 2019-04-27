@@ -133,6 +133,10 @@ namespace BugTracker.Models
                     .HasMaxLength(100);
 
             modelBuilder.Entity<Project>()
+                .Property(project => project.IsArchived)
+                    .IsRequired();
+
+            modelBuilder.Entity<Project>()
                 .Property(project => project.DateCreated)
                     .IsRequired();
 

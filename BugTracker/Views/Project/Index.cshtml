@@ -94,6 +94,22 @@
                                     <a class="small text-muted" href="@Url.Action(nameof(ProjectController.Details), new { id = project.Id })">
                                         @nameof(ProjectController.Details) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-info"></i>
                                     </a>
+                                    @if (isAdminOrProjectManager)
+                                    {
+                                        <div style="margin: 0px 6px;"></div>
+                                        using (Html.BeginForm(nameof(ProjectController.ArchiveProject), "Project", new { id = project.Id }, FormMethod.Post, new { }))
+                                        {
+                                            <label for="archive-@project.Id" style="cursor: pointer">
+                                                <span class="small text-muted">
+                                                    <span class="delete-link">
+                                                        <span style="font-size: 115%; font-weight: 400; text-transform: initial;">Archive</span>
+                                                        <i style="font-size:175%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-junk"></i>
+                                                    </span>
+                                                </span>
+                                            </label>
+                                            <input type="submit" style="display: none" id="archive-@project.Id" />
+                                        }
+                                    }
                                 </td>
                             </tr>
                         }

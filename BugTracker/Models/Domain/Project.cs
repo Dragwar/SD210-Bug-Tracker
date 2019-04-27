@@ -11,7 +11,7 @@ namespace BugTracker.Models.Domain
         public virtual List<Ticket> Tickets { get; set; }
 
         public string Name { get; set; }
-
+        public bool IsArchived { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime? DateUpdated { get; set; }
 
@@ -21,6 +21,7 @@ namespace BugTracker.Models.Domain
             DateCreated = DateTime.Now;
             Users = new List<ApplicationUser>();
             Tickets = new List<Ticket>();
+            IsArchived = false;
         }
     }
 }
