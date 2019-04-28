@@ -2,14 +2,12 @@
 using System.Web.Mvc;
 using BugTracker.Models;
 using BugTracker.Models.Domain;
-using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels.TicketComment;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
 
 namespace BugTracker.Controllers
 {
-    [BugTrackerAuthorize]
     public class TicketCommentController : Controller
     {
         private readonly ApplicationDbContext DbContext;

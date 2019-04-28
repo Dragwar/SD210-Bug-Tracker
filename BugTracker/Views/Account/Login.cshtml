@@ -50,15 +50,15 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Log in" class="btn btn-default" />
+                            <input type="submit" value="Log in" class="btn btn-primary" />
                         </div>
                     </div>
                     <p>
-                        @Html.ActionLink("Register as a new user", "Register")
+                        @Html.ActionLink("Register as a new user", "Register", new { }, new { @class = "text-muted" })
                     </p>
                     @* Enable this once you have account confirmation enabled for password reset functionality *@
                     <p>
-                        @Html.ActionLink("Forgot your password?", "ForgotPassword")
+                        @Html.ActionLink("Forgot your password?", "ForgotPassword", new { }, new { @class = "text-muted" })
                     </p>
                 }
             </section>
@@ -66,17 +66,47 @@
     </div>
 </div>
 
-
 <div class="col-md-6">
     <div class="card ">
         <div class="header">
-            <h4 class="title">@ViewBag.Title</h4>
-            <p class="category">Use a external account to log in</p>
+            <h4 class="title">Or @ViewBag.Title as demo user</h4>
+            <p class="category">pick a role to use</p>
         </div>
         <div class="content">
-            <section id="socialLoginForm">
-                @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
-            </section>
+            @using (Html.BeginForm(nameof(AccountController.LoginAsDemoUser), "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DemoRolesToChooseFrom, new { @class = "col-md-2 control-label" })
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.ChosenDemoRole, Model.DemoRolesToChooseFrom, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.ChosenDemoRole, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-1 col-md-2">
+                        <input type="submit" value="Log in as demo user" class="btn btn-primary" />
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+
+@*<div class="col-md-6">
+        <div class="card ">
+            <div class="header">
+                <h4 class="title">@ViewBag.Title</h4>
+                <p class="category">Use a external account to log in</p>
+            </div>
+            <div class="content">
+                <section id="socialLoginForm">
+                    @Html.Partial("_ExternalLoginsListPartial", new ExternalLoginListViewModel { ReturnUrl = ViewBag.ReturnUrl })
+                </section>
+            </div>
+        </div>
+    </div>*@

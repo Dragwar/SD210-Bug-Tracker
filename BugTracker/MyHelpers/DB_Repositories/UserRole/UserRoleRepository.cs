@@ -14,14 +14,17 @@ namespace BugTracker.MyHelpers.DB_Repositories
     public class UserRoleRepository
     {
         private readonly UserManager<ApplicationUser> UserManager;
+        private readonly UserRepository UserRepository;
         private readonly ApplicationDbContext DbContext;
 
         public UserRoleRepository(ApplicationDbContext dbContext)
         {
             DbContext = dbContext;
             UserManager = OwinContextExtensions.GetUserManager<ApplicationUserManager>(HttpContext.Current.GetOwinContext());
+            UserRepository = new UserRepository(dbContext);
         }
 
+        public bool DoesRoleExist(string roleName) => DbContext.Roles.Any(role => role.Name == roleName);
         public IQueryable<IdentityRole> GetAllUserRoles() => DbContext.Roles.AsQueryable();
         public bool IsUserInRole(string userId, string roleName) => UserManager.IsInRole(userId, roleName);
         public bool IsUserInRole(string userId, UserRolesEnum roleName) => UserManager.IsInRole(userId, roleName.ToString());
@@ -29,21 +32,37 @@ namespace BugTracker.MyHelpers.DB_Repositories
         public List<IdentityRole> GetUserRoles(string userId) => GetAllUserRoles().Where(role => role.Users.FirstOrDefault(user => user.UserId == userId) != null).ToList();
         public bool AddUserToRole(string userId, string roleName)
         {
+            if (UserRepository.IsUserADemoUser(userId))
+            {
+                throw new ArgumentException("You can't change the roles of a demo user");
+            }
             IdentityResult result = UserManager.AddToRole(userId, roleName);
             return result.Succeeded;
         }
         public bool AddUserToRole(string userId, UserRolesEnum roleName)
         {
+            if (UserRepository.IsUserADemoUser(userId))
+            {
+                throw new ArgumentException("You can't change the roles of a demo user");
+            }
             IdentityResult result = UserManager.AddToRole(userId, roleName.ToString());
             return result.Succeeded;
         }
         public bool RemoveUserFromRole(string userId, string roleName)
         {
+            if (UserRepository.IsUserADemoUser(userId))
+            {
+                throw new ArgumentException("You can't change the roles of a demo user");
+            }
             IdentityResult result = UserManager.RemoveFromRole(userId, roleName);
             return result.Succeeded;
         }
         public bool RemoveUserFromRole(string userId, UserRolesEnum roleName)
         {
+            if (UserRepository.IsUserADemoUser(userId))
+            {
+                throw new ArgumentException("You can't change the roles of a demo user");
+            }
             IdentityResult result = UserManager.RemoveFromRole(userId, roleName.ToString());
             return result.Succeeded;
         }

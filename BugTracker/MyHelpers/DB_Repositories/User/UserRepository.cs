@@ -18,10 +18,17 @@ namespace BugTracker.MyHelpers.DB_Repositories
         public ApplicationUser GetUserByUserName(string userName) => DBContext.Users.FirstOrDefault(user => user.UserName == userName);
         public ApplicationUser GetUserByDisplayName(string displayName) => DBContext.Users.FirstOrDefault(user => user.UserName == displayName);
 
-        //! Flagged to be removed (similar method exists on the ProjectReposiory and this class should just worry about users and nothing else)
-        //public List<ApplicationUser> GetUsersByProjectId(Guid projectId) => DBContext.Users
-        //    .Where(user => user.Projects.Any(project => project.Id == projectId))
-        //    .ToList();
+        /// <summary>Depends on "demo-" being in the demo users email</summary>
+        public IQueryable<ApplicationUser> GetAllDemoUsers() => DBContext.Users.Where(user => user.Email.ToLower().Contains("demo-")).AsQueryable();
+
+        /// <summary>Depends on "demo-" being in the demo users email and the "<paramref name="roleName" />" to be within the email</summary>
+        public ApplicationUser GetDemoUser(string roleName) => GetAllDemoUsers().FirstOrDefault(user => user.Email.ToLower().Contains(roleName.ToLower()));
+
+        /// <summary>Depends on "demo-" being in the demo users email and the "<paramref name="roleName" />" to be within the email</summary>
+        public bool DoesDemoUserExist(string roleName) => GetAllDemoUsers().Any(user => user.Email.ToLower().Contains(roleName.ToLower()));
+
+        /// <summary>Depends on "demo-" being in the demo users email and the "<paramref name="roleName" />" to be within the email</summary>
+        public bool IsUserADemoUser(string id) => GetAllDemoUsers().Any(user => user.Id == id);
 
         public IQueryable<ApplicationUser> GetAllUsers() => DBContext.Users.AsQueryable();
     }

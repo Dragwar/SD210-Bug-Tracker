@@ -1,4 +1,8 @@
-﻿using BugTracker.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using BugTracker.Models;
 using BugTracker.Models.Filters.Actions;
 using BugTracker.Models.Filters.Authorize;
 using BugTracker.Models.ViewModels;
@@ -6,9 +10,6 @@ using BugTracker.Models.ViewModels.UserRole;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
 
 namespace BugTracker.Controllers
 {
@@ -31,6 +32,7 @@ namespace BugTracker.Controllers
         {
             List<HelperUserViewModel> model = UserRepository
                 .GetAllUsers()
+                .Where(user => !user.Email.ToLower().Contains("demo-"))
                 .ToList()
                 .Select(user => HelperUserViewModel.CreateNewViewModel(user, DbContext))
                 .ToList();
@@ -48,20 +50,26 @@ namespace BugTracker.Controllers
             return View(model);
         }
 
-        // GET: UserRole/ManageRoles/{id}
-        [OverrideCurrentNavLinkStyle("userrole-index")]
-        public ActionResult ManageRoles(string id)
+        private ManageRolesViewModel GenerateManageRolesViewModel(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return null;
+            }
+
             ApplicationUser foundUser = UserRepository.GetUserById(id);
             if (foundUser == null)
             {
-                return RedirectToAction(nameof(Index));
+                return null;
             }
             string currentAdminUserId = User.Identity.GetUserId();
             ManageRolesViewModel model = ManageRolesViewModel.CreateNewViewModel(currentAdminUserId, foundUser, UserRoleRepository.GetAllUserRoles(), DbContext);
-
-            return View(model);
+            return model;
         }
+
+        // GET: UserRole/ManageRoles/{id}
+        [OverrideCurrentNavLinkStyle("userrole-index")]
+        public ActionResult ManageRoles(string id) => View(GenerateManageRolesViewModel(id));
 
         // POST: UserRole/ManageRoles/{id}
         [HttpPost]
@@ -71,7 +79,7 @@ namespace BugTracker.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return View(formData);
+                    return View(GenerateManageRolesViewModel(formData.UserId));
                 }
 
                 ApplicationUser foundUser = UserRepository.GetUserById(formData.UserId);
@@ -136,9 +144,15 @@ namespace BugTracker.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (ArgumentException e)
             {
-                return View(formData);
+                ModelState.AddModelError("", e.Message);
+                return View(GenerateManageRolesViewModel(formData.UserId));
+            }
+            catch (Exception e)
+            {
+                ModelState.AddModelError("", e.Message);
+                return View(GenerateManageRolesViewModel(formData.UserId));
             }
         }
     }

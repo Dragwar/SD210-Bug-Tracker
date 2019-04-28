@@ -1,26 +1,26 @@
-﻿using BugTracker.Models;
-using BugTracker.Models.Filters.Actions;
-using BugTracker.MyHelpers;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using BugTracker.Models;
+using BugTracker.Models.Filters.Actions;
+using BugTracker.MyHelpers;
+using BugTracker.MyHelpers.DB_Repositories;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
 
 namespace BugTracker.Controllers
 {
-    [Authorize]
     [OverrideCurrentNavLinkStyle("none")]
     public class AccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private ApplicationDbContext DbContext;
 
-        public AccountController()
-        {
-        }
+        public AccountController() => DbContext = new ApplicationDbContext();
 
         public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
@@ -47,7 +47,8 @@ namespace BugTracker.Controllers
         {
             ViewBag.ReturnUrl = returnUrl;
             ViewBag.PermissionError = TempData?["PermissionError"]?.ToString();
-            return View();
+
+            return View(GenerateLoginViewModel(null));
         }
 
         //
@@ -59,7 +60,7 @@ namespace BugTracker.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return View(GenerateLoginViewModel(model));
             }
 
             // This doesn't count login failures towards account lockout
@@ -76,8 +77,46 @@ namespace BugTracker.Controllers
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
+                    return View(GenerateLoginViewModel(model));
             }
+        }
+        private void RemoveModelError(ModelStateDictionary modelStateDictionary, string key) => modelStateDictionary[$"{key}"]?.Errors?.Clear();
+
+        //
+        // POST: /Account/Login
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult LoginAsDemoUser(LoginViewModel model, string returnUrl)
+        {
+            UserRoleRepository userRoleRepository = new UserRoleRepository(DbContext);
+            UserRepository userRepository = new UserRepository(DbContext);
+            const string email = nameof(LoginViewModel.Email);
+            const string password = nameof(LoginViewModel.Password);
+            RemoveModelError(ModelState, email);
+            RemoveModelError(ModelState, password);
+            if (string.IsNullOrWhiteSpace(model.ChosenDemoRole) || !userRoleRepository.DoesRoleExist(model.ChosenDemoRole))
+            {
+                ModelState.AddModelError("", "invalid role");
+                return View(nameof(Login), GenerateLoginViewModel(model));
+            }
+            if (!ModelState.IsValid && model.ChosenDemoRole == UserRolesEnum.None.ToString())
+            {
+                return View(nameof(Login), GenerateLoginViewModel(model));
+            }
+
+            ApplicationUser foundDemoUser = userRepository.GetDemoUser(model.ChosenDemoRole);
+
+            if (foundDemoUser == null)
+            {
+                ModelState.AddModelError("", "Demo user not found");
+                return View(nameof(Login), GenerateLoginViewModel(model));
+            }
+
+            SignInManager.SignIn(foundDemoUser, true, model.RememberMe);
+
+            return RedirectToLocal(returnUrl); // don't have to worry about invalid URL (this method checks if URL is a local one)
+
         }
 
         //
@@ -126,10 +165,7 @@ namespace BugTracker.Controllers
         //
         // GET: /Account/Register
         [AllowAnonymous]
-        public ActionResult Register()
-        {
-            return View();
-        }
+        public ActionResult Register() => View();
 
         //
         // POST: /Account/Register
@@ -197,10 +233,7 @@ namespace BugTracker.Controllers
         //
         // GET: /Account/ForgotPassword
         [AllowAnonymous]
-        public ActionResult ForgotPassword()
-        {
-            return View();
-        }
+        public ActionResult ForgotPassword() => View();
 
         //
         // POST: /Account/ForgotPassword
@@ -244,18 +277,12 @@ namespace BugTracker.Controllers
         //
         // GET: /Account/ForgotPasswordConfirmation
         [AllowAnonymous]
-        public ActionResult ForgotPasswordConfirmation()
-        {
-            return View();
-        }
+        public ActionResult ForgotPasswordConfirmation() => View();
 
         //
         // GET: /Account/ResetPassword
         [AllowAnonymous]
-        public ActionResult ResetPassword(string code)
-        {
-            return code == null ? View("Error") : View();
-        }
+        public ActionResult ResetPassword(string code) => code == null ? View("Error") : View();
 
         //
         // POST: /Account/ResetPassword
@@ -286,10 +313,7 @@ namespace BugTracker.Controllers
         //
         // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
-        public ActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
+        public ActionResult ResetPasswordConfirmation() => View();
 
         //
         // POST: /Account/ExternalLogin
@@ -418,10 +442,7 @@ namespace BugTracker.Controllers
         //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]
-        public ActionResult ExternalLoginFailure()
-        {
-            return View();
-        }
+        public ActionResult ExternalLoginFailure() => View();
 
         protected override void Dispose(bool disposing)
         {
@@ -437,6 +458,12 @@ namespace BugTracker.Controllers
                 {
                     _signInManager.Dispose();
                     _signInManager = null;
+                }
+
+                if (DbContext != null)
+                {
+                    DbContext.Dispose();
+                    DbContext = null;
                 }
             }
 
@@ -456,6 +483,21 @@ namespace BugTracker.Controllers
                 ModelState.AddModelError("", error);
             }
         }
+
+        private LoginViewModel GenerateLoginViewModel(LoginViewModel existingViewModel) => new LoginViewModel()
+        {
+            Email = existingViewModel?.Email,
+            Password = existingViewModel?.Password,
+            RememberMe = existingViewModel?.RememberMe ?? false,
+            ChosenDemoRole = existingViewModel?.ChosenDemoRole,
+            DemoRolesToChooseFrom = Enum.GetNames(typeof(UserRolesEnum))
+                .Cast<string>()
+                .Select(roleName => new SelectListItem()
+                {
+                    Text = roleName,
+                    Value = roleName,
+                }).ToList(),
+        };
 
         private ActionResult RedirectToLocal(string returnUrl)
         {

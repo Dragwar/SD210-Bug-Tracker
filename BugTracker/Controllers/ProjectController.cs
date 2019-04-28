@@ -1,4 +1,8 @@
-﻿using BugTracker.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using BugTracker.Models;
 using BugTracker.Models.Domain;
 using BugTracker.Models.Filters.Actions;
 using BugTracker.Models.Filters.Authorize;
@@ -7,10 +11,6 @@ using BugTracker.Models.ViewModels.Project;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
 
 namespace BugTracker.Controllers
 {
@@ -30,7 +30,6 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project
-        [BugTrackerAuthorize]
         public ActionResult Index()
         {
             IQueryable<Project> userProjects = ProjectRepository.GetUserProjects(User.Identity.GetUserId());
@@ -78,7 +77,6 @@ namespace BugTracker.Controllers
         }
 
         // GET: Project/Details/{id}
-        [BugTrackerAuthorize]
         [OverrideCurrentNavLinkStyle("project-index")]
         public ActionResult Details(Guid? id)
         {

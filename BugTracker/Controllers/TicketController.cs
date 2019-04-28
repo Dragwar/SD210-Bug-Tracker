@@ -13,7 +13,6 @@ using Microsoft.AspNet.Identity;
 
 namespace BugTracker.Controllers
 {
-    [BugTrackerAuthorize]
     public class TicketController : Controller
     {
         private readonly ApplicationDbContext DbContext;

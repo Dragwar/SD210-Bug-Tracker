@@ -54,8 +54,8 @@ namespace BugTracker.Migrations
                 TicketTypes type = context.TicketTypes.First(p => p.TypeString == nameof(TicketTypesEnum.Feature));
 
                 //! Ran into weird bugs when using ".First()", ".Last()", and ".ElementAt()"
-                ApplicationUser author = context.Users.First(user => user.DisplayName.ToLower().Contains("submitter"));
-                ApplicationUser assignedUser = context.Users.First(user => user.DisplayName.ToLower().Contains("developer"));
+                ApplicationUser author = context.Users.First(user => user.Email.ToLower() == "submitter@mybugtracker.com");
+                ApplicationUser assignedUser = context.Users.First(user => user.Email.ToLower() == "developer@mybugtracker.com");
 
                 Project project = author.Projects.FirstOrDefault() ?? context.Projects.First();
 
@@ -103,12 +103,12 @@ namespace BugTracker.Migrations
         }
         private void CreateTicketPropsAndSave(ApplicationDbContext context)
         {
-            List<int> TicketPrioritiesList = Enum.GetValues(typeof(TicketPrioritiesEnum)).Cast<int>().ToList();
-            if (context.TicketPriorities.Count() != TicketPrioritiesList.Count)
+            List<int> ticketPrioritiesList = Enum.GetValues(typeof(TicketPrioritiesEnum)).Cast<int>().ToList();
+            if (context.TicketPriorities.Count() != ticketPrioritiesList.Count)
             {
-                foreach (int TicketPrioritiesId in TicketPrioritiesList)
+                foreach (int ticketPrioritiesId in ticketPrioritiesList)
                 {
-                    bool isSuccessful = CONSTANTS.TicketPriorites.TryGetValue((TicketPrioritiesEnum)TicketPrioritiesId, out TicketPriorities currentPriority);
+                    bool isSuccessful = CONSTANTS.TicketPriorites.TryGetValue((TicketPrioritiesEnum)ticketPrioritiesId, out TicketPriorities currentPriority);
 
                     if (!isSuccessful || currentPriority == null)
                     {
@@ -121,12 +121,12 @@ namespace BugTracker.Migrations
             context.SaveChanges();
 
 
-            List<int> TicketTypesList = Enum.GetValues(typeof(TicketTypesEnum)).Cast<int>().ToList();
-            if (context.TicketTypes.Count() != TicketTypesList.Count)
+            List<int> ticketTypesList = Enum.GetValues(typeof(TicketTypesEnum)).Cast<int>().ToList();
+            if (context.TicketTypes.Count() != ticketTypesList.Count)
             {
-                foreach (int TicketTypeId in TicketTypesList)
+                foreach (int ticketTypeId in ticketTypesList)
                 {
-                    bool isSuccessful = CONSTANTS.TicketTypes.TryGetValue((TicketTypesEnum)TicketTypeId, out TicketTypes currentType);
+                    bool isSuccessful = CONSTANTS.TicketTypes.TryGetValue((TicketTypesEnum)ticketTypeId, out TicketTypes currentType);
 
                     if (!isSuccessful || currentType == null)
                     {
@@ -139,12 +139,12 @@ namespace BugTracker.Migrations
             context.SaveChanges();
 
 
-            List<int> TicketStatusesList = Enum.GetValues(typeof(TicketStatusesEnum)).Cast<int>().ToList();
-            if (context.TicketStatuses.Count() != TicketStatusesList.Count)
+            List<int> ticketStatusesList = Enum.GetValues(typeof(TicketStatusesEnum)).Cast<int>().ToList();
+            if (context.TicketStatuses.Count() != ticketStatusesList.Count)
             {
-                foreach (int TicketStatusId in TicketStatusesList)
+                foreach (int ticketStatusId in ticketStatusesList)
                 {
-                    bool isSuccessful = CONSTANTS.TicketStatuses.TryGetValue((TicketStatusesEnum)TicketStatusId, out TicketStatuses currentStatus);
+                    bool isSuccessful = CONSTANTS.TicketStatuses.TryGetValue((TicketStatusesEnum)ticketStatusId, out TicketStatuses currentStatus);
 
                     if (!isSuccessful || currentStatus == null)
                     {
@@ -182,22 +182,99 @@ namespace BugTracker.Migrations
             List<ApplicationUser> initialUsers = new List<ApplicationUser>();
 
             #region Creating Initial Users
-            ApplicationUser admin = CreateUser(context, roleManager, userManager, "Admin (DisplayName)", "admin@mybugtracker.com", "admin@mybugtracker.com", userRole: nameof(UserRolesEnum.Admin));
+            ApplicationUser admin = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Admin (DisplayName)",
+                userName: "admin@mybugtracker.com",
+                userEmail: "admin@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.Admin));
 
-            ApplicationUser projectManager = CreateUser(context, roleManager, userManager, "Project Manager (DisplayName)", "projectManager@mybugtracker.com", "projectManager@mybugtracker.com", userRole: nameof(UserRolesEnum.ProjectManager));
+            ApplicationUser demoAdmin = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Demo-Admin",
+                userName: "demo-admin@mybugtracker.com",
+                userEmail: "demo-admin@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.Admin));
 
-            ApplicationUser developer = CreateUser(context, roleManager, userManager, "Developer (DisplayName)", "developer@mybugtracker.com", "developer@mybugtracker.com", userRole: nameof(UserRolesEnum.Developer));
+            ApplicationUser projectManager = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Project-Manager (DisplayName)",
+                userName: "projectManager@mybugtracker.com",
+                userEmail: "projectManager@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.ProjectManager));
+            
+            ApplicationUser demoProjectManager = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Demo-Project-Manager",
+                userName: "demo-projectManager@mybugtracker.com",
+                userEmail: "demo-projectManager@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.ProjectManager));
 
-            ApplicationUser submitter = CreateUser(context, roleManager, userManager, "Submitter (DisplayName)", "submitter@mybugtracker.com", "submitter@mybugtracker.com", userRole: nameof(UserRolesEnum.Submitter));
+            ApplicationUser developer = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Developer (DisplayName)",
+                userName: "developer@mybugtracker.com",
+                userEmail: "developer@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.Developer));
+            
+            ApplicationUser demoDeveloper = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Demo-Developer",
+                userName: "demo-developer@mybugtracker.com",
+                userEmail: "demo-developer@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.Developer));
 
-            ApplicationUser everettGrassler = CreateUser(context, roleManager, userManager, "Everett Grassler (DisplayName)", "everettG@mybugtracker.com", "everettG@mybugtracker.com", userPassword: "123Everett", userRole: nameof(UserRolesEnum.Admin));
+            ApplicationUser submitter = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Submitter (DisplayName)",
+                userName: "submitter@mybugtracker.com",
+                userEmail: "submitter@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.Submitter));
+
+            ApplicationUser demoSubmitter = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Demo-Submitter",
+                userName: "demo-submitter@mybugtracker.com",
+                userEmail: "demo-submitter@mybugtracker.com",
+                userRole: nameof(UserRolesEnum.Submitter));
+
+            ApplicationUser everettGrassler = CreateUser(
+                context: context,
+                roleManager: roleManager,
+                userManager: userManager,
+                displayName: "Everett Grassler (DisplayName)",
+                userName: "everettG@mybugtracker.com",
+                userEmail: "everettG@mybugtracker.com",
+                userPassword: "123Everett",
+                userRole: nameof(UserRolesEnum.Admin));
             #endregion
 
             initialUsers.Add(admin);
-            initialUsers.Add(projectManager); // TODO: Delete these after testing the role permissions
-            initialUsers.Add(developer); // TODO: Delete these after testing the role permissions
-            initialUsers.Add(submitter); // TODO: Delete these after testing the role permissions
+            initialUsers.Add(projectManager);
+            initialUsers.Add(developer);
+            initialUsers.Add(submitter);
+            initialUsers.Add(demoAdmin);
+            initialUsers.Add(demoProjectManager);
+            initialUsers.Add(demoDeveloper);
+            initialUsers.Add(demoSubmitter);
             initialUsers.Add(everettGrassler);
+
 
             // Save changes made above to the database
             context.SaveChanges();
@@ -256,6 +333,9 @@ namespace BugTracker.Migrations
                 newUser = context.Users.First(user => user.UserName == userName);
             }
 
+            context.Users.AddOrUpdate(user => user.Email, newUser);
+            context.SaveChanges();
+            
             // Make sure the user is on the passed in role
             if (!string.IsNullOrEmpty(userRole) && !string.IsNullOrWhiteSpace(userRole) && !userManager.IsInRole(newUser.Id, userRole))
             {

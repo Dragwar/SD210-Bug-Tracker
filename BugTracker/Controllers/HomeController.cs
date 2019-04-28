@@ -1,12 +1,9 @@
-﻿using BugTracker.Models;
+﻿using System.Web.Mvc;
+using BugTracker.Models;
 using BugTracker.Models.Filters.Actions;
 using BugTracker.Models.ViewModels.Home;
-using BugTracker.Models.ViewModels.Project;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Collections.Generic;
-using System.Web.Mvc;
 
 namespace BugTracker.Controllers
 {
@@ -23,24 +20,9 @@ namespace BugTracker.Controllers
 
         public ActionResult Index()
         {
-            HomeIndexViewModel model;
-            if (User.Identity.IsAuthenticated)
-            {
-                string userId = User.Identity.GetUserId();
-                ApplicationUser currentUser = UserRepository.GetUserById(userId);
-                model = HomeIndexViewModel.CreateNewViewModel(currentUser, DbContext, 5, 5, 5);
-            }
-            else
-            {
-                model = new HomeIndexViewModel()
-                {
-                    UserId = "",
-                    DisplayName = "Guest User",
-                    Email = "",
-                    LatestProjects = new List<ProjectIndexViewModel>(),
-                    Roles = new List<IdentityRole>(),
-                };
-            }
+            string userId = User.Identity.GetUserId();
+            ApplicationUser currentUser = UserRepository.GetUserById(userId);
+            HomeIndexViewModel model = HomeIndexViewModel.CreateNewViewModel(currentUser, DbContext, 5, 5, 5);
 
             return View(model);
         }

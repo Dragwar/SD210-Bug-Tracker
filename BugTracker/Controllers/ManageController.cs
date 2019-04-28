@@ -1,29 +1,25 @@
-﻿using BugTracker.Models;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using BugTracker.Models;
 using BugTracker.Models.Filters.Actions;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
 namespace BugTracker.Controllers
 {
-    [Authorize]
     [OverrideCurrentNavLinkStyle("none")]
     public class ManageController : Controller
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
-        private ApplicationDbContext DbContext;
+        private readonly ApplicationDbContext DbContext;
 
-        public ManageController()
-        {
-            DbContext = new ApplicationDbContext();
-        }
+        public ManageController() => DbContext = new ApplicationDbContext();
 
         public ManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
@@ -159,10 +155,7 @@ namespace BugTracker.Controllers
 
         //
         // GET: /Manage/AddPhoneNumber
-        public ActionResult AddPhoneNumber()
-        {
-            return View();
-        }
+        public ActionResult AddPhoneNumber() => View();
 
         //
         // POST: /Manage/AddPhoneNumber
@@ -273,10 +266,7 @@ namespace BugTracker.Controllers
 
         //
         // GET: /Manage/ChangePassword
-        public ActionResult ChangePassword()
-        {
-            return View();
-        }
+        public ActionResult ChangePassword() => View();
 
         //
         // POST: /Manage/ChangePassword
@@ -304,10 +294,7 @@ namespace BugTracker.Controllers
 
         //
         // GET: /Manage/SetPassword
-        public ActionResult SetPassword()
-        {
-            return View();
-        }
+        public ActionResult SetPassword() => View();
 
         //
         // POST: /Manage/SetPassword
