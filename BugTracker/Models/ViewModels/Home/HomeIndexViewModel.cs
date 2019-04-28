@@ -1,11 +1,11 @@
-﻿using BugTracker.Models.ViewModels.Project;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BugTracker.Models.ViewModels.Project;
 using BugTracker.Models.ViewModels.Ticket;
 using BugTracker.MyHelpers;
 using BugTracker.MyHelpers.DB_Repositories;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace BugTracker.Models.ViewModels.Home
 {
@@ -23,8 +23,19 @@ namespace BugTracker.Models.ViewModels.Home
         public List<TicketIndexViewModel> LatestAssignedTickets { get; set; }
 
         public List<IdentityRole> Roles { get; set; }
+        public int AllProjectCount { get; set; }
+        public int AllOpenTicketsCount { get; set; }
+        public int AllResovledTicketsCount { get; set; }
+        public int AllRejectedTicketsCount { get; set; }
+        public int AllTicketsCount => AllOpenTicketsCount + AllResovledTicketsCount + AllRejectedTicketsCount;
 
-        public static HomeIndexViewModel CreateNewViewModel(ApplicationUser applicationUser, ApplicationDbContext dbContext, int latestProjectIntakeLimit = 3, int latestCreatedTicketIntakeLimit = 3, int latestAssignedTicketIntakeLimit = 3)
+
+        public static HomeIndexViewModel CreateNewViewModel(
+            ApplicationUser applicationUser,
+            ApplicationDbContext dbContext,
+            int latestProjectIntakeLimit = 3,
+            int latestCreatedTicketIntakeLimit = 3,
+            int latestAssignedTicketIntakeLimit = 3)
         {
             if (applicationUser == null)
             {
@@ -32,9 +43,9 @@ namespace BugTracker.Models.ViewModels.Home
             }
 
             List<IdentityRole> roles = new UserRoleRepository(dbContext).GetUserRoles(applicationUser.Id);
-            ProjectRepository repo = new ProjectRepository(dbContext);
+            ProjectRepository projectRepository = new ProjectRepository(dbContext);
 
-            List<ProjectIndexViewModel> latestProjects = repo
+            List<ProjectIndexViewModel> latestProjects = projectRepository
                 .GetUserProjects(applicationUser.Id)?
                 .ToList()
                 .OrderByDescending(project => project?.DateUpdated ?? project.DateCreated)
@@ -80,7 +91,7 @@ namespace BugTracker.Models.ViewModels.Home
                 latestAssignedTickets = new List<TicketIndexViewModel>();
             }
 
-
+            TicketRepository ticketRepository = new TicketRepository(dbContext);
             try
             {
                 return new HomeIndexViewModel()
@@ -88,13 +99,19 @@ namespace BugTracker.Models.ViewModels.Home
                     UserId = string.IsNullOrWhiteSpace(applicationUser.Id) ? throw new ArgumentNullException() : applicationUser.Id,
                     DisplayName = string.IsNullOrWhiteSpace(applicationUser.DisplayName) ? throw new ArgumentNullException() : applicationUser.DisplayName,
                     Email = string.IsNullOrWhiteSpace(applicationUser.Email) ? throw new ArgumentNullException() : applicationUser.Email,
-                    TotalProjectCount = repo.GetUserProjects(applicationUser.Id)?.Count() ?? 0,
+                    TotalProjectCount = projectRepository.GetUserProjects(applicationUser.Id)?.Count() ?? 0,
                     LatestProjects = latestProjects?.Any() ?? false ? latestProjects : new List<ProjectIndexViewModel>(),
                     Roles = (roles?.Any() ?? false) ? roles : new List<IdentityRole>(),
                     TotalCreatedTicketCount = numberOfCreatedTickets,
                     TotalAssignedTicketCount = numberOfAssignedTickets,
                     LatestCreatedTickets = latestCreatedTickets,
                     LatestAssignedTickets = latestAssignedTickets,
+                    AllProjectCount = projectRepository.GetAllProjects().Count(),
+
+                    //! NOTE: This depends on the table primary keys matching with the enum int value
+                    AllOpenTicketsCount = ticketRepository.GetAllTickets().Count(ticket => ticket.StatusId == (int)TicketStatusesEnum.Open),
+                    AllResovledTicketsCount = ticketRepository.GetAllTickets().Count(ticket => ticket.StatusId == (int)TicketStatusesEnum.Resolved),
+                    AllRejectedTicketsCount = ticketRepository.GetAllTickets().Count(ticket => ticket.StatusId == (int)TicketStatusesEnum.Rejected),
                 };
             }
             catch (ArgumentNullException e)

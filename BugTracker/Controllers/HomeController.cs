@@ -28,7 +28,7 @@ namespace BugTracker.Controllers
             {
                 string userId = User.Identity.GetUserId();
                 ApplicationUser currentUser = UserRepository.GetUserById(userId);
-                model = HomeIndexViewModel.CreateNewViewModel(currentUser, DbContext, 5);
+                model = HomeIndexViewModel.CreateNewViewModel(currentUser, DbContext, 5, 5, 5);
             }
             else
             {

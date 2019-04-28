@@ -174,6 +174,55 @@
         </div>
     }
 
+    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
+    {
+        <!-- [Widget]:Admin/ProjectManager Card -->
+        <div class="col-lg-5">
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Bug Tracker Stats</h4>
+                    <p class="category">
+                        
+                    </p>
+                </div>
+                <div class="content">
+                    <div class="footer" style="display: flex; flex-flow: row wrap;">
+                        <div style="flex-basis: 50%">
+                            <h5 style="margin-bottom: 5px;">Tickets</h5>
+                            <div class="legend text-uppercase" style="font-weight: 600;">
+                                <span>
+                                    <i class="fa fa-circle text-primary"></i> - Total :
+                                    <span style="font-size: 125%;">@(Model.AllOpenTicketsCount + Model.AllResovledTicketsCount + Model.AllRejectedTicketsCount)</span>
+                                </span>
+                                <span>
+                                    <i class="fa fa-circle text-success"></i> - Open :
+                                    <span style="font-size: 125%;">@Model.AllOpenTicketsCount</span>
+                                </span>
+                                <span>
+                                    <i class="fa fa-circle text-info"></i> - Resolved :
+                                    <span style="font-size: 125%;">@Model.AllResovledTicketsCount</span>
+                                </span>
+                                <span>
+                                    <i class="fa fa-circle text-danger"></i> - Rejected :
+                                    <span style="font-size: 125%;">@Model.AllRejectedTicketsCount</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div style="flex-basis: 50%">
+                            <h5 style="margin-bottom: 5px;">Projects</h5>
+                            <div class="legend text-uppercase" style="font-weight: 600;">
+                                <span>
+                                    <i class="fa fa-circle text-primary"></i> - Total :
+                                    <span style="font-size: 125%;">@Model.AllProjectCount</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     <!-- [Widget]:2014 Sales -->
     <!--
     <div class="col-lg-6">
