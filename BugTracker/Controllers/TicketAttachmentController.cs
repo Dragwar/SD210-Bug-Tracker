@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using BugTracker.Models;
 using BugTracker.Models.Domain;
@@ -86,7 +87,7 @@ namespace BugTracker.Controllers
                     return View(formData);
                 }
 
-                FileSystemRepository fileSystemRepository = new FileSystemRepository(Server, null);
+                FileSystemRepository fileSystemRepository = new FileSystemRepository(Server, new HashSet<string>());
 
                 TicketAttachment newTicketAttachment = new TicketAttachment()
                 {

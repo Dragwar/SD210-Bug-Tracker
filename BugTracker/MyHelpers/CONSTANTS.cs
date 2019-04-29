@@ -7,6 +7,11 @@ namespace BugTracker.MyHelpers
 {
     public static class CONSTANTS
     {
+        public const string TextExtension = ".txt";
+        public const string JsonExtension = ".json";
+        public const string UploadFolder = @"~/UserUploads/";
+        public const string BenchmarkFolder = @"~/Logs/Benchmarks/";
+        
         //! NOTE: i tried using a constructor for this but EF needs a empty constructor for DB
         #region TicketPriorities
         #region CONSTANT Ticket Priorities

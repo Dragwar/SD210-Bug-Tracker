@@ -9,6 +9,7 @@ namespace BugTracker
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new Benchmark());
             filters.Add(new BugTrackerAuthorize());
             filters.Add(new OverrideCurrentNavLinkStyle(null));
         }

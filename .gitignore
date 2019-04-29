@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /BugTracker/Private.config
 /BugTracker/UserUploads
+/BugTracker/Logs/

@@ -187,6 +187,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Domain\ActionResultBenchmark.cs" />
     <Compile Include="Models\Domain\Project.cs" />
     <Compile Include="Models\Domain\Ticket.cs" />
     <Compile Include="Models\Domain\TicketAttachment.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Models\Domain\TicketPriorities.cs" />
     <Compile Include="Models\Domain\TicketStatuses.cs" />
     <Compile Include="Models\Domain\TicketTypes.cs" />
+    <Compile Include="Models\Filters\Actions\Benchmark.cs" />
     <Compile Include="Models\Filters\Actions\OverrideCurrentNavLinkStyle.cs" />
     <Compile Include="Models\Filters\Authorize\BugTrackerAuthorize.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -420,6 +422,7 @@
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
     <Content Include="Private.config" />
+    <Content Include="Logs\Benchmark\MyBenchmark.json" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
