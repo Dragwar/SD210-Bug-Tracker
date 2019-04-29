@@ -9,9 +9,30 @@ using BugTracker.Models.ViewModels.Ticket;
 
 namespace BugTracker.MyHelpers.DB_Repositories
 {
+    //[NotMapped]
+    //public class AssignedNewDeveloperEventArg
+    //{
+    //    public Ticket Ticket { get; set; }
+    //    public ApplicationUser UserWhoMadeChanges { get; set; }
+    //    public ApplicationUser OldDeveloper { get; set; }
+    //    public ApplicationUser NewDeveloper { get; set; }
+    //    public DateTime DateOfEventTrigger { get; set; }
+    //    public string CallBackUrl { get; }
+
+    //    public AssignedNewDeveloperEventArg(Ticket ticket, ApplicationUser userWhoMadeChanges, ApplicationUser oldDeveloper, ApplicationUser newDeveloper, string callBackUrl)
+    //    {
+    //        Ticket = ticket ?? throw new ArgumentNullException(nameof(ticket));
+    //        UserWhoMadeChanges = userWhoMadeChanges ?? throw new ArgumentNullException(nameof(userWhoMadeChanges));
+    //        OldDeveloper = oldDeveloper ?? throw new ArgumentNullException(nameof(oldDeveloper));
+    //        NewDeveloper = newDeveloper ?? throw new ArgumentNullException(nameof(newDeveloper));
+    //        DateOfEventTrigger = DateTime.Now;
+    //        CallBackUrl = callBackUrl;
+    //    }
+    //}
     [NotMapped]
     public class TicketRepository
     {
+        //public event EventHandler<AssignedNewDeveloperEventArg> AssignedNewDeveloper;
         private readonly ApplicationDbContext DbContext;
 
         public TicketRepository(ApplicationDbContext dBContext) => DbContext = dBContext ?? throw new ArgumentNullException(nameof(dBContext));
@@ -272,6 +293,8 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
             if (ticket.AssignedUserId != model.DeveloperId)
             {
+                //ApplicationUser newDev = new UserRepository(DbContext).GetUserById(model.DeveloperId);
+                //AssignedNewDeveloper?.Invoke(this, new AssignedNewDeveloperEventArg(ticket, userWhoMadeChanges, ticket.AssignedUser, newDev, callBackUrl));
                 isNewDev = true;
                 ticket.AssignedUserId = model.DeveloperId;
 

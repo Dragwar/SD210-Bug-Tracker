@@ -337,7 +337,7 @@ namespace BugTracker.Controllers
 
                 // Generate link to ticket details when sending a email
                 string callBackUrl = Url.Action(nameof(Details), "Ticket", new { id = foundTicket.Id }, Request.Url.Scheme);
-
+                //TicketRepository.AssignedNewDeveloper += TicketRepository_AssignedNewDeveloper;
                 (_, bool wasChanged) = TicketRepository.EditExistingTicket(foundTicket, formData, userId, callBackUrl, false);
 
                 if (!wasChanged)
@@ -363,5 +363,18 @@ namespace BugTracker.Controllers
                 return View(nameof(Edit), model);
             }
         }
+
+        //private void TicketRepository_AssignedNewDeveloper(object sender, AssignedNewDeveloperEventArg e)
+        //{
+        //    EmailSystemRepository emailRepo = new EmailSystemRepository();
+        //    // Send email to new assigned developer
+        //    string body = emailRepo.GetSampleBodyString(
+        //        $"You Were Assigned To {e.Ticket.Title}",
+        //        $"assigned by {e.UserWhoMadeChanges.Email}",
+        //        $"Click here for the ticket details",
+        //        $"{e.CallBackUrl}");
+
+        //    emailRepo.Send(e.NewDeveloper.Id, ("New Assigned Ticket", body));
+        //}
     }
 }
