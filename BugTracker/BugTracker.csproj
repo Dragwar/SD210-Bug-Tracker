@@ -422,7 +422,7 @@
     <Content Include="Content\DataTables\css\mixins.scss" />
     <Content Include="Content\DataTables\css\common.scss" />
     <Content Include="Private.config" />
-    <Content Include="Logs\Benchmark\MyBenchmark.json" />
+    <Content Include="Logs\Benchmarks\HNLSL-SD42_Benchmark.json" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.js" />
     <Content Include="Scripts\DataTables\autoFill.bootstrap.min.js" />
