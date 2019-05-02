@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Runtime.InteropServices;
 using BugTracker.Models;
 using BugTracker.Models.Domain;
 
@@ -16,7 +17,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
         public EntityState? GetTicketState(Guid id) => DbContext.ChangeTracker.Entries<Ticket>().FirstOrDefault(ticket => ticket.Entity.Id == id)?.State;
 
-        public List<TicketHistory> GetTicketChanges(Ticket ticketToCheck, string userIdWhoMadeChanges, List<string> avoidTheseMembers)
+        public List<TicketHistory> GetTicketChanges(Ticket ticketToCheck, string userIdWhoMadeChanges, [Optional] List<string> avoidTheseMembers)
         {
             #region Null Checks
             if (string.IsNullOrWhiteSpace(userIdWhoMadeChanges) || !new UserRepository(DbContext).DoesUserExist(userIdWhoMadeChanges))
@@ -56,8 +57,8 @@ namespace BugTracker.MyHelpers.DB_Repositories
                         continue;
                     }
 
-                    string oldValue = foundTicketEntry.OriginalValues[memberName].ToString();
-                    string newValue = foundTicketEntry.CurrentValues[memberName].ToString();
+                    string oldValue = foundTicketEntry.OriginalValues[memberName]?.ToString();
+                    string newValue = foundTicketEntry.CurrentValues[memberName]?.ToString();
 
 
                     if (oldValue != newValue)
@@ -84,13 +85,38 @@ namespace BugTracker.MyHelpers.DB_Repositories
                                 case nameof(ticketToCheck.AssignedUserId):
                                     UserRepository userRepo = new UserRepository(DbContext);
 
-                                    oldValue = userRepo
-                                        .GetUserById(oldValue)?
-                                        .Email ?? throw new Exception("User not found");
+                                    // Handle when user had no assigned user to start having one
+                                    const string message = "User not found";
 
-                                    newValue = userRepo
-                                        .GetUserById(newValue)?
-                                        .Email ?? throw new Exception("User not found");
+                                    // Able to assign user from ticket (from null to assigning a new user)
+                                    try
+                                    {
+                                        oldValue = userRepo
+                                            .GetUserById(oldValue)?
+                                            .Email ?? throw new Exception(message);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        if (e.Message == message)
+                                        {
+                                            oldValue = "No User";
+                                        }
+                                    }
+
+                                    // Able to unassign user from ticket (and leave it null)
+                                    try
+                                    {
+                                        newValue = userRepo
+                                            .GetUserById(newValue)?
+                                            .Email ?? throw new Exception(message);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        if (e.Message == message)
+                                        {
+                                            newValue = "No User";
+                                        }
+                                    }
                                     break;
 
                                 case nameof(ticketToCheck.PriorityId):
@@ -130,7 +156,6 @@ namespace BugTracker.MyHelpers.DB_Repositories
                     }
                 }
             }
-
             return ticketHistories;
         }
 

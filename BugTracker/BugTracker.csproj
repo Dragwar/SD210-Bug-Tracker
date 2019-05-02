@@ -188,6 +188,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Domain\ActionResultBenchmark.cs" />
+    <Compile Include="Models\Domain\TicketNotification.cs" />
     <Compile Include="Models\Domain\Project.cs" />
     <Compile Include="Models\Domain\Ticket.cs" />
     <Compile Include="Models\Domain\TicketAttachment.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="MyHelpers\DB_Repositories\TicketAttachment\TicketAttachmentRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\TicketComment\TicketCommentRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\TicketHistory\TicketHistoryRepository.cs" />
+    <Compile Include="MyHelpers\DB_Repositories\TicketNotification\TicketNotificationRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\Ticket\TicketRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\UserRole\UserRoleRepository.cs" />
     <Compile Include="MyHelpers\DB_Repositories\User\UserRepository.cs" />

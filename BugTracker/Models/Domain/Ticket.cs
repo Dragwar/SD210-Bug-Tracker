@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using BugTracker.Models.ViewModels.Ticket;
 using BugTracker.MyHelpers;
 
@@ -38,12 +39,20 @@ namespace BugTracker.Models.Domain
         public virtual ApplicationUser AssignedUser { get; set; }
         public string AssignedUserId { get; set; }
 
+
+        //[InverseProperty(nameof(ApplicationUser.SubscribedTickets))]
+        //public virtual List<ApplicationUser> SubscribedUsers { get; set; }
+        public virtual List<TicketNotification> TicketNotifications { get; set; }
+
         public Ticket()
         {
             Id = Guid.NewGuid();
             DateCreated = DateTime.Now;
             Attachments = new List<TicketAttachment>();
             Comments = new List<TicketComment>();
+
+            //SubscribedUsers = new List<ApplicationUser>();
+            TicketNotifications = new List<TicketNotification>();
         }
 
         public override bool Equals(object obj)

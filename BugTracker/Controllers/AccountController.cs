@@ -113,7 +113,7 @@ namespace BugTracker.Controllers
                 return View(nameof(Login), GenerateLoginViewModel(model));
             }
 
-            SignInManager.SignIn(foundDemoUser, true, model.RememberMe);
+            SignInManager.SignIn(foundDemoUser, model.RememberMe, model.RememberMe);
 
             return RedirectToLocal(returnUrl); // don't have to worry about invalid URL (this method checks if URL is a local one)
 
@@ -181,9 +181,6 @@ namespace BugTracker.Controllers
                 IdentityResult result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-
                     // don't need to check if user is in role because
                     // this is where new users get created therefore
                     // by default new users don't have a role assigned to them
@@ -192,6 +189,9 @@ namespace BugTracker.Controllers
 
                     //? is this needed or useful here in any way?
                     //UserManager.Update(user);
+                    
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    
 
                     // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link

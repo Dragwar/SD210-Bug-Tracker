@@ -201,7 +201,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
         //    .AsQueryable() ?? new List<Models.Domain.Ticket>().AsQueryable();
 
 
-        public Ticket CreateNewTicket(TicketCreateViewModel model, bool saveChanges)
+        public Ticket CreateNewTicket(TicketCreateViewModel model, (bool saveChanges, bool addNotifications) config)
         {
             if (DbContext == null ||
                 model == null ||
@@ -212,9 +212,12 @@ namespace BugTracker.MyHelpers.DB_Repositories
             {
                 throw new ArgumentException("bad data");
             }
+            UserRepository userRepository = new UserRepository(DbContext);
+            //UserRoleRepository userRoleRepository = new UserRoleRepository(DbContext);
+            //TicketNotificationRepository ticketNotificationRepository = new TicketNotificationRepository(DbContext);
 
             Project foundProject = new ProjectRepository(DbContext).GetProject(model.ProjectId) ?? throw new Exception($"project not found {model.ProjectId}");
-            ApplicationUser foundAuthor = new UserRepository(DbContext).GetUserById(model.AuthorId) ?? throw new Exception($"user not found {model.AuthorId}");
+            ApplicationUser foundAuthor = userRepository.GetUserById(model.AuthorId) ?? throw new Exception($"user not found {model.AuthorId}");
 
             Ticket newTicket = new Ticket()
             {
@@ -228,7 +231,39 @@ namespace BugTracker.MyHelpers.DB_Repositories
             foundProject.Tickets.Add(newTicket);
             foundAuthor.CreatedTickets.Add(newTicket);
 
-            if (saveChanges)
+            //!Don't need to worry about adding all Admins/ProjectManagers to a ticket notifications
+            //!Also don't need to assign a user to the newly created ticket (only on ticket edit)
+            //if (config.addNotifications)
+            //{
+            //    // Subscribe the new ticket to the admins and project notifications
+            //    List<ApplicationUser> adminsAndProjectManagers = userRoleRepository
+            //        .UsersInRole(UserRolesEnum.Admin)
+            //        .Concat(userRoleRepository.UsersInRole(UserRolesEnum.ProjectManager))
+            //        .Where(user => user.Id != foundAuthor.Id) // in case of Author is an Admin and at the Creator of the newTicket
+            //        .Where(user => user.Id != newTicket.AssignedUserId) // in case of AssignedUser is an Admin and a the Developer of the newTicket
+            //        .ToList();
+
+            //    adminsAndProjectManagers
+            //        .ForEach(user =>
+            //        {
+            //            TicketNotification userSubscribed = ticketNotificationRepository.CreateNewTicketNotification(user.Id, newTicket, false);
+            //            DbContext.TicketNotifications.Add(userSubscribed);
+            //        });
+
+            //    // This won't happen because I'm not assigning a user on ticket creation
+            //    if (!string.IsNullOrWhiteSpace(newTicket.AssignedUserId) && userRepository.DoesUserExist(newTicket.AssignedUserId))
+            //    {
+            //        TicketNotification userSubscribed = new TicketNotification()
+            //        {
+            //            TicketId = newTicket.Id,
+            //            UserId = newTicket.AssignedUserId,
+            //        };
+            //        DbContext.TicketNotifications.Add(userSubscribed);
+            //    }
+            //}
+
+
+            if (config.saveChanges)
             {
                 DbContext.SaveChanges();
             }
@@ -240,8 +275,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
             Ticket ticket,
             TicketEditViewModel model,
             string currentUserId,
-            string callBackUrl,
-            bool saveDatabase)
+            string callBackUrl)
         {
             if (ticket == null || model == null ||
                 string.IsNullOrWhiteSpace(model.Title) ||
@@ -258,57 +292,75 @@ namespace BugTracker.MyHelpers.DB_Repositories
             }
 
             ApplicationUser userWhoMadeChanges = new UserRepository(DbContext).GetUserById(currentUserId) ?? throw new Exception("Editor wasn't found");
+            TicketHistoryRepository ticketHistoryRepository = new TicketHistoryRepository(DbContext);
+            TicketNotificationRepository ticketNotificationRepository = new TicketNotificationRepository(DbContext);
+            UserRepository userRepository = new UserRepository(DbContext);
             EmailSystemRepository emailRepo = new EmailSystemRepository();
-            bool isNewDev = false;
 
+            //!NOTE: Probably don't need to do these checks
+            #region Assigning model values to ticket
             if (ticket.Title != model.Title)
             {
                 ticket.Title = model.Title;
             }
-
             if (ticket.Description != model.Description)
             {
                 ticket.Description = model.Description;
             }
-
             if (ticket.PriorityId != (int)model.Priority)
             {
                 ticket.PriorityId = (int)model.Priority;
             }
-
             if (ticket.StatusId != ((int?)model?.Status ?? (int)TicketStatusesEnum.Open))
             {
                 ticket.StatusId = (int?)model?.Status ?? (int)TicketStatusesEnum.Open;
             }
-
             if (ticket.TypeId != (int)model.Type)
             {
                 ticket.TypeId = (int)model.Type;
             }
-
             if (ticket.ProjectId != model.ProjectId)
             {
                 ticket.ProjectId = model.ProjectId;
             }
+            #endregion
 
+
+            // ON DEV CHANGE
             if (ticket.AssignedUserId != model.DeveloperId)
             {
-                //ApplicationUser newDev = new UserRepository(DbContext).GetUserById(model.DeveloperId);
+                //ApplicationUser newDev = userRepository.GetUserById(model.DeveloperId);
                 //AssignedNewDeveloper?.Invoke(this, new AssignedNewDeveloperEventArg(ticket, userWhoMadeChanges, ticket.AssignedUser, newDev, callBackUrl));
-                isNewDev = true;
-                ticket.AssignedUserId = model.DeveloperId;
 
-                // Send email to new assigned developer
-                string body = emailRepo.GetSampleBodyString(
-                    $"You Were Assigned To {ticket.Title}",
-                    $"assigned by {userWhoMadeChanges.Email}",
-                    $"Click here for the ticket details",
-                    $"{callBackUrl}");
+                // remove any notification belonging to this ticket
+                if (ticket.AssignedUser != null)
+                {
+                    // NOTE: save changes is called later (Line - ~383) because the ChangeTracker will give unintended data
+                    ticketNotificationRepository.RemoveTicketNotificationsFromUser(ticket.AssignedUser, ticket, false);
+                }
 
-                emailRepo.Send(ticket.AssignedUserId, ("New Assigned Ticket", body));
+                // Add new notification for new developer
+                ApplicationUser foundNewDeveloper = userRepository.GetUserById(model.DeveloperId);
+                if (foundNewDeveloper != null)
+                {
+                    ticketNotificationRepository.CreateNewTicketNotification(foundNewDeveloper, ticket, false);
+                }
+
+                ticket.AssignedUser = foundNewDeveloper;
+
+                if (foundNewDeveloper != null)
+                {
+                    // Send email to new assigned developer
+                    string body = emailRepo.GetSampleBodyString(
+                        $"You were assigned to <i>\"{ticket.Title}\"</i>",
+                        $"assigned by {userWhoMadeChanges.Email}",
+                        $"Click here for the ticket details",
+                        $"{callBackUrl}");
+
+                    emailRepo.Send(foundNewDeveloper.Id, ("New assigned ticket", body));
+                }
             }
 
-            TicketHistoryRepository ticketHistoryRepository = new TicketHistoryRepository(DbContext);
 
             // If "ticketHistoryRepository.GetTicketState(ticket.Id)" returned "null", then make "wasEdited" = "false"
             bool wasEdited = (ticketHistoryRepository.GetTicketState(ticket.Id) ?? EntityState.Unchanged) == EntityState.Modified;
@@ -317,30 +369,25 @@ namespace BugTracker.MyHelpers.DB_Repositories
             {
                 ticket.DateUpdated = DateTime.Now;
 
-                // Make TicketHistories
-                DbContext.TicketHistories.AddRange(ticketHistoryRepository.GetTicketChanges(ticket, currentUserId, null));
+                // Make TicketHistories and DbContext.SaveChanges();
+                DbContext.TicketHistories.AddRange(ticketHistoryRepository.GetTicketChanges(ticket, currentUserId));
+                DbContext.SaveChanges();
 
-                //TODO: Ask Gui for clarity on the TicketNotifications Table in the "DB Spec.png" picture
-                //UserRoleRepository userRoleRepo = new UserRoleRepository(DbContext);
-                //bool isUserAdminOrProjectManager = userRoleRepo.IsUserInRole(currentUserId, UserRolesEnum.Admin) || userRoleRepo.IsUserInRole(currentUserId, UserRolesEnum.ProjectManager);
 
-                // Send email to assigned developer (only send if the developer wasn't changed) when ticket was changed
-                if (!isNewDev /*|| isUserAdminOrProjectManager //Then check if opt-in or opt-out*/)
+                List<TicketNotification> ticketNotifications = ticketNotificationRepository
+                    .GetTicketsTicketNotifications(ticket.Id)
+                    .ToList();
+
+                if (ticketNotifications.Count > 0)
                 {
                     string body = emailRepo.GetSampleBodyString(
-                        $"{ticket.Title} Was Modified",
+                        $"<i>\"{ticket.Title}\"</i> was modified",
                         $"changes made by {userWhoMadeChanges.Email}",
                         $"Click here for the ticket details",
                         $"{callBackUrl}");
 
-                    emailRepo.Send(ticket.AssignedUserId, ($"{ticket.Title} (Ticket) was changed", body));
+                    emailRepo.SendAll(($"\"{ticket.Title}\" (Ticket) was changed", body), ticketNotifications);
                 }
-            }
-
-
-            if (saveDatabase && wasEdited)
-            {
-                DbContext.SaveChanges();
             }
 
             return (ticket, wasEdited);

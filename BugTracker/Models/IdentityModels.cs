@@ -12,20 +12,24 @@ namespace BugTracker.Models
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit https://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
-        public virtual string DisplayName { get; set; }
-        public virtual List<Project> Projects { get; set; }
-
         [InverseProperty(nameof(Ticket.Author))]
         public virtual List<Ticket> CreatedTickets { get; set; }
 
         [InverseProperty(nameof(Ticket.AssignedUser))]
         public virtual List<Ticket> AssignedTickets { get; set; }
 
+
+        public virtual string DisplayName { get; set; }
+        public virtual List<Project> Projects { get; set; }
         public virtual List<TicketAttachment> TicketAttachments { get; set; }
-
         public virtual List<TicketComment> TicketComments { get; set; }
-
         public virtual List<TicketHistory> TicketHistories { get; set; }
+
+
+        public virtual List<TicketNotification> TicketNotifications { get; set; }
+
+        //[InverseProperty(nameof(Ticket.SubscribedUsers))]
+        //public virtual List<Ticket> SubscribedTickets { get; set; }
 
         public ApplicationUser()
         {
@@ -35,6 +39,9 @@ namespace BugTracker.Models
             TicketComments = new List<TicketComment>();
             TicketHistories = new List<TicketHistory>();
             Projects = new List<Project>();
+
+            //SubscribedTickets = new List<Ticket>();
+            TicketNotifications = new List<TicketNotification>();
         }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
@@ -48,8 +55,7 @@ namespace BugTracker.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+        public ApplicationDbContext() : base("DefaultConnection", throwIfV1Schema: false)
         {
         }
 
@@ -62,11 +68,14 @@ namespace BugTracker.Models
         public DbSet<TicketComment> TicketComments { get; set; }
         public DbSet<TicketHistory> TicketHistories { get; set; }
 
+        public DbSet<TicketNotification> TicketNotifications { get; set; }
+
         public static ApplicationDbContext Create() => new ApplicationDbContext();
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            //modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
 
             // TODO: Learn what .WillCascadeOnDelete() does and where/when should I use this
             // TODO: Learn how to make a (Many To Many) Relationship with fluentAPI
@@ -78,6 +87,34 @@ namespace BugTracker.Models
             //! "<ENTITY-1>.HasRequired()..." and "<ENITITY-2>.HasMany()..." <-- this represents a one-to-many relationship.
             //! In conclusion since I'm following relationship convention I don't need to explicitly make these relationships here
             //! but this would be necessary when you're not following conventions.
+
+
+            //! this will break.
+            //!ERROR:
+            //!Introducing FOREIGN KEY constraint 'FK_dbo.Test_dbo.AspNetUsers_UserId' on table 'Test' may cause cycles or multiple cascade paths. 
+            //!Specify ON DELETE NO ACTION or ON UPDATE NO ACTION, or modify other FOREIGN KEY constraints.
+            //!Could not create constraint or index. See previous errors.
+            //xmodelBuilder.Entity<ApplicationUserTickets>()
+            //x    .HasKey(t => new { t.UserId, t.TicketId });
+
+            //! Making both required also breaks Same error as above
+            //xmodelBuilder.Entity<UserSubscribedTickets>()
+            //x    .Property(ut => ut.UserId)
+            //x        .IsRequired();
+            //xmodelBuilder.Entity<UserSubscribedTickets>()
+            //x    .Property(ut => ut.TicketId)
+            //x        .IsRequired();
+
+
+            modelBuilder.Entity<TicketNotification>()
+                .HasKey(ut => ut.Id)
+                .Property(ut => ut.DateCreated)
+                    .IsRequired();
+
+
+
+
+
 
             #region ApplicationUser (Entity)
             modelBuilder.Entity<ApplicationUser>()
@@ -97,10 +134,50 @@ namespace BugTracker.Models
                     .WithRequired(ticketAttachment => ticketAttachment.User)
                     .HasForeignKey(ticketAttachment => ticketAttachment.UserId);
 
+
+            //? Maybe Example: ApplicationUser Relationship(Many To Many)
+            //modelBuilder.Entity<ApplicationUser>()
+            //    .HasMany(user => user.SubscribedTickets)
+            //        .WithMany(ticket => ticket.SubscribedUsers)
+            //        .Map(x =>
+            //        {
+            //            x.MapLeftKey($"{nameof(ApplicationUser) + "_" + nameof(ApplicationUser.Id)}");
+            //            x.MapRightKey($"{nameof(Ticket) + "_" + nameof(Ticket.Id)}");
+            //            x.ToTable($"{nameof(ApplicationUser) + nameof(Ticket)}s");
+            //        }).MapToStoredProcedures(x =>
+            //        {
+            //            x.Insert(y =>
+            //            {
+            //                y.LeftKeyParameter(user => user.Id, $"{nameof(ApplicationUser) + "_" + nameof(ApplicationUser.Id)}");
+            //                y.RightKeyParameter(ticket => ticket.Id, $"{nameof(Ticket) + "_" + nameof(Ticket.Id)}");
+            //            });
+
+            //            x.Delete(y => { });
+            //        });
+
             //? Maybe Example: Project Relationship (Many To Many)
             modelBuilder.Entity<ApplicationUser>()
                 .HasMany(user => user.Projects)
-                    .WithMany(project => project.Users);
+                    .WithMany(project => project.Users)
+                    .Map(x =>
+                    {
+                        x.ToTable($"{nameof(ApplicationUser) + nameof(Project)}s");
+                        x.MapLeftKey($"{nameof(ApplicationUser)}_{nameof(ApplicationUser.Id)}");
+                        x.MapRightKey($"{nameof(Project)}_{nameof(Project.Id)}");
+                    }).MapToStoredProcedures(x =>
+                    {
+                        x.Insert(y =>
+                        {
+                            y.LeftKeyParameter(user => user.Id, $"{nameof(ApplicationUser)}_{nameof(ApplicationUser.Id)}");
+                            y.RightKeyParameter(project => project.Id, $"{nameof(Project)}_{nameof(Project.Id)}");
+                        });
+
+                        x.Delete(y =>
+                        {
+                            y.LeftKeyParameter(user => user.Id, $"{nameof(ApplicationUser)}_{nameof(ApplicationUser.Id)}");
+                            y.RightKeyParameter(project => project.Id, $"{nameof(Project)}_{nameof(Project.Id)}");
+                        });
+                    });
 
             //! Example: Ticket [Author] Relationship (One To Many)
             modelBuilder.Entity<ApplicationUser>()
@@ -153,7 +230,26 @@ namespace BugTracker.Models
             //? Maybe Example: ApplicationUser Relationship (Many To Many)
             modelBuilder.Entity<Project>()
                 .HasMany(project => project.Users)
-                .WithMany(user => user.Projects);
+                    .WithMany(user => user.Projects)
+                    .Map(x =>
+                    {
+                        x.ToTable($"{nameof(ApplicationUser) + nameof(Project)}s");
+                        x.MapLeftKey($"{nameof(Project)}_{nameof(Project.Id)}");
+                        x.MapRightKey($"{nameof(ApplicationUser)}_{nameof(ApplicationUser.Id)}");
+                    }).MapToStoredProcedures(x =>
+                    {
+                        x.Insert(y =>
+                        {
+                            y.LeftKeyParameter(project => project.Id, $"{nameof(Project)}_{nameof(Project.Id)}");
+                            y.RightKeyParameter(user => user.Id, $"{nameof(ApplicationUser)}_{nameof(ApplicationUser.Id)}");
+                        });
+
+                        x.Delete(y =>
+                        {
+                            y.LeftKeyParameter(project => project.Id, $"{nameof(Project)}_{nameof(Project.Id)}");
+                            y.RightKeyParameter(user => user.Id, $"{nameof(ApplicationUser)}_{nameof(ApplicationUser.Id)}");
+                        });
+                    });
             #endregion
 
             #region Ticket (Entity)
@@ -232,6 +328,26 @@ namespace BugTracker.Models
                 .HasMany(ticket => ticket.TicketHistories)
                     .WithRequired(ticketHistory => ticketHistory.Ticket)
                     .HasForeignKey(ticketHistory => ticketHistory.TicketId);
+
+            //? Maybe Example: ApplicationUser Relationship (Many To Many)
+            //modelBuilder.Entity<Ticket>()
+            //    .HasMany(ticket => ticket.SubscribedUsers)
+            //        .WithMany(user => user.SubscribedTickets)
+            //        .Map(x =>
+            //        {
+            //            x.MapRightKey($"{nameof(ApplicationUser) + "_" + nameof(ApplicationUser.Id)}");
+            //            x.MapLeftKey($"{nameof(Ticket) + "_" + nameof(Ticket.Id)}");
+            //            x.ToTable($"{nameof(ApplicationUser) + nameof(Ticket)}s");
+            //        }).MapToStoredProcedures(x =>
+            //        {
+            //            x.Insert(y =>
+            //            {
+            //                y.RightKeyParameter(user => user.Id, $"{nameof(ApplicationUser) + "_" + nameof(ApplicationUser.Id)}");
+            //                y.LeftKeyParameter(ticket => ticket.Id, $"{nameof(Ticket) + "_" + nameof(Ticket.Id)}");
+            //            });
+
+            //            x.Delete(y => { });
+            //        });
             #endregion
 
             #region TicketPriorities (Entity)

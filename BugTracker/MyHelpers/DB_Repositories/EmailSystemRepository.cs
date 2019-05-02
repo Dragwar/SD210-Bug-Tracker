@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Web;
 using BugTracker.Models;
+using BugTracker.Models.Domain;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 
@@ -11,6 +14,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
     public class EmailSystemRepository
     {
         private readonly UserManager<ApplicationUser> UserManager;
+        public List<string> EmailsToSendTo { get; set; } = new List<string>();
 
         public EmailSystemRepository() => UserManager = OwinContextExtensions.GetUserManager<ApplicationUserManager>(HttpContext.Current.GetOwinContext());
 
@@ -26,25 +30,61 @@ namespace BugTracker.MyHelpers.DB_Repositories
             </div>
         ");
 
-        public void Send(string userId, IdentityMessage message)
+        public void SendAll((string Subject, string Body) message, bool resetEmailList = true)
         {
-            if (string.IsNullOrWhiteSpace(userId) || message == null)
+            if (EmailsToSendTo.Count > 0)
             {
-                throw new ArgumentNullException();
-            }
-            else if (string.IsNullOrWhiteSpace(message.Body) || string.IsNullOrWhiteSpace(message.Subject))
-            {
-                throw new ArgumentException("Invalid message (empty content)");
-            }
+                UserManager.EmailService.Send(new IdentityMessage()
+                {
+                    Subject = message.Subject,
+                    Body = message.Body,
+                    Destination = string.Join(",", EmailsToSendTo)
+                });
 
-            if (string.IsNullOrWhiteSpace(message.Destination))
-            {
-                message.Destination = UserManager.FindById(userId)?.Email ?? throw new ArgumentException("User not found");
+                if (resetEmailList)
+                {
+                    EmailsToSendTo.Clear();
+                }
             }
-
-            UserManager.EmailService.Send(message);
         }
-        public void Send(string userId, (string Subject, string Body)message)
+        public void SendAll((string Subject, string Body) message, List<string> emailsToSendTo)
+        {
+            UserManager.EmailService.Send(new IdentityMessage()
+            {
+                Subject = message.Subject,
+                Body = message.Body,
+                Destination = string.Join(",", emailsToSendTo)
+            });
+        }
+        public void SendAll((string Subject, string Body) message, List<TicketNotification> notifications)
+        {
+            UserManager.EmailService.Send(new IdentityMessage()
+            {
+                Subject = message.Subject,
+                Body = message.Body,
+                Destination = string.Join(",", notifications.Select(ticketNotification => ticketNotification.UserEmail))
+            });
+        }
+        //public void Send(string userId, IdentityMessage message)
+        //{
+        //    if (string.IsNullOrWhiteSpace(userId) || message == null)
+        //    {
+        //        throw new ArgumentNullException();
+        //    }
+        //    else if (string.IsNullOrWhiteSpace(message.Body) || string.IsNullOrWhiteSpace(message.Subject))
+        //    {
+        //        throw new ArgumentException("Invalid message (empty content)");
+        //    }
+
+        //    if (string.IsNullOrWhiteSpace(message.Destination))
+        //    {
+        //        message.Destination = UserManager.FindById(userId)?.Email ?? throw new ArgumentException("User not found");
+        //    }
+
+        //    UserManager.EmailService.Send(message);
+        //}
+
+        public void Send(string userId, (string Subject, string Body) message)
         {
             if (string.IsNullOrWhiteSpace(userId))
             {

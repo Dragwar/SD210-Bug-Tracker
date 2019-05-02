@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using BugTracker.Models;
 using BugTracker.Models.Domain;
@@ -113,6 +114,28 @@ namespace BugTracker.Controllers
                 {
                     throw new Exception($"Database wasn't saved\n\tFileSystemRepository - Message: {resultMessage}");
                 }
+
+                #region Send Emails
+                List<TicketNotification> ticketNotifications = new TicketNotificationRepository(DbContext)
+                    .GetTicketsTicketNotifications(formData.TicketId)
+                    .ToList();
+
+                if (ticketNotifications.Count > 0)
+                {
+                    ApplicationUser foundAttachmentAuthor = UserRepository.GetUserById(userId) ?? throw new Exception("Attachment author not found");
+
+                    string callBackUrl = Url.Action(nameof(TicketController.Details), "Ticket", new { id = formData.TicketId }, Request.Url.Scheme);
+                    
+                    EmailSystemRepository emailRepository = new EmailSystemRepository();
+                    string body = emailRepository.GetSampleBodyString(
+                        $"The new attachment was added to the <i>\"{formData.TicketTitle}\"</i> ticket",
+                        $"made by {foundAttachmentAuthor.Email}",
+                        $"Click here for the ticket details",
+                        $"{callBackUrl}");
+
+                    emailRepository.SendAll(("A new attachment was added", body), ticketNotifications);
+                }
+                #endregion
 
                 return RedirectToAction(nameof(Index), new { ticketId = formData.TicketId });
             }

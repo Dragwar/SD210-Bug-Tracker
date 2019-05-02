@@ -206,7 +206,7 @@ namespace BugTracker.Controllers
 
             try
             {
-                Ticket newTicket = TicketRepository.CreateNewTicket(formData, true);
+                Ticket newTicket = TicketRepository.CreateNewTicket(formData, (true, true));
 
                 return RedirectToAction(nameof(Index));
             }
@@ -338,7 +338,7 @@ namespace BugTracker.Controllers
                 // Generate link to ticket details when sending a email
                 string callBackUrl = Url.Action(nameof(Details), "Ticket", new { id = foundTicket.Id }, Request.Url.Scheme);
                 //TicketRepository.AssignedNewDeveloper += TicketRepository_AssignedNewDeveloper;
-                (_, bool wasChanged) = TicketRepository.EditExistingTicket(foundTicket, formData, userId, callBackUrl, false);
+                (_, bool wasChanged) = TicketRepository.EditExistingTicket(foundTicket, formData, userId, callBackUrl);
 
                 if (!wasChanged)
                 {

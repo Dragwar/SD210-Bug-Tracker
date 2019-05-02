@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using BugTracker.Models;
 using BugTracker.Models.Domain;
@@ -98,7 +100,6 @@ namespace BugTracker.Controllers
                 {
                     return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({foundTicket.Title})" });
                 }
-
                 TicketComment newTicketComment = new TicketComment()
                 {
                     Comment = formData.Comment,
@@ -107,6 +108,27 @@ namespace BugTracker.Controllers
 
                 foundTicket.Comments.Add(newTicketComment);
                 DbContext.SaveChanges();
+
+                #region Send Emails
+                List<TicketNotification> ticketNotifications = new TicketNotificationRepository(DbContext)
+                    .GetTicketsTicketNotifications(foundTicket.Id)
+                    .ToList();
+
+                if (ticketNotifications.Count > 0)
+                {
+                    ApplicationUser foundCommentAuthor = UserRepository.GetUserById(userId) ?? throw new Exception("Comment Author not found");
+                    string callBackUrl = Url.Action(nameof(TicketController.Details), "Ticket", new { id = foundTicket.Id }, Request.Url.Scheme);
+
+                    EmailSystemRepository emailRepository = new EmailSystemRepository();
+                    string body = emailRepository.GetSampleBodyString(
+                        $"The new comment was posted on the <i>\"{foundTicket.Title}\"</i> ticket",
+                        $"made by {foundCommentAuthor.Email}",
+                        $"Click here for the ticket details",
+                        $"{callBackUrl}");
+
+                    emailRepository.SendAll(("A new comment was posted", body), ticketNotifications);
+                }
+                #endregion
 
                 return RedirectToAction(nameof(Index), new { ticketId = formData.TicketId });
             }
@@ -152,7 +174,9 @@ namespace BugTracker.Controllers
             try
             {
                 string userId = User.Identity.GetUserId();
+                ApplicationUser foundCommentEditor = UserRepository.GetUserById(userId) ?? throw new Exception("Comment Editor wasn't found");
                 TicketComment foundTicketComment = TicketCommentRepository.GetTicketComment(formData.Id) ?? throw new Exception("Ticket Comment Not Found");
+                Ticket foundTicket = TicketRepository.GetTicket(formData.TicketId) ?? throw new Exception("Ticket Not Found");
                 if (!TicketRepository.CanUserEditTicket(userId, foundTicketComment.TicketId))
                 {
                     return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the appropriate permissions to add a comment to this ticket ({formData.TicketTitle})" });
