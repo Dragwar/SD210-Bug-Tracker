@@ -12,6 +12,7 @@ namespace BugTracker.Models.Filters.Actions
 {
     public class Benchmark : ActionFilterAttribute, IActionFilter, IResultFilter
     {
+        private readonly HttpServerUtilityWrapper HttpServerUtilityWrapper;
         private readonly FileSystemRepository FileSystemRepository;
         private readonly Stopwatch TotalStopwatch = new Stopwatch();
         private readonly Stopwatch Stopwatch = new Stopwatch();
@@ -22,14 +23,13 @@ namespace BugTracker.Models.Filters.Actions
         private const string Controller = "controller";
         private const string Action = "action";
         private const string BenchmarkFolder = CONSTANTS.BenchmarkFolder;
-
         private long TempNum { get; set; }
 
         public Benchmark([Optional] string benchmarkName)
         {
-            HttpServerUtilityWrapper httpServerUtilityWrapper = new HttpServerUtilityWrapper(HttpContext.Current.Server);
-            FileSystemRepository = new FileSystemRepository(httpServerUtilityWrapper, BenchmarkFolder);
-            BenchmarkName = benchmarkName ?? $"{httpServerUtilityWrapper.MachineName}_Benchmark";
+            HttpServerUtilityWrapper = new HttpServerUtilityWrapper(HttpContext.Current.Server);
+            FileSystemRepository = new FileSystemRepository(HttpServerUtilityWrapper, BenchmarkFolder);
+            BenchmarkName = benchmarkName ?? $"{HttpServerUtilityWrapper.MachineName}_Benchmark";
 
             (List<ActionResultBenchmark> result, bool hasLoaded, _) = FileSystemRepository.LoadJsonFile<List<ActionResultBenchmark>>(BenchmarkName);
             Benchmarks = hasLoaded ? result : new List<ActionResultBenchmark>();

@@ -1,7 +1,7 @@
 ﻿using BugTracker.Models.Domain;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-
+using System.Web;
 
 namespace BugTracker.MyHelpers
 {
@@ -11,7 +11,9 @@ namespace BugTracker.MyHelpers
         public const string JsonExtension = ".json";
         public const string UploadFolder = @"~/UserUploads/";
         public const string BenchmarkFolder = @"~/Logs/Benchmarks/";
-        
+        public static string GetDefaultFileNameForBenchmark(HttpServerUtilityBase server) => $"{server.MachineName}_Benchmark.json";
+
+
         //! NOTE: i tried using a constructor for this but EF needs a empty constructor for DB
         #region TicketPriorities
         #region CONSTANT Ticket Priorities

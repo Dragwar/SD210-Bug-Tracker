@@ -151,7 +151,7 @@ namespace BugTracker.MyHelpers.DB_Repositories
             return (false, filePath, "Something bad happened");
         }
 
-        public (T @object, bool hasLoaded, string resultMessage) LoadJsonFile<T>(string fileName) where T : class, new()
+        public (T resultObject, bool hasLoaded, string resultMessage) LoadJsonFile<T>(string fileName) where T : class, new()
         {
             if (string.IsNullOrWhiteSpace(fileName))
             {

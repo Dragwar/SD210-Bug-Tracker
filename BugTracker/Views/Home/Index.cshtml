@@ -1,6 +1,11 @@
 ﻿@model HomeIndexViewModel
+@using BugTracker.Models.Domain;
 @{
     ViewBag.Title = "Dashboard";
+    string benchmarkMessage = ViewBag.BenchmarkMessage as string;
+    string benchmarkFileName = ViewBag.BenchmarkFileName as string;
+    var benchmarks = ViewBag.BenchmarkResults as List<ActionResultBenchmark>;
+    const string benchmarksTableId = "my-benchmarks";
 }
 
 @section Styles
@@ -14,6 +19,47 @@
                 color: ButtonText;
             }
     </style>
+    @Styles.Render(@"~/data-tables/css")
+}
+
+@section Scripts
+{
+    @Scripts.Render(@"~/data-tables/js")
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js"></script>
+    <script type="text/javascript">
+        (() => {
+            const styleIt = () => {
+                const search = $("#@(benchmarksTableId)_filter").children("label").children("input");
+                const pageBtn = $(".paginate_button");
+                const dropdown = $("#@(benchmarksTableId)_length").children("label").children("select");
+                const projectWrapper = $("#@(benchmarksTableId)_wrapper");
+
+                search.addClass("form-control");
+                pageBtn.addClass("btn btn-secondary");
+                pageBtn.css("margin", "0px 5px")
+                dropdown.addClass("form-control");
+                projectWrapper.css("display", "flex");
+                projectWrapper.css("flex-flow", "row wrap");
+                projectWrapper.css("justify-content", "space-between");
+            };
+
+            $(document).ready(() => {
+                $.fn.dataTable.moment("MM/dd/yyyy HH:mm");
+                $("#@(benchmarksTableId)").DataTable({ order: [[0, "desc"]] });
+                styleIt();
+
+                // update page buttons when searching
+                document.querySelector("#@(benchmarksTableId)_filter label input").addEventListener("keyup", styleIt);
+
+                // update page buttons when selecting from drop-down list
+                document.querySelector("#@(benchmarksTableId)_length label select").addEventListener("change", styleIt);
+
+                // update page buttons when selecting from drop-down list
+                document.body.addEventListener("click", styleIt);
+            });
+        })();
+    </script>
 }
 
 <div class="row">
@@ -170,7 +216,7 @@
                 <div class="header">
                     <h4 class="title">Bug Tracker Stats</h4>
                     <p class="category">
-                        
+
                     </p>
                 </div>
                 <div class="content">
@@ -382,4 +428,100 @@
         </div>
     </div>
     -->
+    @if (User.IsInRole(UserRolesEnum.Admin.ToString()))
+    {
+        <div class="col-lg-12">
+            @* Tasks Header *@
+            <div class="card ">
+                <div class="header">
+                    <h4 class="title">ActionResultBenchmark (@(benchmarks?.Count ?? 0))</h4>
+                    <p class="category">
+                        <div class="text-muted">
+                            @if (benchmarks != null)
+                            {
+                                <span>
+                                    [
+                                    <span>
+                                        <i class="pe-7s-file" style="font-size: 150%; position: relative; top: 3.5px;"></i>
+                                        FileName: "@(benchmarkFileName)"
+                                    </span>
+                                    |
+                                    <span>
+                                        <i class="fa fa-history"></i>
+                                        Newest record:
+                                        "@(benchmarks?.FirstOrDefault()?.Created.GetDateTimeFromNow())"
+                                    </span>
+                                    |
+                                    <span>
+                                        <i class="fa fa-history"></i>
+                                        Oldest record:
+                                        "@(benchmarks?.LastOrDefault()?.Created.GetDateTimeFromNow())"
+                                    </span>
+                                    ]
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    [
+                                    <span>
+                                        <i class="pe-7s-file" style="font-size: 150%; position: relative; top: 3.5px;"></i>
+                                        FileName: "@(benchmarkFileName)"
+                                    </span>
+                                    ]
+                                </span>
+                            }
+                        </div>
+                    </p>
+                </div>
+
+                @* Tasks Content *@
+                <div class="content">
+                    <table id="@(benchmarksTableId)" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Controller</th>
+                                <th>Action</th>
+                                <th>Action (ms)</th>
+                                <th>Result (ms)</th>
+                                <th>Total (ms)</th>
+                                <th>Noise (ms)</th>
+                                <th>GrandTotal (ms)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (benchmarks?.Any() ?? false)
+                            {
+                                foreach (var mark in benchmarks)
+                                {
+                                    <tr>
+                                        <td>@mark.Created.ToString(@"MM/dd/yyyy HH:mm")</td>
+                                        <td>@mark.ControllerName</td>
+                                        <td>@mark.ActionName</td>
+                                        <td>@mark.ActionMilliseconds</td>
+                                        <td>@mark.ResultMilliseconds</td>
+                                        <td>@mark.TotalActionResultMilliseconds</td>
+                                        <td>@mark.NoiseMilliseconds</td>
+                                        <td>@mark.GrandTotalMilliseconds</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                    @* Tasks Footer *@
+                    @if (!string.IsNullOrWhiteSpace(benchmarkMessage))
+                    {
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <span>@benchmarkMessage</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
 </div>
