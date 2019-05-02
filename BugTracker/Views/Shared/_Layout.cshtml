@@ -37,17 +37,27 @@
             -->
             <div class="sidebar-wrapper">
                 <div class="logo">
-                    <a href="@Url.Action(nameof(HomeController.Index), "Home")" class="simple-text">
-                        Bug Tracker
-                    </a>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a href="@Url.Action(nameof(HomeController.Index), "Home")" class="simple-text">
+                            Bug Tracker
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="simple-text" style="cursor: default; user-select: none;">Bug Tracker</span>
+                    }
                 </div>
                 <ul class="nav">
-                    <li id="home-index" class="my-page-link">
-                        <a href="@Url.Action(nameof(HomeController.Index), "Home")">
-                            <i class="pe-7s-graph"></i>
-                            <p>Dashboard</p>
-                        </a>
-                    </li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li id="home-index" class="my-page-link">
+                            <a href="@Url.Action(nameof(HomeController.Index), "Home")">
+                                <i class="pe-7s-graph"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+                    }
 
                     @if (User.IsInRole(nameof(UserRolesEnum.Admin)))
                     {
@@ -81,15 +91,15 @@
                                 <p>My Projects</p>
                             </a>
                         </li>
-                    
 
-                    <li class="my-page-link" id="ticket-index">
-                        @*<a href="./Template/icons.html">*@
-                        <a href="@Url.Action(nameof(TicketController.Index), "Ticket", new { whatTickets = "" })">
-                            <i class="pe-7s-ticket"></i>
-                            <p>All Tickets</p>
-                        </a>
-                    </li>
+
+                        <li class="my-page-link" id="ticket-index">
+                            @*<a href="./Template/icons.html">*@
+                            <a href="@Url.Action(nameof(TicketController.Index), "Ticket", new { whatTickets = "" })">
+                                <i class="pe-7s-ticket"></i>
+                                <p>All Tickets</p>
+                            </a>
+                        </li>
                     }
                 </ul>
             </div>

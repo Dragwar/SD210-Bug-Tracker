@@ -113,6 +113,7 @@ namespace BugTracker.Controllers
                 return View(nameof(Login), GenerateLoginViewModel(model));
             }
 
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
             SignInManager.SignIn(foundDemoUser, model.RememberMe, model.RememberMe);
 
             return RedirectToLocal(returnUrl); // don't have to worry about invalid URL (this method checks if URL is a local one)
@@ -436,7 +437,8 @@ namespace BugTracker.Controllers
         public ActionResult LogOff()
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction(nameof(HomeController.Index), "Home");
+            //return RedirectToAction(nameof(HomeController.Index), "Home");
+            return RedirectToAction(nameof(Login));
         }
 
         //
