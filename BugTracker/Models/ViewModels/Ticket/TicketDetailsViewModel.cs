@@ -29,6 +29,8 @@ namespace BugTracker.Models.ViewModels.Ticket
         public HelperUserViewModel Author { get; set; }
         public HelperUserViewModel AssignedUser { get; set; }
 
+        public bool IsWatching { get; set; }
+
         public static TicketDetailsViewModel CreateNewViewModel(string currentUserId, Domain.Ticket ticket, ApplicationDbContext dbContext)
         {
             if (ticket == null || dbContext == null || !new UserRepository(dbContext).DoesUserExist(currentUserId))
@@ -68,6 +70,8 @@ namespace BugTracker.Models.ViewModels.Ticket
                     AssignedUser = ticket.AssignedUser == null ? null : HelperUserViewModel.CreateNewViewModel(ticket.AssignedUser, dbContext),
                     Project = ticket.Project,
                     ProjectId = ticket.ProjectId,
+
+                    IsWatching = new TicketNotificationRepository(dbContext).IsUserSubscribedToTicket(currentUserId, ticket.Id),
                 };
             }
             catch (Exception e)

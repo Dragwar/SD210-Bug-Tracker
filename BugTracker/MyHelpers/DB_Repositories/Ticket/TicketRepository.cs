@@ -239,8 +239,9 @@ namespace BugTracker.MyHelpers.DB_Repositories
             //    List<ApplicationUser> adminsAndProjectManagers = userRoleRepository
             //        .UsersInRole(UserRolesEnum.Admin)
             //        .Concat(userRoleRepository.UsersInRole(UserRolesEnum.ProjectManager))
-            //        .Where(user => user.Id != foundAuthor.Id) // in case of Author is an Admin and at the Creator of the newTicket
-            //        .Where(user => user.Id != newTicket.AssignedUserId) // in case of AssignedUser is an Admin and a the Developer of the newTicket
+            //        //in case of Author is an Admin and at the Creator of the newTicket
+            //        //in case of AssignedUser is an Admin and a the Developer of the newTicket
+            //        .Where(user => user.Id != foundAuthor.Id && user.Id != newTicket.AssignedUserId)
             //        .ToList();
 
             //    adminsAndProjectManagers
@@ -327,7 +328,8 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
 
             // ON DEV CHANGE
-            if (ticket.AssignedUserId != model.DeveloperId)
+            bool isNewDev = ticket.AssignedUserId != model.DeveloperId;
+            if (isNewDev)
             {
                 //ApplicationUser newDev = userRepository.GetUserById(model.DeveloperId);
                 //AssignedNewDeveloper?.Invoke(this, new AssignedNewDeveloperEventArg(ticket, userWhoMadeChanges, ticket.AssignedUser, newDev, callBackUrl));
@@ -380,6 +382,13 @@ namespace BugTracker.MyHelpers.DB_Repositories
 
                 if (ticketNotifications.Count > 0)
                 {
+                    //! should i prevent this email from being sent to the new developer??
+                    //! don't email the new assigned developer?
+                    //if (isNewDev && ticket?.AssignedUserId != null)
+                    //{
+                    //    ticketNotifications.RemoveAll(ticketNotification => ticketNotification.UserId == ticket?.AssignedUserId);
+                    //}
+
                     string body = emailRepo.GetSampleBodyString(
                         $"<i>\"{ticket.Title}\"</i> was modified",
                         $"changes made by {userWhoMadeChanges.Email}",

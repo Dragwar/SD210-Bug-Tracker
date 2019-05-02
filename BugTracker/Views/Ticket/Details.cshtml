@@ -6,7 +6,6 @@
                         User.Identity.Name == Model.Author.Email ||
                         (!string.IsNullOrWhiteSpace(Model?.AssignedUser?.Email) && User.Identity.Name == Model.AssignedUser.Email));
 }
-
 @* Main Details and Attachments Cards *@
 <div class="col-lg-4">
     @* Main Details Card *@
@@ -99,6 +98,14 @@
                     </div>
                 }
 
+                @if (isAdminOrProjectManager)
+                {
+                    using (Html.BeginForm(nameof(TicketNotificationController.ToggleWatchingTicket), "TicketNotification", new { ticketId = Model.Id }, FormMethod.Post, new { style = "margin: 20px 0px 10px 0px;" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="submit" value="@(Model.IsWatching ? "Stop Watching" : "Watch")" class="btn btn-@(Model.IsWatching ? "danger" : "primary")" />
+                    }
+                }
                 <div class="footer">
                     @*
                         <div class="legend">
@@ -198,6 +205,7 @@
         </div>
     </div>
 </div>
+
 <!--
 @* Author User Card *@
 <div class="col-lg-6">
