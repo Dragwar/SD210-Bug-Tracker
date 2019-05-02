@@ -6,6 +6,17 @@
                         User.Identity.Name == Model.Author.Email ||
                         (!string.IsNullOrWhiteSpace(Model?.AssignedUser?.Email) && User.Identity.Name == Model.AssignedUser.Email));
 }
+
+@section Styles
+{
+    <style>
+        button:focus {
+            background-color: white !important;
+            color: darkslategray !important;
+        }
+    </style>
+}
+
 @* Main Details and Attachments Cards *@
 <div class="col-lg-4">
     @* Main Details Card *@
@@ -103,26 +114,13 @@
                     using (Html.BeginForm(nameof(TicketNotificationController.ToggleWatchingTicket), "TicketNotification", new { ticketId = Model.Id }, FormMethod.Post, new { style = "margin: 20px 0px 10px 0px;" }))
                     {
                         @Html.AntiForgeryToken()
-                        <input type="submit" value="@(Model.IsWatching ? "Stop Watching" : "Watch")" class="btn btn-@(Model.IsWatching ? "danger" : "primary")" />
+                        <button type="submit" class="btn btn-@(Model.IsWatching ? "danger" : "primary")" style="border: none; padding: 0px;">
+                            @(Model.IsWatching ? "Stop Watching" : "Watch")
+                            <i style="font-size: 150%; font-weight: 600; position: relative; top: 5px;" class="pe-7s-look"></i>
+                        </button>
                     }
                 }
                 <div class="footer">
-                    @*
-                        <div class="legend">
-                                <p>
-                                    <i class="fa fa-circle text-info"></i> @Html.ActionLink("See My Projects", nameof(ProjectController.Index))
-                                </p>
-                                <p>
-                                    @if (User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager)))
-                                    {
-                                        <i class="fa fa-circle text-primary"></i> @Html.ActionLink("See All Projects", nameof(ProjectController.All))
-                                    }
-                                </p>
-                                <p>
-                                    <i class="fa fa-circle text-warning"></i> @Html.ActionLink(nameof(ProjectController.Edit), nameof(ProjectController.Edit), new { id = Model.Id })
-                                </p>
-                        </div>
-                    *@
                     <hr style="margin-top: 15px;" />
                     <div class="stats" style="display: flex; justify-content: space-between; align-items: center;">
                         @if (Model.DateUpdated.HasValue)

@@ -43,7 +43,7 @@ namespace BugTracker.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [BugTrackerAuthorize(UserRolesEnum.Admin, UserRolesEnum.ProjectManager)]
-        public ActionResult ToggleWatchingTicket(Guid? ticketId)
+        public ActionResult ToggleWatchingTicket(Guid? ticketId, bool goToAllTickets = false)
         {
             if (!ticketId.HasValue)
             {
@@ -73,6 +73,11 @@ namespace BugTracker.Controllers
                 else
                 {
                     TicketNotificationRepository.CreateNewTicketNotification(foundUser, foundTicket, true);
+                }
+
+                if (goToAllTickets)
+                {
+                    return RedirectToAction(nameof(TicketController.Index), "Ticket");
                 }
 
                 return RedirectToAction(nameof(Index), new { ticketId = ticketId.Value });

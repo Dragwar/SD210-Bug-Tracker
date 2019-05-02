@@ -6,11 +6,25 @@
     {
         ViewBag.Title = $"{ViewBag.whatTickets} Tickets";
     }
+    bool isAdminOrProjectManager = User.IsInRole(nameof(UserRolesEnum.Admin)) || User.IsInRole(nameof(UserRolesEnum.ProjectManager));
 }
 
 @section Styles
 {
     @Styles.Render(@"~/data-tables/css")
+    <style>
+        button {
+            background: none !important;
+        }
+
+        .IsWatchingTrue:hover {
+            color: red;
+        }
+
+        .IsWatchingFalse:hover {
+            color: blue;
+        }
+    </style>
 }
 
 @section Scripts
@@ -152,6 +166,23 @@
                                     <a class="small text-muted" href="@Url.Action(nameof(TicketController.Details), new { Id = ticket.Id })">
                                         @nameof(ProjectController.Details) <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-info"></i>
                                     </a>
+                                    @if (isAdminOrProjectManager)
+                                    {
+                                        <div style="margin: 0px 6px;"></div>
+                                        using (Html.BeginForm(nameof(TicketNotificationController.ToggleWatchingTicket), "TicketNotification", new { ticketId = ticket.Id, goToAllTickets = true }, FormMethod.Post, new { /*style = "margin: 20px 0px 10px 0px;"*/ }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="btn btn-@(ticket.IsWatching ? "danger" : "primary")"
+                                                    style="border: none; padding: 0px;">
+
+                                                <span class="small text-muted @(nameof(ticket.IsWatching) + ticket.IsWatching)" style="max-height:5px;">
+                                                    @(ticket.IsWatching ? "Stop Watching" : "Watch")
+                                                    <i style="font-size:150%; font-weight: 600; position: relative; top: 3px;" class="pe-7s-look"></i>
+                                                </span>
+                                            </button>
+                                        }
+                                    }
                                 </td>
                             </tr>
                         }

@@ -20,6 +20,7 @@ namespace BugTracker.Controllers
         private readonly UserRoleRepository UserRoleRepository;
         private readonly UserRepository UserRepository;
         private readonly ProjectRepository ProjectRepository;
+        private readonly TicketNotificationRepository TicketNotificationRepository;
 
         public TicketController()
         {
@@ -28,6 +29,7 @@ namespace BugTracker.Controllers
             UserRepository = new UserRepository(DbContext);
             UserRoleRepository = new UserRoleRepository(DbContext);
             ProjectRepository = new ProjectRepository(DbContext);
+            TicketNotificationRepository = new TicketNotificationRepository(DbContext);
         }
 
         // GET: Ticket
@@ -73,8 +75,11 @@ namespace BugTracker.Controllers
                     model = TicketRepository.GetAllTickets()
                         .ToList()
                         .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
-                        .Select(ticket => TicketIndexViewModel.CreateNewViewModel(userId, ticket))
-                        .ToList();
+                        .Select(ticket =>
+                        {
+                            bool isWatching = TicketNotificationRepository.IsUserSubscribedToTicket(userId, ticket.Id);
+                            return TicketIndexViewModel.CreateNewViewModel(userId, ticket, isWatching);
+                        }).ToList();
                 }
             }
             else
@@ -82,8 +87,11 @@ namespace BugTracker.Controllers
                 model = TicketRepository.GetAllTickets()
                     .ToList()
                     .Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id))
-                    .Select(ticket => TicketIndexViewModel.CreateNewViewModel(userId, ticket))
-                    .ToList();
+                    .Select(ticket =>
+                    {
+                        bool isWatching = TicketNotificationRepository.IsUserSubscribedToTicket(userId, ticket.Id);
+                        return TicketIndexViewModel.CreateNewViewModel(userId, ticket, isWatching);
+                    }).ToList();
             }
 
             return View(model);

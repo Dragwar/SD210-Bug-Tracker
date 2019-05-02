@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 
 namespace BugTracker.Models.ViewModels.Ticket
 {
@@ -36,8 +37,9 @@ namespace BugTracker.Models.ViewModels.Ticket
         public string AssignedUserId { get; set; }
 
         public bool IsCurrentUserTheAuthorOrIsAssigned { get; set; }
+        public bool IsWatching { get; set; }
 
-        public static TicketIndexViewModel CreateNewViewModel(string currentUserId, Domain.Ticket ticket)
+        public static TicketIndexViewModel CreateNewViewModel(string currentUserId, Domain.Ticket ticket, [Optional] bool? isWatching)
         {
             if (ticket == null)
             {
@@ -71,6 +73,7 @@ namespace BugTracker.Models.ViewModels.Ticket
                     ProjectId = ticket.ProjectId,
                     ProjectName = ticket.Project.Name,
                     IsCurrentUserTheAuthorOrIsAssigned = isCurrentUserTheAuthorOrIsAssigned,
+                    IsWatching = isWatching ?? false,
                 };
             }
             catch (Exception e)
