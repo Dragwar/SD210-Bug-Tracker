@@ -20,5 +20,7 @@ namespace BugTracker.Models.Domain
         {
             DateCreated = DateTime.Now;
         }
+
+        public override string ToString() => $"Ticket Notification: UserEmail - {UserEmail}, TicketTitle - {TicketTitle}";
     }
 }

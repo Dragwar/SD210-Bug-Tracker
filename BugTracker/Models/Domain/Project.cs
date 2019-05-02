@@ -23,5 +23,7 @@ namespace BugTracker.Models.Domain
             Tickets = new List<Ticket>();
             IsArchived = false;
         }
+
+        public override string ToString() => $"Project: {Name}";
     }
 }
