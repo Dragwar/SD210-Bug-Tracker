@@ -7,15 +7,20 @@ namespace BugTracker.MyHelpers
     [NotMapped]
     public static class DateHelper
     {
-        public static string GetDateAndTime(this DateTime Date) => $"{Date.ToString("m") + ", " + Date.ToShortTimeString()} | {Date.Year}";
+        public static string GetDateAndTime(this DateTime date) => $"{date.ToString("m") + ", " + date.ToShortTimeString()} | {date.Year}";
 
-        public static string GetDateTimeFromNow(this DateTime Date, string justUpdatedString = "Just Updated")
+        public static string GetDateTimeFromNow(this DateTime date, string justUpdatedString = "Just Updated")
         {
-            int postDay = DateTime.Today.Day - Date.Day;
-            TimeSpan postTime = DateTime.Now.TimeOfDay - Date.TimeOfDay;
+            DateTime now = DateTime.Now;
+            DateTime today = DateTime.Today;
+
+            int postDay = today.Day - date.Day;
+            postDay = postDay < 0 ? postDay * -1 : postDay; // ensure postDay is positive
+            TimeSpan postTime = now.TimeOfDay - date.TimeOfDay;
+
             if (postDay >= 1)
             {
-                return $"{postDay} day(s) ago";
+                return $"{postDay} {(postDay == 1 ? "day" : "days")} ago";
             }
             else if (postDay == 0 && postTime.Hours >= 1)
             {

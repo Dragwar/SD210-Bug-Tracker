@@ -52,18 +52,20 @@ namespace BugTracker.Controllers
 
             if (!string.IsNullOrWhiteSpace(whatTickets))
             {
-                if (whatTickets.ToLower() == "assigned")
+                const string assigned = "Assigned";
+                const string created = "Created";
+                if (whatTickets.ToLower() == assigned.ToLower())
                 {
-                    ViewBag.whatTickets = "Assigned";
+                    ViewBag.whatTickets = assigned;
                     model = TicketRepository.GetUserAssignedTickets(userId)
                         .ToList()
                         //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user is assigned to the ticket
                         .Select(ticket => TicketIndexViewModel.CreateNewViewModel(userId, ticket))
                         .ToList();
                 }
-                else if (whatTickets.ToLower() == "created")
+                else if (whatTickets.ToLower() == created.ToLower())
                 {
-                    ViewBag.whatTickets = "Created";
+                    ViewBag.whatTickets = created;
                     model = TicketRepository.GetUserCreatedTickets(userId)
                     .ToList()
                     //.Where(ticket => TicketRepository.CanUserViewTicket(userId, ticket.Id)) // shouldn't need to check, if the user created the ticket
@@ -190,6 +192,7 @@ namespace BugTracker.Controllers
 
         // POST: Ticket/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [BugTrackerAuthorize(nameof(UserRolesEnum.Submitter))]
         [Route("Ticket/Create")] //! this is needed because of the route on the index (I don't know why)
         public ActionResult Create(TicketCreateViewModel formData)
@@ -331,6 +334,7 @@ namespace BugTracker.Controllers
 
         // POST: Ticket/Edit/{id}
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(TicketEditViewModel formData)
         {
             if (formData?.Id == null || formData.Id == Guid.Empty || formData?.ProjectId == null)
@@ -342,6 +346,18 @@ namespace BugTracker.Controllers
             {
                 string userId = User.Identity.GetUserId();
                 Ticket foundTicket = TicketRepository.GetTicket(formData.Id);
+
+                if (foundTicket == null)
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"Ticket wasn't found" });
+                }
+
+                bool canEdit = TicketRepository.CanUserEditTicket(userId, foundTicket.Id);
+
+                if (!canEdit)
+                {
+                    return RedirectToAction(nameof(HomeController.UnauthorizedRequest), "Home", new { error = $"You don't have the permissions to edit \"{foundTicket.Title}\"" });
+                }
 
                 // Generate link to ticket details when sending a email
                 string callBackUrl = Url.Action(nameof(Details), "Ticket", new { id = foundTicket.Id }, Request.Url.Scheme);
@@ -371,18 +387,5 @@ namespace BugTracker.Controllers
                 return View(nameof(Edit), model);
             }
         }
-
-        //private void TicketRepository_AssignedNewDeveloper(object sender, AssignedNewDeveloperEventArg e)
-        //{
-        //    EmailSystemRepository emailRepo = new EmailSystemRepository();
-        //    // Send email to new assigned developer
-        //    string body = emailRepo.GetSampleBodyString(
-        //        $"You Were Assigned To {e.Ticket.Title}",
-        //        $"assigned by {e.UserWhoMadeChanges.Email}",
-        //        $"Click here for the ticket details",
-        //        $"{e.CallBackUrl}");
-
-        //    emailRepo.Send(e.NewDeveloper.Id, ("New Assigned Ticket", body));
-        //}
     }
 }

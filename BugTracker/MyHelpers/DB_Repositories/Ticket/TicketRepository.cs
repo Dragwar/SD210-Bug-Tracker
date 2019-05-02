@@ -9,30 +9,9 @@ using BugTracker.Models.ViewModels.Ticket;
 
 namespace BugTracker.MyHelpers.DB_Repositories
 {
-    //[NotMapped]
-    //public class AssignedNewDeveloperEventArg
-    //{
-    //    public Ticket Ticket { get; set; }
-    //    public ApplicationUser UserWhoMadeChanges { get; set; }
-    //    public ApplicationUser OldDeveloper { get; set; }
-    //    public ApplicationUser NewDeveloper { get; set; }
-    //    public DateTime DateOfEventTrigger { get; set; }
-    //    public string CallBackUrl { get; }
-
-    //    public AssignedNewDeveloperEventArg(Ticket ticket, ApplicationUser userWhoMadeChanges, ApplicationUser oldDeveloper, ApplicationUser newDeveloper, string callBackUrl)
-    //    {
-    //        Ticket = ticket ?? throw new ArgumentNullException(nameof(ticket));
-    //        UserWhoMadeChanges = userWhoMadeChanges ?? throw new ArgumentNullException(nameof(userWhoMadeChanges));
-    //        OldDeveloper = oldDeveloper ?? throw new ArgumentNullException(nameof(oldDeveloper));
-    //        NewDeveloper = newDeveloper ?? throw new ArgumentNullException(nameof(newDeveloper));
-    //        DateOfEventTrigger = DateTime.Now;
-    //        CallBackUrl = callBackUrl;
-    //    }
-    //}
     [NotMapped]
     public class TicketRepository
     {
-        //public event EventHandler<AssignedNewDeveloperEventArg> AssignedNewDeveloper;
         private readonly ApplicationDbContext DbContext;
 
         public TicketRepository(ApplicationDbContext dBContext) => DbContext = dBContext ?? throw new ArgumentNullException(nameof(dBContext));
@@ -298,42 +277,17 @@ namespace BugTracker.MyHelpers.DB_Repositories
             UserRepository userRepository = new UserRepository(DbContext);
             EmailSystemRepository emailRepo = new EmailSystemRepository();
 
-            //!NOTE: Probably don't need to do these checks
-            #region Assigning model values to ticket
-            if (ticket.Title != model.Title)
-            {
-                ticket.Title = model.Title;
-            }
-            if (ticket.Description != model.Description)
-            {
-                ticket.Description = model.Description;
-            }
-            if (ticket.PriorityId != (int)model.Priority)
-            {
-                ticket.PriorityId = (int)model.Priority;
-            }
-            if (ticket.StatusId != ((int?)model?.Status ?? (int)TicketStatusesEnum.Open))
-            {
-                ticket.StatusId = (int?)model?.Status ?? (int)TicketStatusesEnum.Open;
-            }
-            if (ticket.TypeId != (int)model.Type)
-            {
-                ticket.TypeId = (int)model.Type;
-            }
-            if (ticket.ProjectId != model.ProjectId)
-            {
-                ticket.ProjectId = model.ProjectId;
-            }
-            #endregion
-
+            ticket.Title = model.Title;
+            ticket.Description = model.Description;
+            ticket.PriorityId = (int)model.Priority;
+            ticket.StatusId = (int?)model?.Status ?? (int)TicketStatusesEnum.Open;
+            ticket.TypeId = (int)model.Type;
+            ticket.ProjectId = model.ProjectId;
 
             // ON DEV CHANGE
             bool isNewDev = ticket.AssignedUserId != model.DeveloperId;
             if (isNewDev)
             {
-                //ApplicationUser newDev = userRepository.GetUserById(model.DeveloperId);
-                //AssignedNewDeveloper?.Invoke(this, new AssignedNewDeveloperEventArg(ticket, userWhoMadeChanges, ticket.AssignedUser, newDev, callBackUrl));
-
                 // remove any notification belonging to this ticket
                 if (ticket.AssignedUser != null)
                 {

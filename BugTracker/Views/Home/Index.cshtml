@@ -20,7 +20,7 @@
     <!-- [Widget]:My Assigned Projects -->
     @if (Model.LatestProjects != null)
     {
-        <div @*class="col-lg-4"*@ class="col-lg-5">
+        <div class="col-lg-5">
             <div class="card">
                 <div class="header">
                     <h4 class="title">Assigned Projects</h4>
@@ -31,7 +31,6 @@
                     {
                         foreach (ProjectIndexViewModel project in Model.LatestProjects)
                         {
-                            <!--TODO: style bug -> when user clicks this link, the _Layout.cshtml page doesn't update the nav-links-->
                             <div style="font-size: 16px;">
                                 <a id="project-link" href="@Url.Action(nameof(ProjectController.Details), "Project", new { Id = project.Id })">
                                     @project.Name - <i style="font-size: 85%;" class="fa fa-history"></i>
@@ -41,16 +40,8 @@
                                 </a>
                             </div>
                         }
-
                         <div class="footer">
-                            @*
-                                <div class="legend">
-                                    <i class="fa fa-circle text-info"></i> Open
-                                    <i class="fa fa-circle text-danger"></i> Bounce
-                                    <i class="fa fa-circle text-warning"></i> Unsubscribe
-                                </div>
-                            *@
-                            <hr>
+                            <hr />
                             <div class="stats">
                                 @if (Model.TotalProjectCount > 0)
                                 {
@@ -88,7 +79,6 @@
                     {
                         foreach (TicketIndexViewModel ticket in Model.LatestCreatedTickets)
                         {
-                            <!--TODO: style bug -> when user clicks this link, the _Layout.cshtml page doesn't update the nav-links-->
                             <div style="font-size: 16px;">
                                 <a id="project-link" href="@Url.Action(nameof(TicketController.Details), "Ticket", new { Id = ticket.Id })">
                                     @ticket.Title - <i style="font-size: 85%;" class="fa fa-history"></i>
@@ -139,7 +129,6 @@
                     {
                         foreach (TicketIndexViewModel ticket in Model.LatestAssignedTickets)
                         {
-                            <!--TODO: style bug -> when user clicks this link, the _Layout.cshtml page doesn't update the nav-links-->
                             <div style="font-size: 16px;">
                                 <a id="project-link" href="@Url.Action(nameof(TicketController.Details), "Ticket", new { Id = ticket.Id })">
                                     @ticket.Title - <i style="font-size: 85%;" class="fa fa-history"></i>
@@ -149,7 +138,6 @@
                                 </a>
                             </div>
                         }
-
                         <div class="footer">
                             <hr />
                             <div class="stats">
