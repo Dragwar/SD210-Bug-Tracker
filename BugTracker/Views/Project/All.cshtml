@@ -102,6 +102,7 @@
                                     <div style="margin: 0px 6px;"></div>
                                     @using (Html.BeginForm(nameof(ProjectController.ArchiveProject), "Project", new { id = project.Id }, FormMethod.Post, new { }))
                                     {
+                                        @Html.AntiForgeryToken()
                                         <label for="archive-@project.Id" style="cursor: pointer">
                                             <span class="small text-muted">
                                                 <span class="delete-link">

@@ -171,6 +171,7 @@ namespace BugTracker.Controllers
 
         // POST: TicketAttachment/Delete/{id}
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Delete(Guid? id, TicketAttachmentDeleteViewModel formData)
         {
             if (!id.HasValue)

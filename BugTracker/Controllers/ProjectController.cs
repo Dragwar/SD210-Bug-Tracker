@@ -115,6 +115,7 @@ namespace BugTracker.Controllers
             return View(ProjectDetailsViewModel.CreateNewViewModel(userId, foundProject, DbContext));
         }
 
+        [NonAction]
         private ProjectCreateViewModel GenerateCreateViewModel()
         {
             SelectListGroup initialAssignedUserGroup = new SelectListGroup()
@@ -171,6 +172,7 @@ namespace BugTracker.Controllers
 
         // POST: Project/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
         public ActionResult Create(ProjectCreateViewModel formData)
         {
@@ -264,7 +266,7 @@ namespace BugTracker.Controllers
             }
         }
 
-
+        [NonAction]
         private ProjectEditViewModel GenerateEditViewModel(Guid? id)
         {
             if (!id.HasValue || id.Value == Guid.Empty)
@@ -304,6 +306,7 @@ namespace BugTracker.Controllers
 
         // POST: Project/Edit/{id}
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [BugTrackerAuthorize(nameof(UserRolesEnum.Admin), nameof(UserRolesEnum.ProjectManager))]
         [Route("Project/Edit")] //! this is needed because the get action has a route
         public ActionResult Edit(ProjectEditViewModel formData)
@@ -418,6 +421,7 @@ namespace BugTracker.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [BugTrackerAuthorize(UserRolesEnum.Admin, UserRolesEnum.ProjectManager)]
         public ActionResult ArchiveProject(Guid? id)
         {

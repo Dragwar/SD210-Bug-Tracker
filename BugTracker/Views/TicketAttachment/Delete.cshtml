@@ -39,8 +39,8 @@
                 <hr />
                 @using (Html.BeginForm())
                 {
-                    @Html.HiddenFor(model => model.TicketId)
                     @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.TicketId)
                     <div class="stats">
                         <div class="form-actions no-color">
                             @Html.ActionLink("Do Not Delete", nameof(TicketCommentController.Index), new { ticketId = Model.TicketId }, new { @class = "btn btn-primary", style = "" })

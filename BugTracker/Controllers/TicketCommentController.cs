@@ -85,6 +85,7 @@ namespace BugTracker.Controllers
 
         // POST: TicketComment/Create
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Create(TicketCommentCreateViewModel formData)
         {
             if (formData == null)
@@ -164,6 +165,7 @@ namespace BugTracker.Controllers
 
         // POST: TicketComment/Edit/{id}
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(TicketCommentEditViewModel formData)
         {
             if (formData == null)
